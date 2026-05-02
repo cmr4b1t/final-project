@@ -1,0 +1,80 @@
+services:
+  # MongoDB
+  mongo-db:
+    image: mongo:7
+    container_name: bootcamp-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - bootcamp-network
+    volumes:
+      - bootcamp-mongo-data:/data/db
+
+  # Servicio de registro Eureka
+  eureka-server:
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - bootcamp-network
+    environment:
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # config-server
+  config-server:
+    build: ./config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    networks:
+      - bootcamp-network
+    depends_on:
+      eureka-server:
+          condition: service_healthy
+    environment:
+      - SERVER_PORT=8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # customer-service
+  customer-service:
+    build: ./customer-service
+    container_name: customer-service
+    ports:
+      - "8081:8081"
+    networks:
+      - bootcamp-network
+    depends_on:
+      config-server:
+        condition: service_healthy
+      mongo-db:
+        condition: service_started
+    environment:
+      - SERVER_PORT=8081
+      - CONFIG_SERVER_URL=http://config-server:8888
+      - MONGO_URI=mongodb://bootcamp-mongodb:27017/customer-db
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - HOSTNAME=customer-service
+
+networks:
+  bootcamp-network:
+    driver: bridge
+    name: bootcamp-network
+
+volumes:
+  bootcamp-mongo-data:
+    name: bootcamp-mongo-data
