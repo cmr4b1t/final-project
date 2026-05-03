@@ -21,7 +21,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class IdempotencyLogDocument {
   @Id
   private String id;
-  @Indexed(unique = true)
   private String idempotencyKey;
   private OperationType operationType;
   private String responseBody;

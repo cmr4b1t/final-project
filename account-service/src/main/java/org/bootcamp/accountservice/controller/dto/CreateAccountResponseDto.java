@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bootcamp.accountservice.domain.Currency;
+import org.bootcamp.accountservice.domain.account.AccountStatus;
 import org.bootcamp.accountservice.domain.account.AccountSubType;
 import org.bootcamp.accountservice.domain.account.AccountType;
 import org.bootcamp.accountservice.domain.idempotency.OperationStatus;
@@ -34,4 +35,5 @@ public class CreateAccountResponseDto {
   private BigDecimal transactionCommission;
   private BigDecimal maintenanceCommission;
   private BigDecimal allowedMinimumBalance;
+  private AccountStatus accountStatus;
 }

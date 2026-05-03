@@ -57,8 +57,14 @@ Gestionar clientes financieros y sus productos bancarios.
   - 1 Cuenta de Corriente (Checking)
   - Muchas Cuentas de Plazo Fijo (Fixed Term)
 
+- Cliente Personal sólo puede tener un sólo préstamo por persona
+- Cliente Personal sólo puede tener una tarjeta de crédito por persona
+
 - Cliente Empresarial sólo puede tener como máximo estas cuentas bancarias:
   - Muchas Cuentas de Corriente (Checking)
+
+- Cliente Personal puede tener muchos préstamos (Loan)
+- Cliente Personal puede tener muchas tarjetas de crédito (credit_card)
 
 - Cliente Empresarial puede tener:
   - 1 o más titulares
@@ -70,10 +76,22 @@ Gestionar clientes financieros y sus productos bancarios.
 - Al crear una cuenta bancaria, se le creará automáticamente una tarjeta de débito asociada
 - Todas las cuentas bancarias tendrán un número límite máximo de transacciones (deposito/retiro) donde no se cobrará comisión, luego de ello si se cobrará comisión por cada transacción adicional.
 
+- Cliente Personal o Empresarial con perfil Standard:
+  - Reglas para Cuenta de Ahorro:
+    - La cuenta no tiene comisión de mantenimiento
+    - La cuenta tiene un límite máximo de movimientos mensuales
+  - Reglas para Cuenta Corriente:
+    - La cuenta posee comisión de mantenimiento
+    - La cuenta no tiene límite de movimientos mensuales
+  - Reglas para Cuenta de Plazo Fijo:
+    - La cuenta no tiene comisión de mantenimiento
+    - Sólo permite un movimiento de retiro/depósito en un día específico del mes
+    
 - Cliente Personal con perfil VIP:
   - Reglas para Cuenta de Ahorro:
     - El cliente debe tener al menos 1 tarjeta de crédito al momento de crear la cuenta
     - El saldo de la cuenta no debe ser menor a la minima permita según configuración (es decir, no se permitirá retirar dinero si eso hiciera que el saldo sea menor al saldo minimo permitido)
+
 - Cliente Empresarial con perfil PYME:
   - Reglas para Cuenta Corriente:
     - El cliente debe tener al menos 1 tarjeta de crédito al momento de crear la cuenta

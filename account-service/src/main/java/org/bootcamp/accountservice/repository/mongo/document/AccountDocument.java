@@ -1,6 +1,7 @@
 package org.bootcamp.accountservice.repository.mongo.document;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
@@ -33,4 +34,5 @@ public class AccountDocument {
   private BigDecimal maintenanceCommission;
   private BigDecimal allowedMinimumBalance;
   private AccountStatus status;
+  private LocalDateTime createdAt;
 }

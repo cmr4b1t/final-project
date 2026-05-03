@@ -46,10 +46,22 @@ gestionar cuentas bancarias
 - Al crear una cuenta bancaria, se le creará automáticamente una tarjeta de débito asociada
 - Todas las cuentas bancarias tendrán un número límite máximo de transacciones (deposito/retiro) donde no se cobrará comisión, luego de ello si se cobrará comisión por cada transacción adicional.
 
+- Cliente Personal o Empresarial con perfil Standard:
+  - Reglas para Cuenta de Ahorro:
+    - La cuenta no tiene comisión de mantenimiento
+    - La cuenta tiene un límite máximo de movimientos mensuales
+  - Reglas para Cuenta Corriente:
+    - La cuenta posee comisión de mantenimiento
+    - La cuenta no tiene límite de movimientos mensuales
+  - Reglas para Cuenta de Plazo Fijo:
+    - La cuenta no tiene comisión de mantenimiento
+    - Sólo permite un movimiento de retiro/depósito en un día específico del mes
+    - 
 - Cliente Personal con perfil VIP:
   - Reglas para Cuenta de Ahorro:
     - El cliente debe tener al menos 1 tarjeta de crédito al momento de crear la cuenta
     - El saldo de la cuenta no debe ser menor a la minima permita según configuración (es decir, no se permitirá retirar dinero si eso hiciera que el saldo sea menor al saldo minimo permitido)
+
 - Cliente Empresarial con perfil PYME:
   - Reglas para Cuenta Corriente:
     - El cliente debe tener al menos 1 tarjeta de crédito al momento de crear la cuenta
@@ -67,12 +79,13 @@ gestionar cuentas bancarias
     - Si existe, retorna el resultado
     - Si no existe:
     - Buscar el cliente (con customerId) [customer-service: [GET] /v1/customers/{customerId}]
-    - Validar que el cliente no tenga deuda vencida
+    - Validar que el cliente no tenga deuda vencida (usar el campo "hasOverdueDebts" del response de customer-service)
     - Validar que el cliente cumpla con las reglas de negocio para el tipo de cuenta
     - Registrar nueva cuenta bancaria [mongodb: accounts]
     - Registra el resultado en [mongodb: idempotency_log]
     - Gatilla el evento [AccountCreatedEvent] de creación de tarjeta de débito [kafka: bank.account.created]
       - el "Idempotency-Key" y el operationType se enviarán en los headers hacia kafka
+    - En la respuesta final, el "Idempotency-Key" se enviará en los headers
   - Response Body: [CreateAccountResponseDto]
     - status
     - createdAt

@@ -2,6 +2,7 @@ package org.bootcamp.accountservice.controller.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class CreateAccountRequestDto {
   @NotNull
   private Currency currency;
   @NotNull
+  @PositiveOrZero
   private BigDecimal openingBalance;
   private List<String> holders;
   private List<String> authorizedSigners;
