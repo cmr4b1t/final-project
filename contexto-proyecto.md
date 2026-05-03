@@ -64,28 +64,30 @@ Gestionar clientes financieros y sus productos bancarios.
   - 1 o más titulares
   - 0 o más firmantes autorizados
 
-- Un cliente puede solicitar crédito sin necesitad de tener cuenta bancaria (es decir, el desembolso se haría en efectivo)
-- Se permite crear cuentas con mínimo monto de apertura de Cero
-- Al crear una cuenta bancaria, se le creará automáticamente una tarjeta de décbito asociada
 - Si el cliente tiene deuda vencida en algún producto de credito, no podra adquirir ningun producto nuevo.
-- Todas las cuentas bancarias tendrán un número máximo de transacciones (deposito/retiro) donde no se cobrará comisión, luego de ello si se cobrará comisión por cada transacción adicional.
 
-- Cliente VIP:
+- Se permite crear cuentas bancaria con mínimo monto de apertura de Cero
+- Al crear una cuenta bancaria, se le creará automáticamente una tarjeta de débito asociada
+- Todas las cuentas bancarias tendrán un número límite máximo de transacciones (deposito/retiro) donde no se cobrará comisión, luego de ello si se cobrará comisión por cada transacción adicional.
+
+- Cliente Personal con perfil VIP:
   - Reglas para Cuenta de Ahorro:
     - El cliente debe tener al menos 1 tarjeta de crédito al momento de crear la cuenta
-    - La cuenta debe mantener un monto minimo en todo momento
-- Cliente PYME:
+    - El saldo de la cuenta no debe ser menor a la minima permita según configuración (es decir, no se permitirá retirar dinero si eso hiciera que el saldo sea menor al saldo minimo permitido)
+- Cliente Empresarial con perfil PYME:
   - Reglas para Cuenta Corriente:
     - El cliente debe tener al menos 1 tarjeta de crédito al momento de crear la cuenta
     - La cuenta no tiene comisión de mantenimiento
 
-- Un Cliente puede hacer pago de crédito de terceros.
+- Un cliente puede solicitar crédito sin necesitad de tener cuenta bancaria (es decir, el desembolso se haría en efectivo)
+- Un cliente puede hacer pago de crédito de terceros.
 
 ## Funcionalidades
 - Registrar Cliente nuevo con documento de identidad
 - Crear Cuenta Bancaria
 - Crear Tarjeta de Débito
-- Solicitar Crédito
+- Solicitar Préstamo
+- Solicitar Tarjeta de Crédito
 - Realizar transacción de deposito
 - Realizar transacción de retiro
 - Realizar transferencia entre cuentas del mismo cliente

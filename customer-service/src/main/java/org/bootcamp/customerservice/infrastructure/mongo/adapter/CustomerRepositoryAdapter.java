@@ -4,7 +4,6 @@ import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bootcamp.customerservice.application.port.out.CustomerRepositoryPort;
@@ -29,8 +28,8 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
 
   @Override
   public Maybe<Customer> findByCustomerId(String customerId) {
-    customerRepository.findById(customerId);
-    return null;
+    return RxJava3Adapter.monoToMaybe(customerRepository.findByCustomerId(customerId))
+      .map(customerPersistenceMapper::toDomain);
   }
 
   @Override
@@ -45,11 +44,14 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
 
   @Override
   public Maybe<Customer> findByDocumentNumber(String documentNumber) {
-    return null;
+    return RxJava3Adapter.monoToMaybe(customerRepository.findByDocumentNumber(documentNumber))
+      .map(customerPersistenceMapper::toDomain);
   }
 
   @Override
   public Single<Boolean> existsByDocumentNumber(String documentNumber) {
-    return null;
+    return findByDocumentNumber(documentNumber)
+      .isEmpty()
+      .map(isEmpty -> !isEmpty);
   }
 }

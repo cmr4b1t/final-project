@@ -11,7 +11,9 @@ import org.bootcamp.customerservice.application.port.out.CustomerRepositoryPort;
 import org.bootcamp.customerservice.domain.model.Customer;
 import org.bootcamp.customerservice.domain.supports.Constants;
 import org.bootcamp.customerservice.domain.supports.Utils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,8 @@ public class CrudCustomerUseCaseImpl implements CrudCustomerUseCase {
   public Single<Customer> create(Customer customer) {
     return customerRepositoryPort.existsByDocumentNumber(customer.getDocumentNumber())
       .filter(exists -> !exists)
-      .switchIfEmpty(Single.error(new RuntimeException("Customer already exists")))
+      .switchIfEmpty(Single.error(new ResponseStatusException(
+        HttpStatus.CONFLICT, "Customer already exists")))
       .map(exists -> buildNewCustomer(customer))
       .flatMap(customerRepositoryPort::save);
   }
@@ -36,7 +39,9 @@ public class CrudCustomerUseCaseImpl implements CrudCustomerUseCase {
 
   @Override
   public Single<Customer> findByCustomerId(String customerId) {
-    return null;
+    return customerRepositoryPort.findByCustomerId(customerId)
+      .switchIfEmpty(Single.error(new ResponseStatusException(
+        HttpStatus.NOT_FOUND, "Customer not found")));
   }
 
   @Override

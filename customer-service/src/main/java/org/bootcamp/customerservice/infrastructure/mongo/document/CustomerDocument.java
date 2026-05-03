@@ -26,4 +26,10 @@ public class CustomerDocument {
   private String status;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  private boolean hasOverdueDebts;
+  private int savingsAccountsCount;
+  private int checkingAccountsCount;
+  private int fixedTermAccountsCount;
+  private int creditCardsCount;
+  private int loansCount;
 }

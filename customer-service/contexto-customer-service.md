@@ -18,7 +18,7 @@ Gestionar clientes
 ## Responsabilidades:
 - Mantiene una base de datos de los clientes (tablas: customers)
 - Se encarga de la creación y consulta de clientes
-- El cliente mantiene un estado de tiene deuda vencida (para saber si el cliente es moroso o no)
+- El cliente mantiene un estado de "tiene deuda vencida" (para saber si el cliente es moroso si o no)
 - El cliente mantiene una variable número de cuentas de ahorro activas
 - El cliente mantiene una variable número de cuentas de corriente activas
 - El cliente mantiene una variable número de tarjetas de crédito activas
@@ -34,15 +34,15 @@ Gestionar clientes
       - Standard
       - PYME
 
-## Api Rest:
+## Api Rest: [CustomerController]
 - Crear Cliente:
   - API: [POST] /v1/customers
-  - Request Body:
+  - Request Body: [CreateCustomerRequestDto]
     - documentNumber, etc
   - Flujo:
     - Validar que el cliente no exista (con documentNumber) en la base de datos  [mongodb: customers]
-    - Crear el cliente
-  - Response Body:
+    - Registrar el cliente [mongodb: customers]
+  - Response Body: [CustomerResponseDto]
     - customerId
     - documentNumber, etc
   - Response Status:
@@ -50,13 +50,14 @@ Gestionar clientes
   - Response Status Error:
     - 400 Bad Request
     - 409 Conflict
-- Consulta Cliente por customerId
+    
+- Consultar Cliente por customerId
   - API: [GET] /v1/customers/{customerId}
   - PathVariable:
     - customerId: id del cliente
   - Flujo:
     - Buscar el cliente (con customerId) en la base de datos [mongodb: customers]
-  - Response Body:
+  - Response Body: [CustomerResponseDto]
     - customerId
     - documentNumber, etc
   - Response Status:
