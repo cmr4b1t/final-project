@@ -8,7 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class IdempotencyUtils {
-  private static ObjectMapper objectMapper = new ObjectMapper();
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   public static String serializeResponse(Object responseDto) {
     try {

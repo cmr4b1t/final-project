@@ -5,9 +5,13 @@ spring:
 
 kafka:
   bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+  consumer:
+    group-id: ${KAFKA_CONSUMER_GROUP_ID:account.consumer}
 
 topics:
   bank-account-created: bank.account.created
+  bank-debitcard-created: bank.debitcard.created
+  bank-account-activated: bank.account.activated
 
 management:
   endpoints:

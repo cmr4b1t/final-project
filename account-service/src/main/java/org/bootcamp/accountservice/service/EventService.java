@@ -2,7 +2,6 @@ package org.bootcamp.accountservice.service;
 
 import io.reactivex.rxjava3.core.Completable;
 import lombok.RequiredArgsConstructor;
-import org.bootcamp.accountservice.domain.idempotency.OperationType;
 import org.bootcamp.accountservice.kafka.event.AccountCreatedEvent;
 import org.bootcamp.accountservice.support.Constants;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +23,6 @@ public class EventService {
     Message<AccountCreatedEvent> message = MessageBuilder.withPayload(event)
       .setHeader(KafkaHeaders.TOPIC, accountCreatedTopic)
       .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
-      .setHeader(Constants.OPERATION_TYPE_HEADER, OperationType.CREATE_ACCOUNT.name())
       .build();
 
     return Completable.fromCompletionStage(kafkaTemplate.send(message));

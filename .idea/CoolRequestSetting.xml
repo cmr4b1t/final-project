@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CoolRequestSetting">
+    <option name="serializePaths">
+      <list>
+        <option value="C:\Users\LENOVO\.config\.cool-request\request\serialize\f5c0a4104f0c463f9d703125c0c4f039" />
+      </list>
+    </option>
     <option name="projectCachePath" value="project-1fb284a4-fbd0-46b8-a97f-75c26d11076d" />
   </component>
 </project>

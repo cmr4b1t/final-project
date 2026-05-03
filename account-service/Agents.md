@@ -81,11 +81,10 @@ gestionar cuentas bancarias
     - Buscar el cliente (con customerId) [customer-service: [GET] /v1/customers/{customerId}]
     - Validar que el cliente no tenga deuda vencida (usar el campo "hasOverdueDebts" del response de customer-service)
     - Validar que el cliente cumpla con las reglas de negocio para el tipo de cuenta
-    - Registrar nueva cuenta bancaria (inactiva) [mongodb: accounts]
+    - Registrar nueva cuenta bancaria ("INACTIVE") [mongodb: accounts]
     - Registra el resultado en [mongodb: idempotency_log] con estado "PENDING"
-    - Gatilla el evento [AccountCreatedEvent] de creación de tarjeta de débito [kafka: bank.account.created]
-      - el "Idempotency-Key" y el operationType se enviarán en los headers hacia kafka
-    - En la respuesta final, el "Idempotency-Key" se devolverá en los headers
+    - Gatilla el evento [AccountCreatedEvent] a [kafka: bank.account.created] (para creación de tarjeta de débito)
+      - el "Idempotency-Key" se enviará en los headers hacia kafka
   - Response Body: [CreateAccountResponseDto]
     - status
     - createdAt
@@ -99,3 +98,21 @@ gestionar cuentas bancarias
     - 400 Bad Request
     - 404 Not Found
     - 409 Conflict
+
+## Escucha Eventos:
+- [DebitCardCreatedConsumer: listen]
+  - Buscar si existe registro con "idempotencyKey" y OperationType.CREATE_ACCOUNT en [mongodb: idempotency_log]
+  - Si no existe, da error y log.
+  - Si existe y estado es "COMPLETED" o "FAILED, culmina con ack.acknowledge()
+  - Si existe y estado es "PENDING:
+    - Deserealizamos el evento [DebitCardCreatedEvent] de la payload
+    - Buscamos la cuenta bancaria por "accountId" [mongodb: accounts]
+    - Actualizamos el estado de la cuenta bancaria a "ACTIVE"
+    - Actualizamos el estado del idempotency log a "COMPLETED"
+    - Deserealizamos el objeto del responseBody del idempotency log a [CreateAccountResponseDto]
+    - Actualizamos el operationStatus a "COMPLETED" y el accountStatus a "ACTIVE"
+    - Guardamos la cuenta actualizada en [mongodb: accounts]
+    - Guardamos el idempotency_log actualizado en [mongodb: idempotency_log]
+    - Gatilla el evento [AccountActivatedEvent] a [kafka: bank.account.activated] (para que customer actualice sus campos)
+      - el "Idempotency-Key" se enviará en los headers hacia kafka
+    - culminar con ack.acknowledge()

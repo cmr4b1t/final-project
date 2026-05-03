@@ -19,19 +19,10 @@ public class PersonalAccountRuleStrategy extends AbstractAccountRuleStrategy {
   @Override
   public void validate(CustomerSummaryDto customer, CreateAccountRequestDto requestDto) {
     validateCommonRules(customer, requestDto);
-    validateVipRules(customer, requestDto);
     validatePersonalHolders(requestDto);
     validatePersonalAccountLimits(customer, requestDto);
+    validateVipRules(customer, requestDto);
   }
-
-  private void validateVipRules(CustomerSummaryDto customer, CreateAccountRequestDto requestDto) {
-    if ("VIP".equalsIgnoreCase(customer.getProfile()) && requestDto.getAccountType() == AccountType.SAVINGS
-      && customer.getCreditCardsCount() < 1) {
-      throw new ResponseStatusException(
-        HttpStatus.CONFLICT, "VIP customer requires at least one credit card for savings account");
-    }
-  }
-
   private void validatePersonalHolders(CreateAccountRequestDto requestDto) {
     List<String> holders = normalizeList(requestDto.getHolders());
     if (holders.size() != 1) {
@@ -48,6 +39,14 @@ public class PersonalAccountRuleStrategy extends AbstractAccountRuleStrategy {
     if (requestDto.getAccountType() == AccountType.CHECKING && customer.getCheckingAccountsCount() >= 1) {
       throw new ResponseStatusException(
         HttpStatus.CONFLICT, "Personal customer already has an active checking account");
+    }
+  }
+
+  private void validateVipRules(CustomerSummaryDto customer, CreateAccountRequestDto requestDto) {
+    if ("VIP".equalsIgnoreCase(customer.getProfile()) && requestDto.getAccountType() == AccountType.SAVINGS
+      && customer.getCreditCardsCount() < 1) {
+      throw new ResponseStatusException(
+        HttpStatus.CONFLICT, "VIP customer requires at least one credit card for savings account");
     }
   }
 }
