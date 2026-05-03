@@ -26,12 +26,7 @@ import org.bootcamp.accountservice.repository.mongo.IdempotencyLogRepository;
 import org.bootcamp.accountservice.repository.mongo.document.IdempotencyLogDocument;
 import org.bootcamp.accountservice.support.Constants;
 import org.bootcamp.accountservice.support.Utils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.adapter.rxjava.RxJava3Adapter;
@@ -44,10 +39,7 @@ public class AccountService {
   private final AccountMapper accountMapper;
   private final CustomerClient customerClient;
   private final ObjectMapper objectMapper;
-  private final KafkaTemplate<String, Object> kafkaTemplate;
-
-  @Value("${topics.bank-account-created:bank.account.created}")
-  private String accountCreatedTopic;
+  private final EventService eventService;
 
   public Single<CreateAccountResponseDto> createAccount(
     String idempotencyKey, CreateAccountRequestDto requestDto) {
@@ -185,7 +177,9 @@ public class AccountService {
     account.setCreatedAt(createdAt);
     account.setHolders(normalizeList(requestDto.getHolders()));
     account.setAuthorizedSigners(normalizeList(requestDto.getAuthorizedSigners()));
-    account.setMonthlyTransactionsLimitWithoutCommission(resolveMonthlyLimit(requestDto.getAccountType()));
+    account.setUnlimitedTransactions(resolveHasUnlimitedTransactions(requestDto.getAccountType()));
+    account.setMonthlyTransactionsLimit(resolveMonthlyTransactionsLimit(requestDto.getAccountType()));
+    account.setMonthlyTransactionsLimitWithoutCommission(resolveMonthlyTransactionsLimitWithoutCommission(requestDto.getAccountType()));
     account.setTransactionCommission(resolveTransactionCommission(requestDto.getAccountType()));
     account.setMaintenanceCommission(resolveMaintenanceCommission(requestDto));
     account.setAllowedMinimumBalance(resolveAllowedMinimumBalance(requestDto));
@@ -210,6 +204,8 @@ public class AccountService {
       .holders(account.getHolders())
       .authorizedSigners(account.getAuthorizedSigners())
       .fixedTransactionDay(account.getFixedTransactionDay())
+      .unlimitedTransactions(account.isUnlimitedTransactions())
+      .monthlyTransactionsLimit(account.getMonthlyTransactionsLimit())
       .monthlyTransactionsLimitWithoutCommission(account.getMonthlyTransactionsLimitWithoutCommission())
       .transactionCommission(account.getTransactionCommission())
       .maintenanceCommission(account.getMaintenanceCommission())
@@ -240,6 +236,8 @@ public class AccountService {
       .holders(responseDto.getHolders())
       .authorizedSigners(responseDto.getAuthorizedSigners())
       .fixedTransactionDay(responseDto.getFixedTransactionDay())
+      .unlimitedTransactions(responseDto.isUnlimitedTransactions())
+      .monthlyTransactionsLimit(responseDto.getMonthlyTransactionsLimit())
       .monthlyTransactionsLimitWithoutCommission(responseDto.getMonthlyTransactionsLimitWithoutCommission())
       .transactionCommission(responseDto.getTransactionCommission())
       .maintenanceCommission(responseDto.getMaintenanceCommission())
@@ -247,16 +245,25 @@ public class AccountService {
       .status(responseDto.getAccountStatus())
       .build();
 
-    Message<AccountCreatedEvent> message = MessageBuilder.withPayload(event)
-      .setHeader(KafkaHeaders.TOPIC, accountCreatedTopic)
-      .setHeader("Idempotency-Key", idempotencyKey)
-      .setHeader("operationType", OperationType.CREATE_ACCOUNT.name())
-      .build();
-
-    return Completable.fromCompletionStage(kafkaTemplate.send(message));
+    return eventService.publishAccountCreatedEvent(idempotencyKey, event);
   }
 
-  private int resolveMonthlyLimit(AccountType accountType) {
+  private boolean resolveHasUnlimitedTransactions(AccountType accountType) {
+    return switch (accountType) {
+      case SAVINGS, FIXED_TERM -> false;
+      case CHECKING -> true;
+    };
+  }
+
+  private Integer resolveMonthlyTransactionsLimit(AccountType accountType) {
+    return switch (accountType) {
+      case SAVINGS -> 25;
+      case CHECKING -> null;
+      case FIXED_TERM -> 1;
+    };
+  }
+
+  private int resolveMonthlyTransactionsLimitWithoutCommission(AccountType accountType) {
     return switch (accountType) {
       case SAVINGS -> 10;
       case CHECKING -> 30;
@@ -273,6 +280,10 @@ public class AccountService {
   }
 
   private BigDecimal resolveMaintenanceCommission(CreateAccountRequestDto requestDto) {
+    if (requestDto.getAccountType() == AccountType.SAVINGS
+      || requestDto.getAccountType() == AccountType.FIXED_TERM) {
+      return BigDecimal.ZERO;
+    }
     if (requestDto.getAccountType() == AccountType.CHECKING
       && requestDto.getAccountSubType() == AccountSubType.PYME) {
       return BigDecimal.ZERO;

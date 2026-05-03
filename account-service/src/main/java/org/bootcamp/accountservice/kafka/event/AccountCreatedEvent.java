@@ -19,6 +19,8 @@ public record AccountCreatedEvent(
   List<String>holders,
   List<String> authorizedSigners,
   Integer fixedTransactionDay,
+  boolean unlimitedTransactions,
+  Integer monthlyTransactionsLimit,
   int monthlyTransactionsLimitWithoutCommission,
   BigDecimal transactionCommission,
   BigDecimal maintenanceCommission,

@@ -1,6 +1,3 @@
-server:
-  port: ${SERVER_PORT:8081}
-
 eureka:
   client:
     service-url:
@@ -14,3 +11,6 @@ spring:
     name: customer-service
   config:
     import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
+
+server:
+  port: ${SERVER_PORT:8081}

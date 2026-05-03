@@ -23,7 +23,7 @@ gestionar cuentas bancarias
 ## Entidades de negocio
 - Tipos de Cuentas Bancarias:
   - Cuenta de Ahorro (Savings)
-  - Cuenta de Corriente (Checking)
+  ~~- Cuenta de Corriente (Checking)
   - Cuenta de Plazo Fijo (Fixed Term)
 
 ## Reglas de Negocio:
@@ -33,7 +33,7 @@ gestionar cuentas bancarias
     - 1 Cuenta de Corriente (Checking)
     - Muchas Cuentas de Plazo Fijo (Fixed Term)
 
-- Cliente Empresarial sólo puede tener como máximo estas cuentas bancarias:
+- Cliente Empresarial sólo puede tener como máximo estas cuentas bancarias:~~
     - Muchas Cuentas de Corriente (Checking)
 
 - Cliente Empresarial puede tener:

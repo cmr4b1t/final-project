@@ -29,6 +29,8 @@ public class AccountDocument {
   private List<String> holders;
   private List<String> authorizedSigners;
   private Integer fixedTransactionDay;
+  private boolean unlimitedTransactions;
+  private Integer monthlyTransactionsLimit;
   private int monthlyTransactionsLimitWithoutCommission;
   private BigDecimal transactionCommission;
   private BigDecimal maintenanceCommission;

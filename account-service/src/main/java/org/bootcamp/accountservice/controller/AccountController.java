@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.bootcamp.accountservice.controller.dto.CreateAccountRequestDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountResponseDto;
 import org.bootcamp.accountservice.service.AccountService;
+import org.bootcamp.accountservice.support.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +26,7 @@ public class AccountController {
 
   @PostMapping
   public Single<ResponseEntity<CreateAccountResponseDto>> createAccount(
-    @RequestHeader("Idempotency-Key") @NotBlank String idempotencyKey,
+    @RequestHeader(Constants.IDEMPOTENCY_KEY_HEADER) @NotBlank String idempotencyKey,
     @Valid @RequestBody CreateAccountRequestDto requestDto) {
     return accountService.createAccount(idempotencyKey, requestDto)
       .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));

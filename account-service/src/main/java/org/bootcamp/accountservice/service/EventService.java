@@ -1,0 +1,32 @@
+package org.bootcamp.accountservice.service;
+
+import io.reactivex.rxjava3.core.Completable;
+import lombok.RequiredArgsConstructor;
+import org.bootcamp.accountservice.domain.idempotency.OperationType;
+import org.bootcamp.accountservice.kafka.event.AccountCreatedEvent;
+import org.bootcamp.accountservice.support.Constants;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class EventService {
+  private final KafkaTemplate<String, Object> kafkaTemplate;
+
+  @Value("${topics.bank-account-created:bank.account.created}")
+  private String accountCreatedTopic;
+
+  public Completable publishAccountCreatedEvent(String idempotencyKey, AccountCreatedEvent event) {
+    Message<AccountCreatedEvent> message = MessageBuilder.withPayload(event)
+      .setHeader(KafkaHeaders.TOPIC, accountCreatedTopic)
+      .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
+      .setHeader(Constants.OPERATION_TYPE_HEADER, OperationType.CREATE_ACCOUNT.name())
+      .build();
+
+    return Completable.fromCompletionStage(kafkaTemplate.send(message));
+  }
+}
