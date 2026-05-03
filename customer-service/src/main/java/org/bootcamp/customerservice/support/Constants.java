@@ -1,11 +1,9 @@
-package org.bootcamp.accountservice.support;
+package org.bootcamp.customerservice.support;
 
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class Constants {
-  public static final String PREFIX_ACCOUNT_ID = "ACC";
-
   public static final String IDEMPOTENCY_KEY_HEADER = "Idempotency-Key";
 
 }

@@ -67,3 +67,16 @@ Gestionar clientes
     - 404 Not Found
 
 ## Escucha Eventos:
+- [AccountActivatedConsumer: listen]
+  - Buscar si existe registro con "idempotencyKey" y OperationType.ACTIVATE_ACCOUNT en [mongodb: idempotency_log]
+  - Si existe, culmina con ack.acknowledge()
+  - Si existe no existe:
+    - Deserealizamos el evento [AccountActivatedEvent] de la payload
+    - Buscamos el cliente por "customerId" [mongodb: customers]
+    - De acuerdo al tipo de cuenta, actualizar los campos del cliente:
+      - savingsAccountsCount
+      - checkingAccountsCount
+      - fixedTermAccountsCount
+    - Guardamos el cliente actualizado en [mongodb: customers]
+    - Registramos el idempotency log en [mongodb: idempotency_log] con estado "COMPLETED"
+    - culminar con ack.acknowledge()

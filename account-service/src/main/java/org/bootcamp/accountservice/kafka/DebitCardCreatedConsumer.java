@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bootcamp.accountservice.controller.dto.CreateAccountResponseDto;
 import org.bootcamp.accountservice.domain.account.AccountStatus;
-import org.bootcamp.accountservice.domain.idempotency.OperationStatus;
-import org.bootcamp.accountservice.domain.idempotency.OperationType;
+import org.bootcamp.accountservice.repository.mongo.document.OperationStatus;
+import org.bootcamp.accountservice.repository.mongo.document.OperationType;
 import org.bootcamp.accountservice.kafka.event.AccountActivatedEvent;
 import org.bootcamp.accountservice.kafka.event.DebitCardCreatedEvent;
 import org.bootcamp.accountservice.repository.mongo.AccountRepository;
@@ -35,14 +35,14 @@ public class DebitCardCreatedConsumer {
     topics = "${topics.bank-debitcard-created}",
     groupId = "${kafka.consumer.group-id}"
   )
-  public void listen(ConsumerRecord<String, String> record,
+  public void listen(ConsumerRecord<String, String> consumerRecord,
                      @Header(Constants.IDEMPOTENCY_KEY_HEADER) String idempotencyKey,
                      Acknowledgment ack) {
-    processDebitCardCreated(record.value(), idempotencyKey)
+    processDebitCardCreated(consumerRecord.value(), idempotencyKey)
       .doOnSuccess(unused -> ack.acknowledge())
       .doOnError(error -> log.error(
         "Error processing debit card created event. idempotencyKey={}, offset={}",
-        idempotencyKey, record.offset(), error))
+        idempotencyKey, consumerRecord.offset(), error))
       .subscribe();
   }
 

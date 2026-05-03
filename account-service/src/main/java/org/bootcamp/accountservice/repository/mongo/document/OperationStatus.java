@@ -1,4 +1,4 @@
-package org.bootcamp.accountservice.domain.idempotency;
+package org.bootcamp.accountservice.repository.mongo.document;
 
 public enum OperationStatus {
   PENDING,

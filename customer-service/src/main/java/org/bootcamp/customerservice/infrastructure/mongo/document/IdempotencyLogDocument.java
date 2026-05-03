@@ -1,4 +1,4 @@
-package org.bootcamp.accountservice.repository.mongo.document;
+package org.bootcamp.customerservice.infrastructure.mongo.document;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

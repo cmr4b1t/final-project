@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class WebClientConfig {
-  @Value("${clients.customer-service.base-url:http://localhost:8081}")
+  @Value("${clients.customer-service.base-url}")
   private String customerServiceBaseUrl;
 
   @LoadBalanced

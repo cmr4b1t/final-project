@@ -12,7 +12,7 @@ import org.bootcamp.accountservice.domain.Currency;
 import org.bootcamp.accountservice.domain.account.AccountStatus;
 import org.bootcamp.accountservice.domain.account.AccountSubType;
 import org.bootcamp.accountservice.domain.account.AccountType;
-import org.bootcamp.accountservice.domain.idempotency.OperationStatus;
+import org.bootcamp.accountservice.repository.mongo.document.OperationStatus;
 
 @Data
 @Builder
