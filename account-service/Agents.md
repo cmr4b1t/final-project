@@ -81,11 +81,11 @@ gestionar cuentas bancarias
     - Buscar el cliente (con customerId) [customer-service: [GET] /v1/customers/{customerId}]
     - Validar que el cliente no tenga deuda vencida (usar el campo "hasOverdueDebts" del response de customer-service)
     - Validar que el cliente cumpla con las reglas de negocio para el tipo de cuenta
-    - Registrar nueva cuenta bancaria [mongodb: accounts]
-    - Registra el resultado en [mongodb: idempotency_log]
+    - Registrar nueva cuenta bancaria (inactiva) [mongodb: accounts]
+    - Registra el resultado en [mongodb: idempotency_log] con estado "PENDING"
     - Gatilla el evento [AccountCreatedEvent] de creación de tarjeta de débito [kafka: bank.account.created]
       - el "Idempotency-Key" y el operationType se enviarán en los headers hacia kafka
-    - En la respuesta final, el "Idempotency-Key" se enviará en los headers
+    - En la respuesta final, el "Idempotency-Key" se devolverá en los headers
   - Response Body: [CreateAccountResponseDto]
     - status
     - createdAt
