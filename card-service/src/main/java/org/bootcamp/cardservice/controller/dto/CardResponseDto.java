@@ -1,4 +1,4 @@
-package org.bootcamp.cardservice.repository.mongo.document;
+package org.bootcamp.cardservice.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,19 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bootcamp.cardservice.domain.CardStatus;
 import org.bootcamp.cardservice.domain.CardType;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "cards")
-public class CardDocument {
-  @Id
-  private String id;
-  @Indexed(unique = true)
+public class CardResponseDto {
   private String cardId;
   private String customerId;
   private String sourceAccountId;
