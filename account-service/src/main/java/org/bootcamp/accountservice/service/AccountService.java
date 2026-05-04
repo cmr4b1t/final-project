@@ -3,6 +3,7 @@ package org.bootcamp.accountservice.service;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.accountservice.client.CustomerClient;
@@ -24,7 +25,9 @@ import org.bootcamp.accountservice.service.strategy.AccountRuleStrategyFactory;
 import org.bootcamp.accountservice.support.Constants;
 import org.bootcamp.accountservice.support.IdempotencyUtils;
 import org.bootcamp.accountservice.support.Utils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.adapter.rxjava.RxJava3Adapter;
 
 @Service
@@ -49,6 +52,14 @@ public class AccountService {
         .flatMap(response -> saveIdempotencyLog(idempotencyKey, response)
           .andThen(publishAccountCreatedEvent(idempotencyKey, response))
           .andThen(Single.just(response))));
+  }
+
+  public Single<BigDecimal> findAvailableBalance(String accountId) {
+    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+      .switchIfEmpty(Single.error(new ResponseStatusException(
+        HttpStatus.NOT_FOUND, "Account not found for accountId: " + accountId)))
+      .map(accountMapper::toDomain)
+      .map(Account::getBalance);
   }
 
   private Maybe<CreateAccountResponseDto> findExistingOperation(String idempotencyKey) {

@@ -3,6 +3,7 @@ package org.bootcamp.accountservice.controller;
 import io.reactivex.rxjava3.core.Single;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.accountservice.controller.dto.CreateAccountRequestDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountResponseDto;
@@ -11,6 +12,8 @@ import org.bootcamp.accountservice.support.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,5 +33,12 @@ public class AccountController {
     @Valid @RequestBody CreateAccountRequestDto requestDto) {
     return accountService.createAccount(idempotencyKey, requestDto)
       .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
+  }
+
+  @GetMapping("/{accountId}/balance")
+  public Single<ResponseEntity<BigDecimal>> findAvailableBalance(
+    @PathVariable @NotBlank String accountId) {
+    return accountService.findAvailableBalance(accountId)
+      .map(ResponseEntity::ok);
   }
 }

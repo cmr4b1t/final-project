@@ -99,6 +99,18 @@ gestionar cuentas bancarias
     - 404 Not Found
     - 409 Conflict
 
+- Consultar saldo disponible de cuenta bancaria
+  - API: [GET] /v1/accounts/{accountId}/balance
+  - PathVariable:
+    - accountId: id de la cuenta
+  - Flujo:
+  - Response Body: [Java:BigDecimal]
+  - Response Status:
+    - 200 OK
+  - Response Status Error:
+    - 400 Bad Request
+    - 404 Not Found
+
 ## Escucha Eventos:
 - [DebitCardCreatedConsumer: listen]
   - Buscar si existe registro con "idempotencyKey" y OperationType.CREATE_ACCOUNT en [mongodb: idempotency_log]
