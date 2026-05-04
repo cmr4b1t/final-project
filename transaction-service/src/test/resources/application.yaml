@@ -1,0 +1,14 @@
+eureka:
+  client:
+    enabled: false
+
+spring:
+  application:
+    name: transaction-service
+  cloud:
+    config:
+      enabled: false
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/transaction-test-db
+
