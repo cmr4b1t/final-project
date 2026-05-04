@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 public class CreateCardRequestDto {
   @NotBlank
   private String customerId;
+  @NotBlank
   private String sourceAccountId;
 }
