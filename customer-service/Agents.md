@@ -14,6 +14,7 @@ Gestionar clientes
   - 'kafka/': capa de integración con kafka
   - 'mongo/': capa de integración con mongodb
   - 'redis/': capa de integración con redis
+- 'support/': utilidades
 
 ## Responsabilidades:
 - Mantiene una base de datos de los clientes (tablas: customers)
