@@ -112,7 +112,7 @@ gestionar cuentas bancarias
     - 404 Not Found
 
 ## Escucha Eventos:
-- [DebitCardCreatedConsumer: listen]
+- [DebitCardCreatedConsumer: listen(), evento: DebitCardCreatedEvent]
   - Buscar si existe registro con "idempotencyKey" y OperationType.CREATE_ACCOUNT en [mongodb: idempotency_log]
   - Si no existe, da error y log.
   - Si existe y estado es "COMPLETED" o "FAILED, culmina con ack.acknowledge()
@@ -128,3 +128,40 @@ gestionar cuentas bancarias
     - Gatilla el evento [AccountActivatedEvent] a [kafka: bank.account.activated] (para que customer actualice sus campos)
       - el "Idempotency-Key" se enviará en los headers hacia kafka
     - culminar con ack.acknowledge()
+
+- [DepositRequestedConsumer: listen(), evento: DepositRequestedEvent]
+  - Buscar si existe registro con "idempotencyKey" y OperationType.DEPOSIT_REQUESTED en [mongodb: idempotency_log]
+  - Si existe, culmina con ack.acknowledge()
+  - Si no existe:
+    - Buscar la cuenta por "accountId" [mongodb: accounts]
+    - Validar que no supere el límite de movimientos mensuales (si aplica)
+    - Validar con reglas de negocio según el tipo de cuenta
+    - Si la cuenta no cumple con las reglas,
+      - Publicar evento [DepositRejectedEvent] a [kafka: bank.deposit.rejected]
+      - culmina con ack.acknowledge()
+    - Aplicar políticas (comisiones, etc) según el tipo de cuenta
+    - Actualizar balance de la cuenta
+    - Guarda cuenta actualizada en [mongodb: accounts]
+    - Registra el resultado en [mongodb: idempotency_log] con estado "COMPLETED"
+    - Envía registro de transacción de deposito a [transaction-service: [POST] /v1/transactions]
+    - Publicar evento [DepositAcceptedEvent] a [kafka: bank.deposit.accepted]
+    - culmina con ack.acknowledge()
+
+- [WithdrawRequestedConsumer: listen(), evento: WithdrawRequestedEvent]
+  - Buscar si existe registro con "idempotencyKey" y OperationType.WITHDRAW_REQUESTED en [mongodb: idempotency_log]
+  - Si existe, culmina con ack.acknowledge()
+  - Si no existe:
+    - Buscar la cuenta por "accountId" [mongodb: accounts]
+    - Validar que el saldo de la cuenta no sea menor al monto del retiro
+    - Validar que no supere el límite de movimientos mensuales (si aplica)
+    - Validar con reglas de negocio según el tipo de cuenta
+    - Si la cuenta no cumple con las reglas,
+      - Publicar evento [WithdrawRejectedEvent] a [kafka: bank.withdraw.rejected]
+      - culmina con ack.acknowledge()
+    - Aplicar políticas (comisiones, etc) según el tipo de cuenta
+    - Actualizar balance de la cuenta
+    - Guarda cuenta actualizada en [mongodb: accounts]
+    - Registra el resultado en [mongodb: idempotency_log] con estado "COMPLETED"
+    - Envía registro de transacción de retiro a [transaction-service: [POST] /v1/transactions]
+    - Publicar evento [WithdrawAcceptedEvent] a [kafka: bank.withdraw.accepted]
+    - culmina con ack.acknowledge()

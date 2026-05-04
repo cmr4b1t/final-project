@@ -1,0 +1,21 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/transaction-orchestrator-db}
+
+kafka:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+  consumer:
+    group-id: ${KAFKA_CONSUMER_GROUP_ID:transaction-orchestrator.consumer}
+
+topics:
+  bank-transaction-deposit-requested: bank.transaction.deposit.requested
+  bank-transaction-withdraw-requested: bank.transaction.withdraw.requested
+  bank-transaction-deposit-accepted: bank.transaction.deposit.accepted
+  bank-transaction-withdraw-accepted: bank.transaction.withdraw.accepted
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

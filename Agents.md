@@ -74,6 +74,7 @@ Gestionar clientes financieros y sus productos bancarios.
 
 - Se permite crear cuentas bancaria con mínimo monto de apertura de Cero
 - Al crear una cuenta bancaria, se le creará automáticamente una tarjeta de débito asociada
+
 - Todas las cuentas bancarias tendrán un número límite máximo de transacciones (deposito/retiro) donde no se cobrará comisión, luego de ello si se cobrará comisión por cada transacción adicional.
 
 - Cliente Personal o Empresarial con perfil Standard:
