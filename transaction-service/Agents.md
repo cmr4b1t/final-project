@@ -1,5 +1,5 @@
 # Transaction Service
-realizar transacciones (deposito, retiro, consumo)
+registrar transacciones (deposito, retiro, consumo, pagos)
 
 ## Estructura del proyecto
 - 'client/': apis externas

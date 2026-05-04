@@ -126,11 +126,12 @@ Gestionar clientes financieros y sus productos bancarios.
 ## microservicios
 - customer-service: gestionar clientes
 - account-service: gestionar cuentas bancarias
-- transaction-service: realizar transacciones (deposito, retiro)
+- transaction-service: registrar transacciones (deposito, retiro, consumo, pagos)
+- card-service: gestionar tarjetas de débito y crédito
+- transaction-orchestrator: orquestar el flujo de transacciones (deposito, retiro, consumo)
 - loan-service: gestionar cuentas de préstamos
 - credit-card-account-service: gestionar cuentas de tarjetas de crédito
-- card-service: gestionar tarjetas de débito y crédito
-- payment-service: realizar pagos de deuda de préstamos y tarjetas de crédito
+- payment-service: orquestar pagos de deuda de préstamos y tarjetas de crédito
 - statement-service: gestionar estados de cuenta de tarjetas de crédito
 - overdue-debt-service: gestionar deuda vencida
 - transfer-service: realizar transferencias (entre cuentas del mismo cliente, entre cuentas de diferentes clientes)

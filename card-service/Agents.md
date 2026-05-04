@@ -26,6 +26,7 @@ gestionar tarjetas de débito y crédito
 
 
 ## Api Rest: [CreditController]
+ - Rest crud para tarjetas de débito y crédito
 
 ## Escucha Eventos:
 - [AccountCreatedConsumer: listen]
