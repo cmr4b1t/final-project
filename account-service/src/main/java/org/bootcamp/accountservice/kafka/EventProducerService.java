@@ -1,4 +1,4 @@
-package org.bootcamp.accountservice.service;
+package org.bootcamp.accountservice.kafka;
 
 import io.reactivex.rxjava3.core.Completable;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EventService {
+public class EventProducerService {
   private final KafkaTemplate<String, Object> kafkaTemplate;
 
   @Value("${topics.bank-account-created:bank.account.created}")

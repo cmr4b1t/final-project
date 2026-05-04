@@ -16,9 +16,7 @@ realizar transacciones (deposito, retiro, consumo)
 ## Responsabilidades:
 - Mantiene una base de datos de las transacciones (tablas: transactions)
 - Se encarga de registrar y consultar transacciones (deposito, retiro, consumo, desembolso, pago de préstamos, pago de tarjetas de crédito)
-- Consultar movimientos de cuenta bancaria (deposito, retiro)
-- Consultar movimientos de préstamos
-- Consultar movimientos de tarjeta de crédito
+- Consultar movimientos de cuenta bancaria, préstamos y tarjetas de crédito
 
 ## Api Rest: [TransactionController]
 - Registrar transacción:
@@ -37,7 +35,7 @@ realizar transacciones (deposito, retiro, consumo)
     - Response Status Error:
         - 400 Bad Request
         - 409 Conflict
-- Listar transacciones por accountId:
+- Consultar movimientos por accountId:
     - API: [POST] /v1/transactions/{accountId}
     - PathVariable:
       - accountId: id del la cuenta origen
@@ -48,4 +46,3 @@ realizar transacciones (deposito, retiro, consumo)
         - 200 OK
     - Response Status Error:
         - 400 Bad Request
-        - 404 Not Found

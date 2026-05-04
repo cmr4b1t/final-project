@@ -1,7 +1,7 @@
 package org.bootcamp.transactionservice.repository.mongo;
 
-import org.bootcamp.accountservice.repository.mongo.document.OperationType;
-import org.bootcamp.accountservice.repository.mongo.document.IdempotencyLogDocument;
+import org.bootcamp.transactionservice.repository.mongo.document.IdempotencyLogDocument;
+import org.bootcamp.transactionservice.repository.mongo.document.OperationType;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;

@@ -13,7 +13,6 @@ import org.bootcamp.accountservice.repository.mongo.AccountRepository;
 import org.bootcamp.accountservice.repository.mongo.IdempotencyLogRepository;
 import org.bootcamp.accountservice.repository.mongo.document.AccountDocument;
 import org.bootcamp.accountservice.repository.mongo.document.IdempotencyLogDocument;
-import org.bootcamp.accountservice.service.EventService;
 import org.bootcamp.accountservice.support.Constants;
 import org.bootcamp.accountservice.support.IdempotencyUtils;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -29,10 +28,10 @@ import reactor.adapter.rxjava.RxJava3Adapter;
 public class DebitCardCreatedConsumer {
   private final IdempotencyLogRepository idempotencyLogRepository;
   private final AccountRepository accountRepository;
-  private final EventService eventService;
+  private final EventProducerService eventProducerService;
 
   @KafkaListener(
-    topics = "${topics.bank-debitcard-created}",
+    topics = "${topics.bank-debit-card-created}",
     groupId = "${kafka.consumer.group-id}"
   )
   public void listen(ConsumerRecord<String, String> consumerRecord,
@@ -80,7 +79,7 @@ public class DebitCardCreatedConsumer {
     return accountRepository.save(account)
       .then(idempotencyLogRepository.save(idempotencyLog))
       .then(RxJava3Adapter.completableToMono(
-        eventService.publishAccountActivatedEvent(
+        eventProducerService.publishAccountActivatedEvent(
           idempotencyLog.getIdempotencyKey(), buildAccountActivatedEvent(account))));
   }
 

@@ -11,6 +11,7 @@ import org.bootcamp.accountservice.controller.dto.CreateAccountRequestDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountResponseDto;
 import org.bootcamp.accountservice.domain.account.Account;
 import org.bootcamp.accountservice.domain.account.AccountStatus;
+import org.bootcamp.accountservice.kafka.EventProducerService;
 import org.bootcamp.accountservice.repository.mongo.document.OperationStatus;
 import org.bootcamp.accountservice.repository.mongo.document.OperationType;
 import org.bootcamp.accountservice.kafka.event.AccountCreatedEvent;
@@ -33,7 +34,7 @@ public class AccountService {
   private final IdempotencyLogRepository idempotencyLogRepository;
   private final AccountMapper accountMapper;
   private final CustomerClient customerClient;
-  private final EventService eventService;
+  private final EventProducerService eventProducerService;
   private final AccountRuleStrategyFactory businessRuleStrategyFactory;
   private final AccountPolicies accountPolicies;
 
@@ -141,6 +142,6 @@ public class AccountService {
       .status(responseDto.getAccountStatus())
       .build();
 
-    return eventService.publishAccountCreatedEvent(idempotencyKey, event);
+    return eventProducerService.publishAccountCreatedEvent(idempotencyKey, event);
   }
 }

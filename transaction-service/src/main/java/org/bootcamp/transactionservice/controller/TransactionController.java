@@ -7,7 +7,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.transactionservice.controller.dto.TransactionRequestDto;
 import org.bootcamp.transactionservice.controller.dto.TransactionResponseDto;
+import org.bootcamp.transactionservice.service.TransactionService;
 import org.bootcamp.transactionservice.support.Constants;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,18 +25,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 public class TransactionController {
+  private final TransactionService transactionService;
 
   @PostMapping
   public Single<ResponseEntity<TransactionResponseDto>> registerTransaction(
     @RequestHeader(Constants.IDEMPOTENCY_KEY_HEADER) @NotBlank String idempotencyKey,
     @Valid @RequestBody TransactionRequestDto requestDto) {
-    return null;
+    return transactionService.registerTransaction(idempotencyKey, requestDto)
+      .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
   }
 
   @GetMapping("/{accountId}")
   public Single<ResponseEntity<List<TransactionResponseDto>>> getTransactionsByAccountId(
-    @PathVariable String accountId) {
-    return null;
+    @PathVariable @NotBlank String accountId) {
+    return transactionService.getTransactionsByAccountId(accountId)
+      .map(ResponseEntity::ok);
   }
 
 }
