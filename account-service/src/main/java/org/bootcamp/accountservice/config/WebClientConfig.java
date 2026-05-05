@@ -11,11 +11,22 @@ public class WebClientConfig {
   @Value("${clients.customer-service.base-url}")
   private String customerServiceBaseUrl;
 
+  @Value("${clients.transaction-service.base-url}")
+  private String transactionServiceBaseUrl;
+
   @LoadBalanced
   @Bean("customerServiceWebClient")
   public WebClient customerServiceWebClient(WebClient.Builder builder) {
     return builder
       .baseUrl(customerServiceBaseUrl)
+      .build();
+  }
+
+  @LoadBalanced
+  @Bean("transactionServiceWebClient")
+  public WebClient transactionServiceWebClient(WebClient.Builder builder) {
+    return builder
+      .baseUrl(transactionServiceBaseUrl)
       .build();
   }
 }

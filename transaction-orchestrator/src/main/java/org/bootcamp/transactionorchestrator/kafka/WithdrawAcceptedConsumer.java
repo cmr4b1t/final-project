@@ -24,8 +24,8 @@ public class WithdrawAcceptedConsumer {
   private final IdempotencyLogRepository idempotencyLogRepository;
 
   @KafkaListener(
-    topics = "${topics.bank-transaction-withdraw-accepted:bank.transaction.withdraw.accepted}",
-    groupId = "${kafka.consumer.group-id:transaction-orchestrator}"
+    topics = "${topics.bank-transaction-withdraw-accepted}",
+    groupId = "${kafka.consumer.group-id}"
   )
   public void listen(ConsumerRecord<String, String> consumerRecord,
                      @Header(Constants.IDEMPOTENCY_KEY_HEADER) String idempotencyKey,

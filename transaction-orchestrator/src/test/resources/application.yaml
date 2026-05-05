@@ -19,6 +19,8 @@ kafka:
 
 topics:
   bank-transaction-deposit-requested: bank.transaction.deposit.requested
-  bank-transaction-withdraw-requested: bank.transaction.withdraw.requested
+  bank-transaction-deposit-rejected: bank.transaction.deposit.rejected
   bank-transaction-deposit-accepted: bank.transaction.deposit.accepted
+  bank-transaction-withdraw-requested: bank.transaction.withdraw.requested
   bank-transaction-withdraw-accepted: bank.transaction.withdraw.accepted
+  bank-transaction-withdraw-rejected: bank.transaction.withdraw.rejected

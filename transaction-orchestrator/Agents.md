@@ -60,7 +60,7 @@ orquestar el flujo de transacciones (deposito, retiro, consumo)
     - 400 Bad Request
 
 ## Escucha Eventos:
-- [DepositAcceptedConsumer: listen(), evento: DepositAcceptedEvent, topic: bank.deposit.accepted]
+- [DepositAcceptedConsumer: listen(), evento: DepositAcceptedEvent, topic: bank.transaction.deposit.accepted]
   - Buscar si existe registro con "idempotencyKey" y OperationType.DEPOSIT en [mongodb: idempotency_log]
   - Si no existe, da error y log.
   - Si existe y estado es "COMPLETED" o "FAILED, culmina con ack.acknowledge()
@@ -69,7 +69,7 @@ orquestar el flujo de transacciones (deposito, retiro, consumo)
     - Generar un nuevo responseBody con los valores del evento
     - Actualizar el idempotency log en [mongodb: idempotency_log] con estado "COMPLETED"
     - culminar con ack.acknowledge()
-- [DepositRejectedConsumer: listen(), evento: DepositRejectedEvent, topic: bank.deposit.rejected]
+- [DepositRejectedConsumer: listen(), evento: DepositRejectedEvent, topic: bank.transaction.deposit.rejected]
   - Buscar si existe registro con "idempotencyKey" y OperationType.DEPOSIT en [mongodb: idempotency_log]
   - Si no existe, da error y log.
   - Si existe y estado es "COMPLETED" o "FAILED, culmina con ack.acknowledge()
@@ -78,7 +78,7 @@ orquestar el flujo de transacciones (deposito, retiro, consumo)
     - Generar un nuevo responseBody con los valores del evento
     - Actualizar el idempotency log en [mongodb: idempotency_log] con estado "FAILED"
     - culminar con ack.acknowledge()
-- [WithdrawAcceptedConsumer: listen(), evento: WithdrawAcceptedEvent, topic: bank.withdraw.accepted]
+- [WithdrawAcceptedConsumer: listen(), evento: WithdrawAcceptedEvent, topic: bank.transaction.withdraw.accepted]
   - Buscar si existe registro con "idempotencyKey" y OperationType.WITHDRAW en [mongodb: idempotency_log]
   - Si no existe, da error y log.
   - Si existe y estado es "COMPLETED" o "FAILED, culmina con ack.acknowledge()
@@ -87,7 +87,7 @@ orquestar el flujo de transacciones (deposito, retiro, consumo)
     - Generar un nuevo responseBody con los valores del evento
     - Actualizar el idempotency log en [mongodb: idempotency_log] con estado "COMPLETED"
     - culminar con ack.acknowledge()
-- [WithdrawRejectedConsumer: listen(), evento: WithdrawRejectedEvent, topic: bank.withdraw.rejected]
+- [WithdrawRejectedConsumer: listen(), evento: WithdrawRejectedEvent, topic: bank.transaction.withdraw.rejected]
   - Buscar si existe registro con "idempotencyKey" y OperationType.WITHDRAW en [mongodb: idempotency_log]
   - Si no existe, da error y log.
   - Si existe y estado es "COMPLETED" o "FAILED, culmina con ack.acknowledge()

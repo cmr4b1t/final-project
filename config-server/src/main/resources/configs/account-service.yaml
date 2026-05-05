@@ -12,6 +12,12 @@ topics:
   bank-account-created: bank.account.created
   bank-debit-card-created: bank.debit.card.created
   bank-account-activated: bank.account.activated
+  bank-transaction-deposit-requested: bank.transaction.deposit.requested
+  bank-transaction-deposit-accepted: bank.transaction.deposit.accepted
+  bank-transaction-deposit-rejected: bank.transaction.deposit.rejected
+  bank-transaction-withdraw-requested: bank.transaction.withdraw.requested
+  bank-transaction-withdraw-accepted: bank.transaction.withdraw.accepted
+  bank-transaction-withdraw-rejected: bank.transaction.withdraw.rejected
 
 management:
   endpoints:
@@ -22,3 +28,5 @@ management:
 clients:
   customer-service:
     base-url: ${CLIENTS_CUSTOMER_SERVICE_BASE_URL:http://localhost:8081}
+  transaction-service:
+    base-url: ${CLIENTS_TRANSACTION_SERVICE_BASE_URL:http://localhost:8083}

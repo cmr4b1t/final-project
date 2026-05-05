@@ -129,7 +129,7 @@ gestionar cuentas bancarias
       - el "Idempotency-Key" se enviará en los headers hacia kafka
     - culminar con ack.acknowledge()
 
-- [DepositRequestedConsumer: listen(), evento: DepositRequestedEvent]
+- [DepositRequestedConsumer: listen(), evento: DepositRequestedEvent, topic: bank.transaction.deposit.requested]
   - Buscar si existe registro con "idempotencyKey" y OperationType.DEPOSIT_REQUESTED en [mongodb: idempotency_log]
   - Si existe, culmina con ack.acknowledge()
   - Si no existe:
@@ -139,7 +139,7 @@ gestionar cuentas bancarias
       - luego contabilizar el resultado
     - Validar con reglas de negocio según el tipo de cuenta
     - Si la cuenta no cumple con las reglas,
-      - Publicar evento [DepositRejectedEvent] a [kafka: bank.deposit.rejected]
+      - Publicar evento [DepositRejectedEvent] a [kafka: bank.transaction.deposit.rejected]
         - el "Idempotency-Key" se enviará en los headers hacia kafka
       - culmina con ack.acknowledge()
     - Aplicar políticas (comisiones, etc) según el tipo de cuenta
@@ -147,11 +147,11 @@ gestionar cuentas bancarias
     - Guarda cuenta actualizada en [mongodb: accounts]
     - Registra el resultado en [mongodb: idempotency_log] con estado "COMPLETED"
     - Envía registro de transacción de deposito a [transaction-service: [POST] /v1/transactions]
-    - Publicar evento [DepositAcceptedEvent] a [kafka: bank.deposit.accepted]
+    - Publicar evento [DepositAcceptedEvent] a [kafka: bank.transaction.deposit.accepted]
       - el "Idempotency-Key" se enviará en los headers hacia kafka
     - culmina con ack.acknowledge()
 
-- [WithdrawRequestedConsumer: listen(), evento: WithdrawRequestedEvent]
+- [WithdrawRequestedConsumer: listen(), evento: WithdrawRequestedEvent, topic: bank.transaction.withdraw.requested]
   - Buscar si existe registro con "idempotencyKey" y OperationType.WITHDRAW_REQUESTED en [mongodb: idempotency_log]
   - Si existe, culmina con ack.acknowledge()
   - Si no existe:
@@ -162,7 +162,7 @@ gestionar cuentas bancarias
       - luego contabilizar el resultado
     - Validar con reglas de negocio según el tipo de cuenta
     - Si la cuenta no cumple con las reglas,
-      - Publicar evento [WithdrawRejectedEvent] a [kafka: bank.withdraw.rejected]
+      - Publicar evento [WithdrawRejectedEvent] a [kafka: bank.transaction.withdraw.rejected]
         - el "Idempotency-Key" se enviará en los headers hacia kafka
       - culmina con ack.acknowledge()
     - Aplicar políticas (comisiones, etc) según el tipo de cuenta
@@ -170,6 +170,6 @@ gestionar cuentas bancarias
     - Guarda cuenta actualizada en [mongodb: accounts]
     - Registra el resultado en [mongodb: idempotency_log] con estado "COMPLETED"
     - Envía registro de transacción de retiro a [transaction-service: [POST] /v1/transactions]
-    - Publicar evento [WithdrawAcceptedEvent] a [kafka: bank.withdraw.accepted]
+    - Publicar evento [WithdrawAcceptedEvent] a [kafka: bank.transaction.withdraw.accepted]
       - el "Idempotency-Key" se enviará en los headers hacia kafka
     - culmina con ack.acknowledge()

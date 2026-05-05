@@ -21,7 +21,15 @@ topics:
   bank-account-created: bank.account.created
   bank-debitcard-created: bank.debitcard.created
   bank-account-activated: bank.account.activated
+  bank-transaction-deposit-requested: bank.transaction.deposit.requested
+  bank-transaction-deposit-rejected: bank.transaction.deposit.rejected
+  bank-transaction-deposit-accepted: bank.transaction.deposit.accepted
+  bank-transaction-withdraw-requested: bank.transaction.withdraw.requested
+  bank-transaction-withdraw-accepted: bank.transaction.withdraw.accepted
+  bank-transaction-withdraw-rejected: bank.transaction.withdraw.rejected
 
 clients:
   customer-service:
     base-url: http://localhost:8081
+  transaction-service:
+    base-url: http://localhost:8082

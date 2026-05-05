@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 public class EventProducerService {
   private final KafkaTemplate<String, Object> kafkaTemplate;
 
-  @Value("${topics.bank-transaction-deposit-requested:bank.transaction.deposit.requested}")
+  @Value("${topics.bank-transaction-deposit-requested}")
   private String depositRequestedTopic;
 
-  @Value("${topics.bank-transaction-withdraw-requested:bank.transaction.withdraw.requested}")
+  @Value("${topics.bank-transaction-withdraw-requested}")
   private String withdrawRequestedTopic;
 
   public Completable publishDepositRequestedEvent(String idempotencyKey, DepositRequestedEvent event) {
