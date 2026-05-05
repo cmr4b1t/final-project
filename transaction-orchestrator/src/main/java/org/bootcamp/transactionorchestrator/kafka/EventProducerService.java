@@ -15,29 +15,29 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EventProducerService {
-  private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-  @Value("${topics.bank-transaction-deposit-requested}")
-  private String depositRequestedTopic;
+    @Value("${topics.bank-transaction-deposit-requested}")
+    private String depositRequestedTopic;
 
-  @Value("${topics.bank-transaction-withdraw-requested}")
-  private String withdrawRequestedTopic;
+    @Value("${topics.bank-transaction-withdraw-requested}")
+    private String withdrawRequestedTopic;
 
-  public Completable publishDepositRequestedEvent(String idempotencyKey, DepositRequestedEvent event) {
-    Message<DepositRequestedEvent> message = MessageBuilder.withPayload(event)
-      .setHeader(KafkaHeaders.TOPIC, depositRequestedTopic)
-      .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
-      .build();
+    public Completable publishDepositRequestedEvent(String idempotencyKey, DepositRequestedEvent event) {
+        Message<DepositRequestedEvent> message = MessageBuilder.withPayload(event)
+            .setHeader(KafkaHeaders.TOPIC, depositRequestedTopic)
+            .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
+            .build();
 
-    return Completable.fromCompletionStage(kafkaTemplate.send(message));
-  }
+        return Completable.fromCompletionStage(kafkaTemplate.send(message));
+    }
 
-  public Completable publishWithdrawRequestedEvent(String idempotencyKey, WithdrawRequestedEvent event) {
-    Message<WithdrawRequestedEvent> message = MessageBuilder.withPayload(event)
-      .setHeader(KafkaHeaders.TOPIC, withdrawRequestedTopic)
-      .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
-      .build();
+    public Completable publishWithdrawRequestedEvent(String idempotencyKey, WithdrawRequestedEvent event) {
+        Message<WithdrawRequestedEvent> message = MessageBuilder.withPayload(event)
+            .setHeader(KafkaHeaders.TOPIC, withdrawRequestedTopic)
+            .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
+            .build();
 
-    return Completable.fromCompletionStage(kafkaTemplate.send(message));
-  }
+        return Completable.fromCompletionStage(kafkaTemplate.send(message));
+    }
 }

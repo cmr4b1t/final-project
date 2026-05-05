@@ -7,11 +7,11 @@ import io.reactivex.rxjava3.core.Single;
 import org.bootcamp.customerservice.domain.model.Customer;
 
 public interface CrudCustomerRepositoryPort {
-  Single<Customer> save(Customer customer);
+    Single<Customer> save(Customer customer);
 
-  Maybe<Customer> findByCustomerId(String customerId);
+    Maybe<Customer> findByCustomerId(String customerId);
 
-  Observable<Customer> findAll();
+    Observable<Customer> findAll();
 
-  Completable delete(String customerId);
+    Completable delete(String customerId);
 }

@@ -7,6 +7,10 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/transaction-service/pom.xml" />
         <option value="$PROJECT_DIR$/transaction-orchestrator/pom.xml" />
+        <option value="$PROJECT_DIR$/credit-card-account-service/pom.xml" />
+        <option value="$PROJECT_DIR$/loan-service/pom.xml" />
+        <option value="$PROJECT_DIR$/statement-service/pom.xml" />
+        <option value="$PROJECT_DIR$/overdue-debt-service/pom.xml" />
       </list>
     </option>
   </component>

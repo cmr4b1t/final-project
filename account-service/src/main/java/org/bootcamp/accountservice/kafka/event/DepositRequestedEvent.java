@@ -6,9 +6,9 @@ import org.bootcamp.accountservice.domain.Currency;
 
 @Builder
 public record DepositRequestedEvent(
-  String accountId,
-  BigDecimal amount,
-  Currency currency,
-  String note
+    String accountId,
+    BigDecimal amount,
+    Currency currency,
+    String note
 ) {
 }

@@ -12,18 +12,18 @@ import org.bootcamp.accountservice.domain.Currency;
 
 @Data
 public class CreateAccountRequestDto {
-  @NotBlank
-  private String customerId;
-  @NotNull
-  private AccountType accountType;
-  @NotNull
-  private AccountSubType accountSubType;
-  @NotNull
-  private Currency currency;
-  @NotNull
-  @PositiveOrZero
-  private BigDecimal openingBalance;
-  private List<String> holders;
-  private List<String> authorizedSigners;
-  private Integer fixedTransactionDay;
+    @NotBlank
+    private String customerId;
+    @NotNull
+    private AccountType accountType;
+    @NotNull
+    private AccountSubType accountSubType;
+    @NotNull
+    private Currency currency;
+    @NotNull
+    @PositiveOrZero
+    private BigDecimal openingBalance;
+    private List<String> holders;
+    private List<String> authorizedSigners;
+    private Integer fixedTransactionDay;
 }

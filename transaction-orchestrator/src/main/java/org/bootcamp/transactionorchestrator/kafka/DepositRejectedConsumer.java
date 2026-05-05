@@ -21,61 +21,62 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Slf4j
 public class DepositRejectedConsumer {
-  private final IdempotencyLogRepository idempotencyLogRepository;
+    private final IdempotencyLogRepository idempotencyLogRepository;
 
-  @KafkaListener(
-    topics = "${topics.bank-transaction-deposit-rejected}",
-    groupId = "${kafka.consumer.group-id}"
-  )
-  public void listen(ConsumerRecord<String, String> consumerRecord,
-                     @Header(Constants.IDEMPOTENCY_KEY_HEADER) String idempotencyKey,
-                     Acknowledgment ack) {
-    log.info("Received deposit rejected event. idempotencyKey={}, offset={}",
-      idempotencyKey, consumerRecord.offset());
-    processDepositRejected(consumerRecord.value(), idempotencyKey)
-      .doOnSuccess(unused -> ack.acknowledge())
-      .doOnError(error -> log.error(
-        "Error processing deposit rejected event. idempotencyKey={}, offset={}",
-        idempotencyKey, consumerRecord.offset(), error))
-      .subscribe();
-  }
-
-  private Mono<Void> processDepositRejected(String payload, String idempotencyKey) {
-    return idempotencyLogRepository
-      .findByIdempotencyKeyAndOperationType(idempotencyKey, OperationType.DEPOSIT)
-      .switchIfEmpty(Mono.error(new IllegalStateException("Idempotency log not found for key: " + idempotencyKey)))
-      .flatMap(idempotencyLog -> processPendingOperation(payload, idempotencyLog));
-  }
-
-  private Mono<Void> processPendingOperation(String payload, IdempotencyLogDocument idempotencyLog) {
-    if (idempotencyLog.getStatus() == OperationStatus.COMPLETED
-      || idempotencyLog.getStatus() == OperationStatus.FAILED) {
-      return Mono.empty();
+    @KafkaListener(
+        topics = "${topics.bank-transaction-deposit-rejected}",
+        groupId = "${kafka.consumer.group-id}"
+    )
+    public void listen(ConsumerRecord<String, String> consumerRecord,
+                       @Header(Constants.IDEMPOTENCY_KEY_HEADER) String idempotencyKey,
+                       Acknowledgment ack) {
+        log.info("Received deposit rejected event. idempotencyKey={}, offset={}",
+            idempotencyKey, consumerRecord.offset());
+        processDepositRejected(consumerRecord.value(), idempotencyKey)
+            .doOnSuccess(unused -> ack.acknowledge())
+            .doOnError(error -> log.error(
+                "Error processing deposit rejected event. idempotencyKey={}, offset={}",
+                idempotencyKey, consumerRecord.offset(), error))
+            .subscribe();
     }
 
-    if (idempotencyLog.getStatus() != OperationStatus.PENDING) {
-      return Mono.error(new IllegalStateException(
-        "Unsupported operation status: " + idempotencyLog.getStatus()));
+    private Mono<Void> processDepositRejected(String payload, String idempotencyKey) {
+        return idempotencyLogRepository
+            .findByIdempotencyKeyAndOperationType(idempotencyKey, OperationType.DEPOSIT)
+            .switchIfEmpty(
+                Mono.error(new IllegalStateException("Idempotency log not found for key: " + idempotencyKey)))
+            .flatMap(idempotencyLog -> processPendingOperation(payload, idempotencyLog));
     }
 
-    DepositRejectedEvent event = IdempotencyUtils.deserializeResponse(payload, DepositRejectedEvent.class);
-    idempotencyLog.setStatus(OperationStatus.FAILED);
-    idempotencyLog.setResponseBody(buildFailedResponseBody(idempotencyLog, event));
+    private Mono<Void> processPendingOperation(String payload, IdempotencyLogDocument idempotencyLog) {
+        if (idempotencyLog.getStatus() == OperationStatus.COMPLETED
+            || idempotencyLog.getStatus() == OperationStatus.FAILED) {
+            return Mono.empty();
+        }
 
-    return idempotencyLogRepository.save(idempotencyLog).then();
-  }
+        if (idempotencyLog.getStatus() != OperationStatus.PENDING) {
+            return Mono.error(new IllegalStateException(
+                "Unsupported operation status: " + idempotencyLog.getStatus()));
+        }
 
-  private String buildFailedResponseBody(IdempotencyLogDocument idempotencyLog, DepositRejectedEvent event) {
-    AccountTransactionResponseDto responseDto =
-      IdempotencyUtils.deserializeResponse(idempotencyLog.getResponseBody(), AccountTransactionResponseDto.class);
-    responseDto.setOperationStatus(OperationStatus.FAILED.name());
-    responseDto.setOperationId(idempotencyLog.getIdempotencyKey());
-    responseDto.setCustomerId(event.customerId());
-    responseDto.setAccountType(event.accountType());
-    responseDto.setAccountSubType(event.accountSubType());
-    responseDto.setAmount(event.amount());
-    responseDto.setCurrency(event.currency());
-    responseDto.setDescription(event.description());
-    return IdempotencyUtils.serializeResponse(responseDto);
-  }
+        DepositRejectedEvent event = IdempotencyUtils.deserializeResponse(payload, DepositRejectedEvent.class);
+        idempotencyLog.setStatus(OperationStatus.FAILED);
+        idempotencyLog.setResponseBody(buildFailedResponseBody(idempotencyLog, event));
+
+        return idempotencyLogRepository.save(idempotencyLog).then();
+    }
+
+    private String buildFailedResponseBody(IdempotencyLogDocument idempotencyLog, DepositRejectedEvent event) {
+        AccountTransactionResponseDto responseDto =
+            IdempotencyUtils.deserializeResponse(idempotencyLog.getResponseBody(), AccountTransactionResponseDto.class);
+        responseDto.setOperationStatus(OperationStatus.FAILED.name());
+        responseDto.setOperationId(idempotencyLog.getIdempotencyKey());
+        responseDto.setCustomerId(event.customerId());
+        responseDto.setAccountType(event.accountType());
+        responseDto.setAccountSubType(event.accountSubType());
+        responseDto.setAmount(event.amount());
+        responseDto.setCurrency(event.currency());
+        responseDto.setDescription(event.description());
+        return IdempotencyUtils.serializeResponse(responseDto);
+    }
 }

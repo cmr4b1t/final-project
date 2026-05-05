@@ -6,11 +6,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-  componentModel = "spring",
-  nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+    componentModel = "spring",
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface CustomerPersistenceMapper {
-  CustomerDocument toDocument(Customer customer);
+    CustomerDocument toDocument(Customer customer);
 
-  Customer toDomain(CustomerDocument customerDocument);
+    Customer toDomain(CustomerDocument customerDocument);
 }

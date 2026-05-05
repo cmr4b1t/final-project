@@ -15,21 +15,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDocument {
-  @Id
-  private String id;
-  @Indexed(unique = true)
-  private String customerId;
-  private String documentNumber;
-  private String fullName;
-  private String type;
-  private String profile;
-  private String status;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
-  private boolean hasOverdueDebts;
-  private int savingsAccountsCount;
-  private int checkingAccountsCount;
-  private int fixedTermAccountsCount;
-  private int creditCardsCount;
-  private int loansCount;
+    @Id
+    private String id;
+    @Indexed(unique = true)
+    private String customerId;
+    private String documentNumber;
+    private String fullName;
+    private String type;
+    private String profile;
+    private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private boolean hasOverdueDebts;
+    private int savingsAccountsCount;
+    private int checkingAccountsCount;
+    private int fixedTermAccountsCount;
+    private int creditCardsCount;
+    private int loansCount;
 }

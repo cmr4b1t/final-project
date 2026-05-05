@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Mono;
 
 public interface IdempotencyLogRepository extends ReactiveMongoRepository<IdempotencyLogDocument, String> {
-  Mono<IdempotencyLogDocument> findByIdempotencyKeyAndOperationType(
-    String idempotencyKey, OperationType operationType);
+    Mono<IdempotencyLogDocument> findByIdempotencyKeyAndOperationType(
+        String idempotencyKey, OperationType operationType);
 }

@@ -7,9 +7,9 @@ import org.bootcamp.transactionorchestrator.domain.Currency;
 
 @Data
 public class AccountTransactionRequestDto {
-  @NotNull
-  private BigDecimal amount;
-  @NotNull
-  private Currency currency;
-  private String note;
+    @NotNull
+    private BigDecimal amount;
+    @NotNull
+    private Currency currency;
+    private String note;
 }

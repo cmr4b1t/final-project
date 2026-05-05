@@ -30,3 +30,30 @@ clients:
     base-url: ${CLIENTS_CUSTOMER_SERVICE_BASE_URL:http://localhost:8081}
   transaction-service:
     base-url: ${CLIENTS_TRANSACTION_SERVICE_BASE_URL:http://localhost:8083}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      transactionClient:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+      customerClient:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+  retry:
+    instances:
+      transactionClient:
+        maxAttempts: 3
+        waitDuration: 200ms
+      customerClient:
+        maxAttempts: 3
+        waitDuration: 200ms
+  timelimiter:
+    instances:
+      transactionClient:
+        timeoutDuration: 2s
+      customerClient:
+        maxAttempts: 3
+        waitDuration: 200ms

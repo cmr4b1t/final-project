@@ -9,12 +9,12 @@ import org.bootcamp.accountservice.domain.account.AccountType;
 
 @Builder
 public record DepositRejectedEvent(
-  String accountId,
-  String customerId,
-  AccountType accountType,
-  AccountSubType accountSubType,
-  BigDecimal amount,
-  Currency currency,
-  String description
+    String accountId,
+    String customerId,
+    AccountType accountType,
+    AccountSubType accountSubType,
+    BigDecimal amount,
+    Currency currency,
+    String description
 ) {
 }

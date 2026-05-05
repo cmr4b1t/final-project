@@ -5,10 +5,10 @@ import lombok.Builder;
 import org.bootcamp.accountservice.domain.Currency;
 
 @Builder
-public record WithdrawRequestedEvent (
-  String accountId,
-  BigDecimal amount,
-  Currency currency,
-  String note
+public record WithdrawRequestedEvent(
+    String accountId,
+    BigDecimal amount,
+    Currency currency,
+    String note
 ) {
 }

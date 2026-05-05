@@ -40,196 +40,197 @@ import reactor.adapter.rxjava.RxJava3Adapter;
 @Service
 @RequiredArgsConstructor
 public class AccountService {
-  private final AccountRepository accountRepository;
-  private final IdempotencyLogRepository idempotencyLogRepository;
-  private final AccountMapper accountMapper;
-  private final CustomerClient customerClient;
-  private final TransactionClient transactionClient;
-  private final EventProducerService eventProducerService;
-  private final AccountRuleStrategyFactory businessRuleStrategyFactory;
-  private final AccountPolicies accountPolicies;
+    private final AccountRepository accountRepository;
+    private final IdempotencyLogRepository idempotencyLogRepository;
+    private final AccountMapper accountMapper;
+    private final CustomerClient customerClient;
+    private final TransactionClient transactionClient;
+    private final EventProducerService eventProducerService;
+    private final AccountRuleStrategyFactory businessRuleStrategyFactory;
+    private final AccountPolicies accountPolicies;
 
-  public Single<CreateAccountResponseDto> createAccount(
-    String idempotencyKey, CreateAccountRequestDto requestDto) {
-    return findExistingOperation(idempotencyKey)
-      .switchIfEmpty(Single.defer(() -> customerClient.findByCustomerId(requestDto.getCustomerId()))
-        .flatMap(customer -> validateBusinessRules(customer, requestDto))
-        .map(customer -> buildAccount(requestDto))
-        .flatMap(this::saveAccount)
-        .map(this::buildResponse)
-        .flatMap(response -> saveIdempotencyLog(idempotencyKey, response)
-          .andThen(publishAccountCreatedEvent(idempotencyKey, response))
-          .andThen(Single.just(response))));
-  }
-
-  public Single<BigDecimal> findAvailableBalance(String accountId) {
-    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
-      .switchIfEmpty(Single.error(new ResponseStatusException(
-        HttpStatus.NOT_FOUND, "Account not found for accountId: " + accountId)))
-      .map(accountMapper::toDomain)
-      .map(Account::getBalance);
-  }
-
-  private Maybe<CreateAccountResponseDto> findExistingOperation(String idempotencyKey) {
-    return RxJava3Adapter.monoToMaybe(idempotencyLogRepository.findByIdempotencyKeyAndOperationType(
-        idempotencyKey, OperationType.CREATE_ACCOUNT))
-      .map(IdempotencyLogDocument::getResponseBody)
-      .map(responseBody -> IdempotencyUtils.deserializeResponse(responseBody, CreateAccountResponseDto.class));
-  }
-
-  private Single<CustomerSummaryDto> validateBusinessRules(
-    CustomerSummaryDto customer, CreateAccountRequestDto requestDto) {
-    businessRuleStrategyFactory.getStrategy(customer).validate(customer, requestDto);
-    return Single.just(customer);
-  }
-
-  private Account buildAccount(CreateAccountRequestDto requestDto) {
-    LocalDateTime createdAt = LocalDateTime.now();
-    Account account = accountMapper.toDomain(requestDto);
-    account.setAccountId(Utils.generateId(Constants.PREFIX_ACCOUNT_ID));
-    account.setBalance(requestDto.getOpeningBalance());
-    account.setStatus(AccountStatus.INACTIVE);
-    account.setCreatedAt(createdAt);
-    account.setHolders(Utils.normalizeList(requestDto.getHolders()));
-    account.setAuthorizedSigners(Utils.normalizeList(requestDto.getAuthorizedSigners()));
-    account.setFixedTransactionDay(requestDto.getFixedTransactionDay());
-    account.setUnlimitedTransactions(accountPolicies.resolveHasUnlimitedTransactions(requestDto.getAccountType()));
-    account.setMonthlyTransactionsLimit(accountPolicies.resolveMonthlyTransactionsLimit(requestDto.getAccountType()));
-    account.setMonthlyTransactionsLimitWithoutCommission(
-      accountPolicies.resolveMonthlyTransactionsLimitWithoutCommission(requestDto.getAccountType()));
-    account.setTransactionCommission(accountPolicies.resolveTransactionCommission(requestDto.getAccountType()));
-    account.setMaintenanceCommission(accountPolicies.resolveMaintenanceCommission(requestDto));
-    account.setAllowedMinimumBalance(accountPolicies.resolveAllowedMinimumBalance(requestDto));
-    return account;
-  }
-
-  private Single<Account> saveAccount(Account account) {
-    return RxJava3Adapter.monoToSingle(accountRepository.save(accountMapper.toDocument(account)))
-      .map(accountMapper::toDomain);
-  }
-
-  private CreateAccountResponseDto buildResponse(Account account) {
-    return CreateAccountResponseDto.builder()
-      .status(OperationStatus.PENDING)
-      .createdAt(account.getCreatedAt())
-      .accountId(account.getAccountId())
-      .customerId(account.getCustomerId())
-      .accountType(account.getAccountType())
-      .accountSubType(account.getAccountSubType())
-      .currency(account.getCurrency())
-      .balance(account.getBalance())
-      .holders(account.getHolders())
-      .authorizedSigners(account.getAuthorizedSigners())
-      .fixedTransactionDay(account.getFixedTransactionDay())
-      .unlimitedTransactions(account.isUnlimitedTransactions())
-      .monthlyTransactionsLimit(account.getMonthlyTransactionsLimit())
-      .monthlyTransactionsLimitWithoutCommission(account.getMonthlyTransactionsLimitWithoutCommission())
-      .transactionCommission(account.getTransactionCommission())
-      .maintenanceCommission(account.getMaintenanceCommission())
-      .allowedMinimumBalance(account.getAllowedMinimumBalance())
-      .accountStatus(account.getStatus())
-      .build();
-  }
-
-  private Completable saveIdempotencyLog(String idempotencyKey, CreateAccountResponseDto responseDto) {
-    IdempotencyLogDocument document = IdempotencyLogDocument.builder()
-      .idempotencyKey(idempotencyKey)
-      .operationType(OperationType.CREATE_ACCOUNT)
-      .responseBody(IdempotencyUtils.serializeResponse(responseDto))
-      .status(responseDto.getStatus())
-      .createdAt(responseDto.getCreatedAt())
-      .build();
-    return RxJava3Adapter.monoToCompletable(idempotencyLogRepository.save(document).then());
-  }
-
-  private Completable publishAccountCreatedEvent(String idempotencyKey, CreateAccountResponseDto responseDto) {
-    AccountCreatedEvent event = AccountCreatedEvent.builder()
-      .accountId(responseDto.getAccountId())
-      .customerId(responseDto.getCustomerId())
-      .accountType(responseDto.getAccountType())
-      .accountSubType(responseDto.getAccountSubType())
-      .currency(responseDto.getCurrency())
-      .balance(responseDto.getBalance())
-      .holders(responseDto.getHolders())
-      .authorizedSigners(responseDto.getAuthorizedSigners())
-      .fixedTransactionDay(responseDto.getFixedTransactionDay())
-      .unlimitedTransactions(responseDto.isUnlimitedTransactions())
-      .monthlyTransactionsLimit(responseDto.getMonthlyTransactionsLimit())
-      .monthlyTransactionsLimitWithoutCommission(responseDto.getMonthlyTransactionsLimitWithoutCommission())
-      .transactionCommission(responseDto.getTransactionCommission())
-      .maintenanceCommission(responseDto.getMaintenanceCommission())
-      .allowedMinimumBalance(responseDto.getAllowedMinimumBalance())
-      .status(responseDto.getAccountStatus())
-      .build();
-
-    return eventProducerService.publishAccountCreatedEvent(idempotencyKey, event);
-  }
-
-  public Single<List<AccountResponseDto>> findAll() {
-    return RxJava3Adapter.fluxToObservable(accountRepository.findAll())
-      .map(accountMapper::toResponseDto)
-      .toList();
-  }
-
-  public Single<AccountResponseDto> findAccountById(@NotBlank String accountId) {
-    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
-      .map(accountMapper::toResponseDto)
-      .switchIfEmpty(Single.error(new ResponseStatusException(
-        HttpStatus.NOT_FOUND, "Account not found")));
-  }
-
-  public Single<AccountResponseDto> updateAccount(
-    @NotBlank String accountId, UpdateAccountRequestDto requestDto) {
-    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
-      .switchIfEmpty(Single.error(new ResponseStatusException(
-        HttpStatus.NOT_FOUND, "Account not found")))
-      .map(accountDocument -> applyUpdate(accountDocument, requestDto))
-      .flatMap(accountDocument -> RxJava3Adapter.monoToSingle(accountRepository.save(accountDocument)))
-      .map(accountMapper::toResponseDto);
-  }
-
-  public Completable deleteAccount(@NotBlank String accountId) {
-    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
-      .switchIfEmpty(Single.error(new ResponseStatusException(
-        HttpStatus.NOT_FOUND, "Account not found")))
-      .flatMapCompletable(accountDocument -> RxJava3Adapter.monoToCompletable(
-        accountRepository.delete(accountDocument)));
-  }
-
-  public Single<List<AccountResponseDto>> findAllAccountsByCustomerId(@NotBlank String customerId) {
-    return RxJava3Adapter.fluxToObservable(accountRepository.findByCustomerId(customerId))
-      .map(accountMapper::toResponseDto)
-      .toList();
-  }
-
-  public Single<List<TransactionMovementResponseDto>> getMovementsByAccountId(
-    @NotBlank String accountId, LocalDateTime startDate, LocalDateTime endDate) {
-    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
-      .switchIfEmpty(Single.error(new ResponseStatusException(
-        HttpStatus.NOT_FOUND, "Account not found")))
-      .flatMap(account -> RxJava3Adapter.monoToSingle(
-        transactionClient.getMovementsByAccountId(accountId, startDate, endDate)));
-  }
-
-  private AccountDocument applyUpdate(AccountDocument accountDocument, UpdateAccountRequestDto requestDto) {
-    if (requestDto.getCurrency() != null) {
-      accountDocument.setCurrency(requestDto.getCurrency());
+    public Single<CreateAccountResponseDto> createAccount(
+        String idempotencyKey, CreateAccountRequestDto requestDto) {
+        return findExistingOperation(idempotencyKey)
+            .switchIfEmpty(Single.defer(() -> customerClient.findByCustomerId(requestDto.getCustomerId()))
+                .flatMap(customer -> validateBusinessRules(customer, requestDto))
+                .map(customer -> buildAccount(requestDto))
+                .flatMap(this::saveAccount)
+                .map(this::buildResponse)
+                .flatMap(response -> saveIdempotencyLog(idempotencyKey, response)
+                    .andThen(publishAccountCreatedEvent(idempotencyKey, response))
+                    .andThen(Single.just(response))));
     }
-    if (requestDto.getBalance() != null) {
-      accountDocument.setBalance(requestDto.getBalance());
+
+    public Single<BigDecimal> findAvailableBalance(String accountId) {
+        return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+            .switchIfEmpty(Single.error(new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Account not found for accountId: " + accountId)))
+            .map(accountMapper::toDomain)
+            .map(Account::getBalance);
     }
-    if (requestDto.getHolders() != null) {
-      accountDocument.setHolders(Utils.normalizeList(requestDto.getHolders()));
+
+    private Maybe<CreateAccountResponseDto> findExistingOperation(String idempotencyKey) {
+        return RxJava3Adapter.monoToMaybe(idempotencyLogRepository.findByIdempotencyKeyAndOperationType(
+                idempotencyKey, OperationType.CREATE_ACCOUNT))
+            .map(IdempotencyLogDocument::getResponseBody)
+            .map(responseBody -> IdempotencyUtils.deserializeResponse(responseBody, CreateAccountResponseDto.class));
     }
-    if (requestDto.getAuthorizedSigners() != null) {
-      accountDocument.setAuthorizedSigners(Utils.normalizeList(requestDto.getAuthorizedSigners()));
+
+    private Single<CustomerSummaryDto> validateBusinessRules(
+        CustomerSummaryDto customer, CreateAccountRequestDto requestDto) {
+        businessRuleStrategyFactory.getStrategy(customer).validate(customer, requestDto);
+        return Single.just(customer);
     }
-    if (requestDto.getFixedTransactionDay() != null) {
-      accountDocument.setFixedTransactionDay(requestDto.getFixedTransactionDay());
+
+    private Account buildAccount(CreateAccountRequestDto requestDto) {
+        LocalDateTime createdAt = LocalDateTime.now();
+        Account account = accountMapper.toDomain(requestDto);
+        account.setAccountId(Utils.generateId(Constants.PREFIX_ACCOUNT_ID));
+        account.setBalance(requestDto.getOpeningBalance());
+        account.setStatus(AccountStatus.INACTIVE);
+        account.setCreatedAt(createdAt);
+        account.setHolders(Utils.normalizeList(requestDto.getHolders()));
+        account.setAuthorizedSigners(Utils.normalizeList(requestDto.getAuthorizedSigners()));
+        account.setFixedTransactionDay(requestDto.getFixedTransactionDay());
+        account.setUnlimitedTransactions(accountPolicies.resolveHasUnlimitedTransactions(requestDto.getAccountType()));
+        account.setMonthlyTransactionsLimit(
+            accountPolicies.resolveMonthlyTransactionsLimit(requestDto.getAccountType()));
+        account.setMonthlyTransactionsLimitWithoutCommission(
+            accountPolicies.resolveMonthlyTransactionsLimitWithoutCommission(requestDto.getAccountType()));
+        account.setTransactionCommission(accountPolicies.resolveTransactionCommission(requestDto.getAccountType()));
+        account.setMaintenanceCommission(accountPolicies.resolveMaintenanceCommission(requestDto));
+        account.setAllowedMinimumBalance(accountPolicies.resolveAllowedMinimumBalance(requestDto));
+        return account;
     }
-    if (requestDto.getAccountStatus() != null) {
-      accountDocument.setStatus(requestDto.getAccountStatus());
+
+    private Single<Account> saveAccount(Account account) {
+        return RxJava3Adapter.monoToSingle(accountRepository.save(accountMapper.toDocument(account)))
+            .map(accountMapper::toDomain);
     }
-    return accountDocument;
-  }
+
+    private CreateAccountResponseDto buildResponse(Account account) {
+        return CreateAccountResponseDto.builder()
+            .status(OperationStatus.PENDING)
+            .createdAt(account.getCreatedAt())
+            .accountId(account.getAccountId())
+            .customerId(account.getCustomerId())
+            .accountType(account.getAccountType())
+            .accountSubType(account.getAccountSubType())
+            .currency(account.getCurrency())
+            .balance(account.getBalance())
+            .holders(account.getHolders())
+            .authorizedSigners(account.getAuthorizedSigners())
+            .fixedTransactionDay(account.getFixedTransactionDay())
+            .unlimitedTransactions(account.isUnlimitedTransactions())
+            .monthlyTransactionsLimit(account.getMonthlyTransactionsLimit())
+            .monthlyTransactionsLimitWithoutCommission(account.getMonthlyTransactionsLimitWithoutCommission())
+            .transactionCommission(account.getTransactionCommission())
+            .maintenanceCommission(account.getMaintenanceCommission())
+            .allowedMinimumBalance(account.getAllowedMinimumBalance())
+            .accountStatus(account.getStatus())
+            .build();
+    }
+
+    private Completable saveIdempotencyLog(String idempotencyKey, CreateAccountResponseDto responseDto) {
+        IdempotencyLogDocument document = IdempotencyLogDocument.builder()
+            .idempotencyKey(idempotencyKey)
+            .operationType(OperationType.CREATE_ACCOUNT)
+            .responseBody(IdempotencyUtils.serializeResponse(responseDto))
+            .status(responseDto.getStatus())
+            .createdAt(responseDto.getCreatedAt())
+            .build();
+        return RxJava3Adapter.monoToCompletable(idempotencyLogRepository.save(document).then());
+    }
+
+    private Completable publishAccountCreatedEvent(String idempotencyKey, CreateAccountResponseDto responseDto) {
+        AccountCreatedEvent event = AccountCreatedEvent.builder()
+            .accountId(responseDto.getAccountId())
+            .customerId(responseDto.getCustomerId())
+            .accountType(responseDto.getAccountType())
+            .accountSubType(responseDto.getAccountSubType())
+            .currency(responseDto.getCurrency())
+            .balance(responseDto.getBalance())
+            .holders(responseDto.getHolders())
+            .authorizedSigners(responseDto.getAuthorizedSigners())
+            .fixedTransactionDay(responseDto.getFixedTransactionDay())
+            .unlimitedTransactions(responseDto.isUnlimitedTransactions())
+            .monthlyTransactionsLimit(responseDto.getMonthlyTransactionsLimit())
+            .monthlyTransactionsLimitWithoutCommission(responseDto.getMonthlyTransactionsLimitWithoutCommission())
+            .transactionCommission(responseDto.getTransactionCommission())
+            .maintenanceCommission(responseDto.getMaintenanceCommission())
+            .allowedMinimumBalance(responseDto.getAllowedMinimumBalance())
+            .status(responseDto.getAccountStatus())
+            .build();
+
+        return eventProducerService.publishAccountCreatedEvent(idempotencyKey, event);
+    }
+
+    public Single<List<AccountResponseDto>> findAll() {
+        return RxJava3Adapter.fluxToObservable(accountRepository.findAll())
+            .map(accountMapper::toResponseDto)
+            .toList();
+    }
+
+    public Single<AccountResponseDto> findAccountById(@NotBlank String accountId) {
+        return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+            .map(accountMapper::toResponseDto)
+            .switchIfEmpty(Single.error(new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Account not found")));
+    }
+
+    public Single<AccountResponseDto> updateAccount(
+        @NotBlank String accountId, UpdateAccountRequestDto requestDto) {
+        return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+            .switchIfEmpty(Single.error(new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Account not found")))
+            .map(accountDocument -> applyUpdate(accountDocument, requestDto))
+            .flatMap(accountDocument -> RxJava3Adapter.monoToSingle(accountRepository.save(accountDocument)))
+            .map(accountMapper::toResponseDto);
+    }
+
+    public Completable deleteAccount(@NotBlank String accountId) {
+        return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+            .switchIfEmpty(Single.error(new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Account not found")))
+            .flatMapCompletable(accountDocument -> RxJava3Adapter.monoToCompletable(
+                accountRepository.delete(accountDocument)));
+    }
+
+    public Single<List<AccountResponseDto>> findAllAccountsByCustomerId(@NotBlank String customerId) {
+        return RxJava3Adapter.fluxToObservable(accountRepository.findByCustomerId(customerId))
+            .map(accountMapper::toResponseDto)
+            .toList();
+    }
+
+    public Single<List<TransactionMovementResponseDto>> getMovementsByAccountId(
+        @NotBlank String accountId, LocalDateTime startDate, LocalDateTime endDate) {
+        return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+            .switchIfEmpty(Single.error(new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Account not found")))
+            .flatMap(account -> RxJava3Adapter.monoToSingle(
+                transactionClient.getMovementsByAccountId(accountId, startDate, endDate)));
+    }
+
+    private AccountDocument applyUpdate(AccountDocument accountDocument, UpdateAccountRequestDto requestDto) {
+        if (requestDto.getCurrency() != null) {
+            accountDocument.setCurrency(requestDto.getCurrency());
+        }
+        if (requestDto.getBalance() != null) {
+            accountDocument.setBalance(requestDto.getBalance());
+        }
+        if (requestDto.getHolders() != null) {
+            accountDocument.setHolders(Utils.normalizeList(requestDto.getHolders()));
+        }
+        if (requestDto.getAuthorizedSigners() != null) {
+            accountDocument.setAuthorizedSigners(Utils.normalizeList(requestDto.getAuthorizedSigners()));
+        }
+        if (requestDto.getFixedTransactionDay() != null) {
+            accountDocument.setFixedTransactionDay(requestDto.getFixedTransactionDay());
+        }
+        if (requestDto.getAccountStatus() != null) {
+            accountDocument.setStatus(requestDto.getAccountStatus());
+        }
+        return accountDocument;
+    }
 }

@@ -28,70 +28,70 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 public class CardController {
-  private final CardService cardService;
+    private final CardService cardService;
 
-  @PostMapping("/debit")
-  public Single<ResponseEntity<CardResponseDto>> createDebit(
-    @Valid @RequestBody CreateCardRequestDto requestDto) {
-    return cardService.createDebit(requestDto)
-      .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
-  }
+    @PostMapping("/debit")
+    public Single<ResponseEntity<CardResponseDto>> createDebit(
+        @Valid @RequestBody CreateCardRequestDto requestDto) {
+        return cardService.createDebit(requestDto)
+            .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
+    }
 
-  @GetMapping("/debit")
-  public Flowable<CardResponseDto> findAllDebits() {
-    return cardService.findAllDebits();
-  }
+    @GetMapping("/debit")
+    public Flowable<CardResponseDto> findAllDebits() {
+        return cardService.findAllDebits();
+    }
 
-  @GetMapping("/debit/{cardId}")
-  public Single<CardResponseDto> findDebitByCardId(@PathVariable @NotBlank String cardId) {
-    return cardService.findDebitByCardId(cardId);
-  }
+    @GetMapping("/debit/{cardId}")
+    public Single<CardResponseDto> findDebitByCardId(@PathVariable @NotBlank String cardId) {
+        return cardService.findDebitByCardId(cardId);
+    }
 
-  @PutMapping("/debit/{cardId}")
-  public Single<CardResponseDto> updateDebit(
-    @PathVariable @NotBlank String cardId,
-    @Valid @RequestBody UpdateCardRequestDto requestDto) {
-    return cardService.updateDebit(cardId, requestDto);
-  }
+    @PutMapping("/debit/{cardId}")
+    public Single<CardResponseDto> updateDebit(
+        @PathVariable @NotBlank String cardId,
+        @Valid @RequestBody UpdateCardRequestDto requestDto) {
+        return cardService.updateDebit(cardId, requestDto);
+    }
 
-  @DeleteMapping("/debit/{cardId}")
-  public Completable deleteDebit(@PathVariable @NotBlank String cardId) {
-    return cardService.deleteDebit(cardId);
-  }
+    @DeleteMapping("/debit/{cardId}")
+    public Completable deleteDebit(@PathVariable @NotBlank String cardId) {
+        return cardService.deleteDebit(cardId);
+    }
 
-  @PostMapping("/credit")
-  public Single<ResponseEntity<CardResponseDto>> createCredit(
-    @Valid @RequestBody CreateCardRequestDto requestDto) {
-    return cardService.createCredit(requestDto)
-      .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
-  }
+    @PostMapping("/credit")
+    public Single<ResponseEntity<CardResponseDto>> createCredit(
+        @Valid @RequestBody CreateCardRequestDto requestDto) {
+        return cardService.createCredit(requestDto)
+            .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
+    }
 
-  @GetMapping("/credit")
-  public Flowable<CardResponseDto> findAllCredits() {
-    return cardService.findAllCredits();
-  }
+    @GetMapping("/credit")
+    public Flowable<CardResponseDto> findAllCredits() {
+        return cardService.findAllCredits();
+    }
 
-  @GetMapping("/credit/{cardId}")
-  public Single<CardResponseDto> findCreditByCardId(@PathVariable @NotBlank String cardId) {
-    return cardService.findCreditByCardId(cardId);
-  }
+    @GetMapping("/credit/{cardId}")
+    public Single<CardResponseDto> findCreditByCardId(@PathVariable @NotBlank String cardId) {
+        return cardService.findCreditByCardId(cardId);
+    }
 
-  @PutMapping("/credit/{cardId}")
-  public Single<CardResponseDto> updateCredit(
-    @PathVariable @NotBlank String cardId,
-    @Valid @RequestBody UpdateCardRequestDto requestDto) {
-    return cardService.updateCredit(cardId, requestDto);
-  }
+    @PutMapping("/credit/{cardId}")
+    public Single<CardResponseDto> updateCredit(
+        @PathVariable @NotBlank String cardId,
+        @Valid @RequestBody UpdateCardRequestDto requestDto) {
+        return cardService.updateCredit(cardId, requestDto);
+    }
 
-  @DeleteMapping("/credit/{cardId}")
-  public Completable deleteCredit(@PathVariable @NotBlank String cardId) {
-    return cardService.deleteCredit(cardId);
-  }
+    @DeleteMapping("/credit/{cardId}")
+    public Completable deleteCredit(@PathVariable @NotBlank String cardId) {
+        return cardService.deleteCredit(cardId);
+    }
 
-  @GetMapping("/customers/{customerId}")
-  public Single<ResponseEntity<List<CardResponseDto>>> findAllCardsByCustomerId(
-    @PathVariable @NotBlank String customerId) {
-    return cardService.findAllCardsByCustomerId(customerId)
-      .map(ResponseEntity::ok);
-  }
+    @GetMapping("/customers/{customerId}")
+    public Single<ResponseEntity<List<CardResponseDto>>> findAllCardsByCustomerId(
+        @PathVariable @NotBlank String customerId) {
+        return cardService.findAllCardsByCustomerId(customerId)
+            .map(ResponseEntity::ok);
+    }
 }

@@ -10,19 +10,19 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface TransactionRepository extends ReactiveMongoRepository<TransactionDocument, String> {
-  Mono<TransactionDocument> findByTransactionIdAndTransactionType(
-    String transactionId, TransactionType transactionType);
+    Mono<TransactionDocument> findByTransactionIdAndTransactionType(
+        String transactionId, TransactionType transactionType);
 
-  Flux<TransactionDocument> findBySourceAccountId(String sourceAccountId);
+    Flux<TransactionDocument> findBySourceAccountId(String sourceAccountId);
 
-  Flux<TransactionDocument> findByCustomerId(String customerId);
+    Flux<TransactionDocument> findByCustomerId(String customerId);
 
-  Flux<TransactionDocument> findBySourceAccountIdAndCreatedAtBetween(
-    String sourceAccountId, LocalDateTime startDate, LocalDateTime endDate);
+    Flux<TransactionDocument> findBySourceAccountIdAndCreatedAtBetween(
+        String sourceAccountId, LocalDateTime startDate, LocalDateTime endDate);
 
-  Flux<TransactionDocument> findBySourceAccountIdAndCreatedAtGreaterThanEqual(
-    String sourceAccountId, LocalDateTime startDate);
+    Flux<TransactionDocument> findBySourceAccountIdAndCreatedAtGreaterThanEqual(
+        String sourceAccountId, LocalDateTime startDate);
 
-  Flux<TransactionDocument> findBySourceAccountIdAndCreatedAtLessThanEqual(
-    String sourceAccountId, LocalDateTime endDate);
+    Flux<TransactionDocument> findBySourceAccountIdAndCreatedAtLessThanEqual(
+        String sourceAccountId, LocalDateTime endDate);
 }

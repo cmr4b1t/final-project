@@ -10,18 +10,18 @@ import org.bootcamp.customerservice.domain.model.StatusType;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerResponseDto {
-  private String customerId;
-  private String documentNumber;
-  private String fullName;
-  private CustomerType type;
-  private CustomerProfile profile;
-  private StatusType status;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
-  private boolean hasOverdueDebts;
-  private int savingsAccountsCount;
-  private int checkingAccountsCount;
-  private int fixedTermAccountsCount;
-  private int creditCardsCount;
-  private int loansCount;
+    private String customerId;
+    private String documentNumber;
+    private String fullName;
+    private CustomerType type;
+    private CustomerProfile profile;
+    private StatusType status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private boolean hasOverdueDebts;
+    private int savingsAccountsCount;
+    private int checkingAccountsCount;
+    private int fixedTermAccountsCount;
+    private int creditCardsCount;
+    private int loansCount;
 }

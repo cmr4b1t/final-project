@@ -15,14 +15,14 @@ import org.bootcamp.accountservice.domain.Currency;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionMovementResponseDto {
-  private String transactionId;
-  private String transactionType;
-  private String sourceAccountId;
-  private String customerId;
-  private BigDecimal amount;
-  private Currency currency;
-  private BigDecimal commission;
-  private String note;
-  private String statementId;
-  private LocalDateTime createdAt;
+    private String transactionId;
+    private String transactionType;
+    private String sourceAccountId;
+    private String customerId;
+    private BigDecimal amount;
+    private Currency currency;
+    private BigDecimal commission;
+    private String note;
+    private String statementId;
+    private LocalDateTime createdAt;
 }

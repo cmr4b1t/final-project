@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utils {
-  public static String generateId(String prefix) {
-    return prefix + UUID.randomUUID().toString().replace("-", "");
-  }
+    public static String generateId(String prefix) {
+        return prefix + UUID.randomUUID().toString().replace("-", "");
+    }
 }

@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Card {
-  private String cardId;
-  private String customerId;
-  private String sourceAccountId;
-  private CardType cardType;
-  private String cardNumber;
-  private CardStatus cardStatus;
+    private String cardId;
+    private String customerId;
+    private String sourceAccountId;
+    private CardType cardType;
+    private String cardNumber;
+    private CardStatus cardStatus;
 }

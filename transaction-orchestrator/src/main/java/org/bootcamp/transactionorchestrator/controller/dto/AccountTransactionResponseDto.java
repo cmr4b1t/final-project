@@ -17,15 +17,15 @@ import org.bootcamp.transactionorchestrator.domain.Currency;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountTransactionResponseDto {
-  private String operationId;
-  private String operationStatus;
-  private BigDecimal amount;
-  private Currency currency;
-  private String note;
-  private String customerId;
-  private AccountType accountType;
-  private AccountSubType accountSubType;
-  private AccountStatus accountStatus;
-  private BigDecimal balance;
-  private String description;
+    private String operationId;
+    private String operationStatus;
+    private BigDecimal amount;
+    private Currency currency;
+    private String note;
+    private String customerId;
+    private AccountType accountType;
+    private AccountSubType accountSubType;
+    private AccountStatus accountStatus;
+    private BigDecimal balance;
+    private String description;
 }

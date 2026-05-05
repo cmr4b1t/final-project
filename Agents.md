@@ -140,3 +140,6 @@ Gestionar clientes financieros y sus productos bancarios.
 - config-server
 - eureka-server
 - api-gateway
+
+## Definiciones para respuestas de error
+- 

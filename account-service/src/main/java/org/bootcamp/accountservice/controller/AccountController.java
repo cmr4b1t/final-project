@@ -34,66 +34,66 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 public class AccountController {
-  private final AccountService accountService;
+    private final AccountService accountService;
 
-  @PostMapping
-  public Single<ResponseEntity<CreateAccountResponseDto>> createAccount(
-    @RequestHeader(Constants.IDEMPOTENCY_KEY_HEADER) @NotBlank String idempotencyKey,
-    @Valid @RequestBody CreateAccountRequestDto requestDto) {
-    return accountService.createAccount(idempotencyKey, requestDto)
-      .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
-  }
+    @PostMapping
+    public Single<ResponseEntity<CreateAccountResponseDto>> createAccount(
+        @RequestHeader(Constants.IDEMPOTENCY_KEY_HEADER) @NotBlank String idempotencyKey,
+        @Valid @RequestBody CreateAccountRequestDto requestDto) {
+        return accountService.createAccount(idempotencyKey, requestDto)
+            .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
+    }
 
-  @GetMapping
-  public Single<ResponseEntity<List<AccountResponseDto>>> findAll() {
-    return accountService.findAll()
-      .map(ResponseEntity::ok);
-  }
+    @GetMapping
+    public Single<ResponseEntity<List<AccountResponseDto>>> findAll() {
+        return accountService.findAll()
+            .map(ResponseEntity::ok);
+    }
 
-  @GetMapping("/{accountId}")
-  public Single<ResponseEntity<AccountResponseDto>> findAccountById(
-    @PathVariable @NotBlank String accountId) {
-    return accountService.findAccountById(accountId)
-      .map(ResponseEntity::ok);
-  }
+    @GetMapping("/{accountId}")
+    public Single<ResponseEntity<AccountResponseDto>> findAccountById(
+        @PathVariable @NotBlank String accountId) {
+        return accountService.findAccountById(accountId)
+            .map(ResponseEntity::ok);
+    }
 
-  @PutMapping("/{accountId}")
-  public Single<ResponseEntity<AccountResponseDto>> updateAccount(
-    @PathVariable @NotBlank String accountId,
-    @Valid @RequestBody UpdateAccountRequestDto requestDto) {
-    return accountService.updateAccount(accountId, requestDto)
-      .map(ResponseEntity::ok);
-  }
+    @PutMapping("/{accountId}")
+    public Single<ResponseEntity<AccountResponseDto>> updateAccount(
+        @PathVariable @NotBlank String accountId,
+        @Valid @RequestBody UpdateAccountRequestDto requestDto) {
+        return accountService.updateAccount(accountId, requestDto)
+            .map(ResponseEntity::ok);
+    }
 
-  @DeleteMapping("/{accountId}")
-  public Single<ResponseEntity<Void>> deleteAccount(
-    @PathVariable @NotBlank String accountId) {
-    return accountService.deleteAccount(accountId)
-      .andThen(Single.just(ResponseEntity.noContent().build()));
-  }
+    @DeleteMapping("/{accountId}")
+    public Single<ResponseEntity<Void>> deleteAccount(
+        @PathVariable @NotBlank String accountId) {
+        return accountService.deleteAccount(accountId)
+            .andThen(Single.just(ResponseEntity.noContent().build()));
+    }
 
-  @GetMapping("/customers/{customerId}")
-  public Single<ResponseEntity<List<AccountResponseDto>>> findAllAccountsByCustomerId(
-    @PathVariable @NotBlank String customerId) {
-    return accountService.findAllAccountsByCustomerId(customerId)
-      .map(ResponseEntity::ok);
-  }
+    @GetMapping("/customers/{customerId}")
+    public Single<ResponseEntity<List<AccountResponseDto>>> findAllAccountsByCustomerId(
+        @PathVariable @NotBlank String customerId) {
+        return accountService.findAllAccountsByCustomerId(customerId)
+            .map(ResponseEntity::ok);
+    }
 
-  @GetMapping("/{accountId}/movements")
-  public Single<ResponseEntity<List<TransactionMovementResponseDto>>> getMovementsByAccountId(
-    @PathVariable @NotBlank String accountId,
-    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    LocalDateTime startDate,
-    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    LocalDateTime endDate) {
-    return accountService.getMovementsByAccountId(accountId, startDate, endDate)
-      .map(ResponseEntity::ok);
-  }
+    @GetMapping("/{accountId}/movements")
+    public Single<ResponseEntity<List<TransactionMovementResponseDto>>> getMovementsByAccountId(
+        @PathVariable @NotBlank String accountId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        LocalDateTime startDate,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        LocalDateTime endDate) {
+        return accountService.getMovementsByAccountId(accountId, startDate, endDate)
+            .map(ResponseEntity::ok);
+    }
 
-  @GetMapping("/{accountId}/balance")
-  public Single<ResponseEntity<BigDecimal>> findAvailableBalance(
-    @PathVariable @NotBlank String accountId) {
-    return accountService.findAvailableBalance(accountId)
-      .map(ResponseEntity::ok);
-  }
+    @GetMapping("/{accountId}/balance")
+    public Single<ResponseEntity<BigDecimal>> findAvailableBalance(
+        @PathVariable @NotBlank String accountId) {
+        return accountService.findAvailableBalance(accountId)
+            .map(ResponseEntity::ok);
+    }
 }

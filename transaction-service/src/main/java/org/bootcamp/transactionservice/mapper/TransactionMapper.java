@@ -9,18 +9,18 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-  componentModel = "spring",
-  nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+    componentModel = "spring",
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface TransactionMapper {
-  @Mapping(target = "transactionId", ignore = true)
-  @Mapping(target = "createdAt", ignore = true)
-  Transaction toDomain(TransactionRequestDto requestDto);
+    @Mapping(target = "transactionId", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    Transaction toDomain(TransactionRequestDto requestDto);
 
-  Transaction toDomain(TransactionDocument transactionDocument);
+    Transaction toDomain(TransactionDocument transactionDocument);
 
-  @Mapping(target = "id", ignore = true)
-  TransactionDocument toDocument(Transaction transaction);
+    @Mapping(target = "id", ignore = true)
+    TransactionDocument toDocument(Transaction transaction);
 
-  TransactionResponseDto toResponseDto(Transaction transaction);
+    TransactionResponseDto toResponseDto(Transaction transaction);
 }

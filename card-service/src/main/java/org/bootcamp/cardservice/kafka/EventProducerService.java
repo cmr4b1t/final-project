@@ -14,18 +14,18 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EventProducerService {
-  private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-  @Value("${topics.bank-debit-card-created:bank.debit.card.created}")
-  private String debitCardCreatedTopic;
+    @Value("${topics.bank-debit-card-created:bank.debit.card.created}")
+    private String debitCardCreatedTopic;
 
 
-  public Completable publishDebitCardCreatedEvent(String idempotencyKey, DebitCardCreatedEvent event) {
-    Message<DebitCardCreatedEvent> message = MessageBuilder.withPayload(event)
-      .setHeader(KafkaHeaders.TOPIC, debitCardCreatedTopic)
-      .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
-      .build();
+    public Completable publishDebitCardCreatedEvent(String idempotencyKey, DebitCardCreatedEvent event) {
+        Message<DebitCardCreatedEvent> message = MessageBuilder.withPayload(event)
+            .setHeader(KafkaHeaders.TOPIC, debitCardCreatedTopic)
+            .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
+            .build();
 
-    return Completable.fromCompletionStage(kafkaTemplate.send(message));
-  }
+        return Completable.fromCompletionStage(kafkaTemplate.send(message));
+    }
 }

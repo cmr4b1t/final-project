@@ -8,13 +8,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-  componentModel = "spring",
-  nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+    componentModel = "spring",
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface CustomerRestMapper {
-  Customer toDomain(CreateCustomerRequestDto customerRequestDto);
+    Customer toDomain(CreateCustomerRequestDto customerRequestDto);
 
-  Customer toDomain(UpdateCustomerRequestDto customerRequestDto);
+    Customer toDomain(UpdateCustomerRequestDto customerRequestDto);
 
-  CustomerResponseDto toResponse(Customer customer);
+    CustomerResponseDto toResponse(Customer customer);
 }

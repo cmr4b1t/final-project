@@ -10,11 +10,11 @@ import org.bootcamp.transactionorchestrator.domain.Currency;
 
 @Builder
 public record DepositAcceptedEvent(
-  String accountId,
-  String customerId,
-  AccountType accountType,
-  AccountSubType accountSubType,
-  Currency currency,
-  BigDecimal balance
+    String accountId,
+    String customerId,
+    AccountType accountType,
+    AccountSubType accountSubType,
+    Currency currency,
+    BigDecimal balance
 ) {
 }

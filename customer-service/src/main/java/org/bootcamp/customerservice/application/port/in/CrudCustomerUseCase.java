@@ -12,13 +12,13 @@ import org.bootcamp.customerservice.domain.model.Customer;
  * @see Customer
  */
 public interface CrudCustomerUseCase {
-  Single<Customer> create(Customer customer);
+    Single<Customer> create(Customer customer);
 
-  Single<Customer> findByCustomerId(String customerId);
+    Single<Customer> findByCustomerId(String customerId);
 
-  Observable<Customer> findAll();
+    Observable<Customer> findAll();
 
-  Single<Customer> update(String customerId, Customer customer);
+    Single<Customer> update(String customerId, Customer customer);
 
-  Completable delete(String customerId);
+    Completable delete(String customerId);
 }

@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateCardRequestDto {
-  @NotBlank
-  private String customerId;
-  @NotBlank
-  private String sourceAccountId;
+    @NotBlank
+    private String customerId;
+    @NotBlank
+    private String sourceAccountId;
 }

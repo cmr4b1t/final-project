@@ -16,13 +16,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "cards")
 public class CardDocument {
-  @Id
-  private String id;
-  @Indexed(unique = true)
-  private String cardId;
-  private String customerId;
-  private String sourceAccountId;
-  private CardType cardType;
-  private String cardNumber;
-  private CardStatus cardStatus;
+    @Id
+    private String id;
+    @Indexed(unique = true)
+    private String cardId;
+    private String customerId;
+    private String sourceAccountId;
+    private CardType cardType;
+    private String cardNumber;
+    private CardStatus cardStatus;
 }

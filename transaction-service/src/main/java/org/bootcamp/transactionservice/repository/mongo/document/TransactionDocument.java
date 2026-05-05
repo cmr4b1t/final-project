@@ -15,16 +15,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "transactions")
 @CompoundIndex(name = "idx_key_transaction", def = "{'transactionId': 1, 'transactionType': 1}", unique = true)
 public class TransactionDocument {
-  @Id
-  private String id;
-  private String transactionId;
-  private TransactionType transactionType;
-  private String sourceAccountId;
-  private String customerId;
-  private BigDecimal amount;
-  private Currency currency;
-  private BigDecimal commission;
-  private String note;
-  private String statementId;
-  private LocalDateTime createdAt;
+    @Id
+    private String id;
+    private String transactionId;
+    private TransactionType transactionType;
+    private String sourceAccountId;
+    private String customerId;
+    private BigDecimal amount;
+    private Currency currency;
+    private BigDecimal commission;
+    private String note;
+    private String statementId;
+    private LocalDateTime createdAt;
 }

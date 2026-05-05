@@ -8,12 +8,12 @@ import org.bootcamp.customerservice.domain.model.CustomerType;
 
 @Data
 public class CreateCustomerRequestDto {
-  @NotBlank
-  private String documentNumber;
-  @NotBlank
-  private String fullName;
-  @NotNull
-  private CustomerType type;
-  @NotNull
-  private CustomerProfile profile;
+    @NotBlank
+    private String documentNumber;
+    @NotBlank
+    private String fullName;
+    @NotNull
+    private CustomerType type;
+    @NotNull
+    private CustomerProfile profile;
 }

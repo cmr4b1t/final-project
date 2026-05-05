@@ -9,11 +9,11 @@ import org.bootcamp.accountservice.domain.account.AccountStatus;
 
 @Data
 public class UpdateAccountRequestDto {
-  private Currency currency;
-  @PositiveOrZero
-  private BigDecimal balance;
-  private List<String> holders;
-  private List<String> authorizedSigners;
-  private Integer fixedTransactionDay;
-  private AccountStatus accountStatus;
+    private Currency currency;
+    @PositiveOrZero
+    private BigDecimal balance;
+    private List<String> holders;
+    private List<String> authorizedSigners;
+    private Integer fixedTransactionDay;
+    private AccountStatus accountStatus;
 }

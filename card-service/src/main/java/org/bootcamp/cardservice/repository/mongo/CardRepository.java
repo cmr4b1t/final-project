@@ -8,10 +8,10 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface CardRepository extends ReactiveMongoRepository<CardDocument, String> {
-  Mono<CardDocument> findByCardId(String cardId);
+    Mono<CardDocument> findByCardId(String cardId);
 
-  Flux<CardDocument> findByCustomerId(String customerId);
+    Flux<CardDocument> findByCustomerId(String customerId);
 
-  Mono<Void> deleteByCardId(String cardId);
+    Mono<Void> deleteByCardId(String cardId);
 
 }

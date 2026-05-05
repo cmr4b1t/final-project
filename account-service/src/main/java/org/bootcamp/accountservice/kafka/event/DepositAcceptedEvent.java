@@ -9,11 +9,11 @@ import org.bootcamp.accountservice.domain.account.AccountType;
 
 @Builder
 public record DepositAcceptedEvent(
-  String accountId,
-  String customerId,
-  AccountType accountType,
-  AccountSubType accountSubType,
-  Currency currency,
-  BigDecimal balance
+    String accountId,
+    String customerId,
+    AccountType accountType,
+    AccountSubType accountSubType,
+    Currency currency,
+    BigDecimal balance
 ) {
 }

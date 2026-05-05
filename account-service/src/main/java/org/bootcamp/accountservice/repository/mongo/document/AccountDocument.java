@@ -17,24 +17,24 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Document(collection = "accounts")
 public class AccountDocument {
-  @Id
-  private String id;
-  @Indexed(unique = true)
-  private String accountId;
-  private String customerId;
-  private AccountType accountType;
-  private AccountSubType accountSubType;
-  private Currency currency;
-  private BigDecimal balance;
-  private List<String> holders;
-  private List<String> authorizedSigners;
-  private Integer fixedTransactionDay;
-  private boolean unlimitedTransactions;
-  private Integer monthlyTransactionsLimit;
-  private int monthlyTransactionsLimitWithoutCommission;
-  private BigDecimal transactionCommission;
-  private BigDecimal maintenanceCommission;
-  private BigDecimal allowedMinimumBalance;
-  private AccountStatus status;
-  private LocalDateTime createdAt;
+    @Id
+    private String id;
+    @Indexed(unique = true)
+    private String accountId;
+    private String customerId;
+    private AccountType accountType;
+    private AccountSubType accountSubType;
+    private Currency currency;
+    private BigDecimal balance;
+    private List<String> holders;
+    private List<String> authorizedSigners;
+    private Integer fixedTransactionDay;
+    private boolean unlimitedTransactions;
+    private Integer monthlyTransactionsLimit;
+    private int monthlyTransactionsLimitWithoutCommission;
+    private BigDecimal transactionCommission;
+    private BigDecimal maintenanceCommission;
+    private BigDecimal allowedMinimumBalance;
+    private AccountStatus status;
+    private LocalDateTime createdAt;
 }

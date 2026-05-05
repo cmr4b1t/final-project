@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.core.Single;
 import org.bootcamp.customerservice.domain.model.Customer;
 
 public interface CustomerRepositoryPort extends CrudCustomerRepositoryPort {
-  Maybe<Customer> findByDocumentNumber(String documentNumber);
+    Maybe<Customer> findByDocumentNumber(String documentNumber);
 
-  Single<Boolean> existsByDocumentNumber(String documentNumber);
+    Single<Boolean> existsByDocumentNumber(String documentNumber);
 }

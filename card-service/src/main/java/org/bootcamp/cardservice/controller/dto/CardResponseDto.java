@@ -12,10 +12,10 @@ import org.bootcamp.cardservice.domain.CardType;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CardResponseDto {
-  private String cardId;
-  private String customerId;
-  private String sourceAccountId;
-  private CardType cardType;
-  private String cardNumber;
-  private CardStatus cardStatus;
+    private String cardId;
+    private String customerId;
+    private String sourceAccountId;
+    private CardType cardType;
+    private String cardNumber;
+    private CardStatus cardStatus;
 }

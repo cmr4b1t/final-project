@@ -5,7 +5,7 @@ import org.bootcamp.accountservice.controller.dto.CreateAccountRequestDto;
 
 public interface AccountRuleStrategy {
 
-  AccountRuleStrategyType getType();
+    AccountRuleStrategyType getType();
 
-  void validate(CustomerSummaryDto customer, CreateAccountRequestDto requestDto);
+    void validate(CustomerSummaryDto customer, CreateAccountRequestDto requestDto);
 }

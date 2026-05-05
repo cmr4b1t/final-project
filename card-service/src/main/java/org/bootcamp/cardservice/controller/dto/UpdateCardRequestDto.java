@@ -11,7 +11,7 @@ import org.bootcamp.cardservice.domain.CardStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCardRequestDto {
-  private String customerId;
-  private String sourceAccountId;
-  private CardStatus cardStatus;
+    private String customerId;
+    private String sourceAccountId;
+    private CardStatus cardStatus;
 }

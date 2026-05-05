@@ -20,22 +20,22 @@ import org.bootcamp.accountservice.repository.mongo.document.OperationStatus;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateAccountResponseDto {
-  private OperationStatus status;
-  private LocalDateTime createdAt;
-  private String accountId;
-  private String customerId;
-  private AccountType accountType;
-  private AccountSubType accountSubType;
-  private Currency currency;
-  private BigDecimal balance;
-  private List<String> holders;
-  private List<String> authorizedSigners;
-  private Integer fixedTransactionDay;
-  private boolean unlimitedTransactions;
-  private Integer monthlyTransactionsLimit;
-  private int monthlyTransactionsLimitWithoutCommission;
-  private BigDecimal transactionCommission;
-  private BigDecimal maintenanceCommission;
-  private BigDecimal allowedMinimumBalance;
-  private AccountStatus accountStatus;
+    private OperationStatus status;
+    private LocalDateTime createdAt;
+    private String accountId;
+    private String customerId;
+    private AccountType accountType;
+    private AccountSubType accountSubType;
+    private Currency currency;
+    private BigDecimal balance;
+    private List<String> holders;
+    private List<String> authorizedSigners;
+    private Integer fixedTransactionDay;
+    private boolean unlimitedTransactions;
+    private Integer monthlyTransactionsLimit;
+    private int monthlyTransactionsLimitWithoutCommission;
+    private BigDecimal transactionCommission;
+    private BigDecimal maintenanceCommission;
+    private BigDecimal allowedMinimumBalance;
+    private AccountStatus accountStatus;
 }

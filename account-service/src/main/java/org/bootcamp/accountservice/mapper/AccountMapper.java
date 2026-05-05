@@ -9,16 +9,16 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-  componentModel = "spring",
-  nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+    componentModel = "spring",
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface AccountMapper {
-  Account toDomain(CreateAccountRequestDto requestDto);
+    Account toDomain(CreateAccountRequestDto requestDto);
 
-  AccountDocument toDocument(Account account);
+    AccountDocument toDocument(Account account);
 
-  Account toDomain(AccountDocument accountDocument);
+    Account toDomain(AccountDocument accountDocument);
 
-  @Mapping(source = "status", target = "accountStatus")
-  AccountResponseDto toResponseDto(AccountDocument accountDocument);
+    @Mapping(source = "status", target = "accountStatus")
+    AccountResponseDto toResponseDto(AccountDocument accountDocument);
 }
