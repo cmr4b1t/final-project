@@ -1,19 +1,19 @@
 package org.bootcamp.transactionorchestrator.kafka.event;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import lombok.Builder;
+import org.bootcamp.transactionorchestrator.domain.Currency;
 import org.bootcamp.transactionorchestrator.domain.AccountSubType;
 import org.bootcamp.transactionorchestrator.domain.AccountType;
-import org.bootcamp.transactionorchestrator.domain.Currency;
 
 @Builder
-public record WithdrawAcceptedEvent(
+public record DepositRejectedEvent(
   String accountId,
   String customerId,
   AccountType accountType,
   AccountSubType accountSubType,
+  BigDecimal amount,
   Currency currency,
-  BigDecimal balance
+  String description
 ) {
 }

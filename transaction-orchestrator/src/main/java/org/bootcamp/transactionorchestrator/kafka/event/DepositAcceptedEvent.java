@@ -15,8 +15,6 @@ public record DepositAcceptedEvent(
   AccountType accountType,
   AccountSubType accountSubType,
   Currency currency,
-  BigDecimal balance,
-  int monthlyTransactionsCount,
-  LocalDateTime lastTransactionDate
+  BigDecimal balance
 ) {
 }

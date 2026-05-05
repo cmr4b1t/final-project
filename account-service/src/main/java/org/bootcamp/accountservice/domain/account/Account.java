@@ -27,6 +27,4 @@ public class Account {
   private BigDecimal allowedMinimumBalance;
   private AccountStatus status;
   private LocalDateTime createdAt;
-  private int monthlyTransactionsCount;
-  private LocalDateTime lastTransactionDate;
 }

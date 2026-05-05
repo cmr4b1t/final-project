@@ -3,12 +3,14 @@ package org.bootcamp.transactionservice.controller;
 import io.reactivex.rxjava3.core.Single;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.transactionservice.controller.dto.TransactionRequestDto;
 import org.bootcamp.transactionservice.controller.dto.TransactionResponseDto;
 import org.bootcamp.transactionservice.service.TransactionService;
 import org.bootcamp.transactionservice.support.Constants;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,8 +40,12 @@ public class TransactionController {
 
   @GetMapping("/{accountId}")
   public Single<ResponseEntity<List<TransactionResponseDto>>> getTransactionsByAccountId(
-    @PathVariable @NotBlank String accountId) {
-    return transactionService.getTransactionsByAccountId(accountId)
+    @PathVariable @NotBlank String accountId,
+    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    LocalDateTime startDate,
+    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    LocalDateTime endDate) {
+    return transactionService.getTransactionsByAccountId(accountId, startDate, endDate)
       .map(ResponseEntity::ok);
   }
 

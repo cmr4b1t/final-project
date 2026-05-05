@@ -36,7 +36,7 @@ registrar transacciones (deposito, retiro, consumo, pagos)
         - 400 Bad Request
         - 409 Conflict
 - Consultar movimientos por accountId:
-    - API: [POST] /v1/transactions/{accountId}
+    - API: [GET] /v1/transactions/{accountId}
     - PathVariable:
       - accountId: id del la cuenta origen
     - Flujo:

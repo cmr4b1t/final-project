@@ -135,9 +135,12 @@ gestionar cuentas bancarias
   - Si no existe:
     - Buscar la cuenta por "accountId" [mongodb: accounts]
     - Validar que no supere el límite de movimientos mensuales (si aplica)
+      - Para obtener la cantidad actual de transacciones mensuales de la cuenta, consultar a [transaction-service: [GET] /v1/transactions/{accountId}]
+      - luego contabilizar el resultado
     - Validar con reglas de negocio según el tipo de cuenta
     - Si la cuenta no cumple con las reglas,
       - Publicar evento [DepositRejectedEvent] a [kafka: bank.deposit.rejected]
+        - el "Idempotency-Key" se enviará en los headers hacia kafka
       - culmina con ack.acknowledge()
     - Aplicar políticas (comisiones, etc) según el tipo de cuenta
     - Actualizar balance de la cuenta
@@ -145,6 +148,7 @@ gestionar cuentas bancarias
     - Registra el resultado en [mongodb: idempotency_log] con estado "COMPLETED"
     - Envía registro de transacción de deposito a [transaction-service: [POST] /v1/transactions]
     - Publicar evento [DepositAcceptedEvent] a [kafka: bank.deposit.accepted]
+      - el "Idempotency-Key" se enviará en los headers hacia kafka
     - culmina con ack.acknowledge()
 
 - [WithdrawRequestedConsumer: listen(), evento: WithdrawRequestedEvent]
@@ -154,9 +158,12 @@ gestionar cuentas bancarias
     - Buscar la cuenta por "accountId" [mongodb: accounts]
     - Validar que el saldo de la cuenta no sea menor al monto del retiro
     - Validar que no supere el límite de movimientos mensuales (si aplica)
+      - Para obtener la cantidad actual de transacciones mensuales de la cuenta, consultar a [transaction-service: [GET] /v1/transactions/{accountId}]
+      - luego contabilizar el resultado
     - Validar con reglas de negocio según el tipo de cuenta
     - Si la cuenta no cumple con las reglas,
       - Publicar evento [WithdrawRejectedEvent] a [kafka: bank.withdraw.rejected]
+        - el "Idempotency-Key" se enviará en los headers hacia kafka
       - culmina con ack.acknowledge()
     - Aplicar políticas (comisiones, etc) según el tipo de cuenta
     - Actualizar balance de la cuenta
@@ -164,4 +171,5 @@ gestionar cuentas bancarias
     - Registra el resultado en [mongodb: idempotency_log] con estado "COMPLETED"
     - Envía registro de transacción de retiro a [transaction-service: [POST] /v1/transactions]
     - Publicar evento [WithdrawAcceptedEvent] a [kafka: bank.withdraw.accepted]
+      - el "Idempotency-Key" se enviará en los headers hacia kafka
     - culmina con ack.acknowledge()

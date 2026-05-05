@@ -9,11 +9,13 @@ import org.bootcamp.transactionservice.controller.dto.TransactionResponseDto;
 import org.bootcamp.transactionservice.domain.Transaction;
 import org.bootcamp.transactionservice.mapper.TransactionMapper;
 import org.bootcamp.transactionservice.repository.mongo.TransactionRepository;
+import org.bootcamp.transactionservice.repository.mongo.document.TransactionDocument;
 import org.bootcamp.transactionservice.support.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.adapter.rxjava.RxJava3Adapter;
+import reactor.core.publisher.Flux;
 
 @Service
 @RequiredArgsConstructor
@@ -36,11 +38,33 @@ public class TransactionService {
       .map(transactionMapper::toResponseDto);
   }
 
-  public Single<List<TransactionResponseDto>> getTransactionsByAccountId(String accountId) {
-    return RxJava3Adapter.fluxToFlowable(transactionRepository.findBySourceAccountId(accountId))
+  public Single<List<TransactionResponseDto>> getTransactionsByAccountId(
+    String accountId, LocalDateTime startDate, LocalDateTime endDate) {
+    if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+      return Single.error(new ResponseStatusException(
+        HttpStatus.BAD_REQUEST, "startDate must be before or equal to endDate"));
+    }
+    return RxJava3Adapter.fluxToFlowable(findTransactions(accountId, startDate, endDate))
       .map(transactionMapper::toDomain)
       .map(transactionMapper::toResponseDto)
       .toList();
+  }
+
+  private Flux<TransactionDocument> findTransactions(
+    String accountId, LocalDateTime startDate, LocalDateTime endDate) {
+    if (startDate != null && endDate != null) {
+      return transactionRepository.findBySourceAccountIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+        accountId, startDate, endDate);
+    }
+    if (startDate != null) {
+      return transactionRepository.findBySourceAccountIdAndCreatedAtGreaterThanEqual(
+        accountId, startDate);
+    }
+    if (endDate != null) {
+      return transactionRepository.findBySourceAccountIdAndCreatedAtLessThanEqual(
+        accountId, endDate);
+    }
+    return transactionRepository.findBySourceAccountId(accountId);
   }
 
   private Single<Transaction> saveTransaction(String idempotencyKey, TransactionRequestDto requestDto) {

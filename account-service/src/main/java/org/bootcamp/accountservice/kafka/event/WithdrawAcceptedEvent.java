@@ -1,11 +1,11 @@
-package org.bootcamp.transactionorchestrator.kafka.event;
+package org.bootcamp.accountservice.kafka.event;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Builder;
-import org.bootcamp.transactionorchestrator.domain.AccountSubType;
-import org.bootcamp.transactionorchestrator.domain.AccountType;
-import org.bootcamp.transactionorchestrator.domain.Currency;
+import org.bootcamp.accountservice.domain.account.AccountSubType;
+import org.bootcamp.accountservice.domain.account.AccountType;
+import org.bootcamp.accountservice.domain.Currency;
 
 @Builder
 public record WithdrawAcceptedEvent(

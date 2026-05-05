@@ -15,6 +15,7 @@
         <module>account-service</module>
         <module>transaction-service</module>
         <module>card-service</module>
+        <module>transaction-orchestrator</module>
     </modules>
 
     <properties>
