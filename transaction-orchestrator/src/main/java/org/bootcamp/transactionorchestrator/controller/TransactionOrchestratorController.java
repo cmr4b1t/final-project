@@ -1,11 +1,16 @@
 package org.bootcamp.transactionorchestrator.controller;
 
 import io.reactivex.rxjava3.core.Single;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.transactionorchestrator.controller.dto.AccountTransactionRequestDto;
 import org.bootcamp.transactionorchestrator.controller.dto.AccountTransactionResponseDto;
+import org.bootcamp.transactionorchestrator.exception.ApiErrorResponse;
 import org.bootcamp.transactionorchestrator.service.TransactionOrchestratorService;
 import org.bootcamp.transactionorchestrator.support.Constants;
 import org.springframework.http.HttpStatus;
@@ -25,6 +30,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class TransactionOrchestratorController {
     private final TransactionOrchestratorService transactionOrchestratorService;
 
+    @Operation(
+        summary = "Orchestrate account deposit",
+        description = "Creates a pending deposit operation and publishes the deposit request event.",
+        responses = {
+            @ApiResponse(responseCode = "201", description = "Deposit operation requested"),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Invalid request body, account identifier or idempotency key",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+        })
     @PostMapping("/accounts/{accountId}/deposit")
     public Single<ResponseEntity<AccountTransactionResponseDto>> deposit(
         @RequestHeader(Constants.IDEMPOTENCY_KEY_HEADER) @NotBlank String idempotencyKey,
@@ -34,6 +49,16 @@ public class TransactionOrchestratorController {
             .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
 
+    @Operation(
+        summary = "Orchestrate account withdrawal",
+        description = "Creates a pending withdrawal operation and publishes the withdrawal request event.",
+        responses = {
+            @ApiResponse(responseCode = "201", description = "Withdrawal operation requested"),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Invalid request body, account identifier or idempotency key",
+                content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+        })
     @PostMapping("/accounts/{accountId}/withdraw")
     public Single<ResponseEntity<AccountTransactionResponseDto>> withdraw(
         @RequestHeader(Constants.IDEMPOTENCY_KEY_HEADER) @NotBlank String idempotencyKey,

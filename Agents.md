@@ -130,8 +130,8 @@ Gestionar clientes financieros y sus productos bancarios.
 - transaction-service: registrar transacciones (deposito, retiro, consumo, pagos)
 - card-service: gestionar tarjetas de débito y crédito
 - transaction-orchestrator: orquestar el flujo de transacciones (deposito, retiro, consumo)
-- loan-service: gestionar cuentas de préstamos
 - credit-card-account-service: gestionar cuentas de tarjetas de crédito
+- loan-service: gestionar cuentas de préstamos
 - payment-service: orquestar pagos de deuda de préstamos y tarjetas de crédito
 - statement-service: gestionar estados de cuenta de tarjetas de crédito
 - overdue-debt-service: gestionar deuda vencida
@@ -142,4 +142,6 @@ Gestionar clientes financieros y sus productos bancarios.
 - api-gateway
 
 ## Definiciones para respuestas de error
-- 
+- 400 Bad Request -> clase: ApiErrorResponse
+- 404 Not Found -> clase: ApiErrorResponse
+- 409 Conflict -> clase: ApiErrorResponse
