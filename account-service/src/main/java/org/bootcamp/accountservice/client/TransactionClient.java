@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.bootcamp.accountservice.client.dto.TransactionMovementResponseDto;
 import org.bootcamp.accountservice.domain.Currency;
 import org.bootcamp.accountservice.support.Constants;
 import org.springframework.core.ParameterizedTypeReference;
@@ -30,6 +31,23 @@ public class TransactionClient {
       .retrieve()
       .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
       .map(transactions -> (long) transactions.size());
+  }
+
+  public Mono<List<TransactionMovementResponseDto>> getMovementsByAccountId(
+    String accountId, LocalDateTime startDate, LocalDateTime endDate) {
+    return webClient.get()
+      .uri(uriBuilder -> {
+        var builder = uriBuilder.path("/v1/transactions/{accountId}");
+        if (startDate != null) {
+          builder.queryParam("startDate", startDate);
+        }
+        if (endDate != null) {
+          builder.queryParam("endDate", endDate);
+        }
+        return builder.build(accountId);
+      })
+      .retrieve()
+      .bodyToMono(new ParameterizedTypeReference<List<TransactionMovementResponseDto>>() {});
   }
 
   public Mono<Void> registerTransaction(

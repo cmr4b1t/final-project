@@ -5,6 +5,7 @@ import org.bootcamp.accountservice.controller.dto.CreateAccountRequestDto;
 import org.bootcamp.accountservice.domain.account.Account;
 import org.bootcamp.accountservice.repository.mongo.document.AccountDocument;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
@@ -18,5 +19,6 @@ public interface AccountMapper {
 
   Account toDomain(AccountDocument accountDocument);
 
+  @Mapping(source = "status", target = "accountStatus")
   AccountResponseDto toResponseDto(AccountDocument accountDocument);
 }

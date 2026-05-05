@@ -10,9 +10,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.accountservice.client.CustomerClient;
 import org.bootcamp.accountservice.client.dto.CustomerSummaryDto;
+import org.bootcamp.accountservice.client.TransactionClient;
+import org.bootcamp.accountservice.client.dto.TransactionMovementResponseDto;
 import org.bootcamp.accountservice.controller.dto.AccountResponseDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountRequestDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountResponseDto;
+import org.bootcamp.accountservice.controller.dto.UpdateAccountRequestDto;
 import org.bootcamp.accountservice.domain.account.Account;
 import org.bootcamp.accountservice.domain.account.AccountStatus;
 import org.bootcamp.accountservice.kafka.EventProducerService;
@@ -22,6 +25,7 @@ import org.bootcamp.accountservice.kafka.event.AccountCreatedEvent;
 import org.bootcamp.accountservice.mapper.AccountMapper;
 import org.bootcamp.accountservice.repository.mongo.AccountRepository;
 import org.bootcamp.accountservice.repository.mongo.IdempotencyLogRepository;
+import org.bootcamp.accountservice.repository.mongo.document.AccountDocument;
 import org.bootcamp.accountservice.repository.mongo.document.IdempotencyLogDocument;
 import org.bootcamp.accountservice.service.policies.AccountPolicies;
 import org.bootcamp.accountservice.service.strategy.AccountRuleStrategyFactory;
@@ -40,6 +44,7 @@ public class AccountService {
   private final IdempotencyLogRepository idempotencyLogRepository;
   private final AccountMapper accountMapper;
   private final CustomerClient customerClient;
+  private final TransactionClient transactionClient;
   private final EventProducerService eventProducerService;
   private final AccountRuleStrategyFactory businessRuleStrategyFactory;
   private final AccountPolicies accountPolicies;
@@ -171,5 +176,60 @@ public class AccountService {
       .map(accountMapper::toResponseDto)
       .switchIfEmpty(Single.error(new ResponseStatusException(
         HttpStatus.NOT_FOUND, "Account not found")));
+  }
+
+  public Single<AccountResponseDto> updateAccount(
+    @NotBlank String accountId, UpdateAccountRequestDto requestDto) {
+    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+      .switchIfEmpty(Single.error(new ResponseStatusException(
+        HttpStatus.NOT_FOUND, "Account not found")))
+      .map(accountDocument -> applyUpdate(accountDocument, requestDto))
+      .flatMap(accountDocument -> RxJava3Adapter.monoToSingle(accountRepository.save(accountDocument)))
+      .map(accountMapper::toResponseDto);
+  }
+
+  public Completable deleteAccount(@NotBlank String accountId) {
+    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+      .switchIfEmpty(Single.error(new ResponseStatusException(
+        HttpStatus.NOT_FOUND, "Account not found")))
+      .flatMapCompletable(accountDocument -> RxJava3Adapter.monoToCompletable(
+        accountRepository.delete(accountDocument)));
+  }
+
+  public Single<List<AccountResponseDto>> findAllAccountsByCustomerId(@NotBlank String customerId) {
+    return RxJava3Adapter.fluxToObservable(accountRepository.findByCustomerId(customerId))
+      .map(accountMapper::toResponseDto)
+      .toList();
+  }
+
+  public Single<List<TransactionMovementResponseDto>> getMovementsByAccountId(
+    @NotBlank String accountId, LocalDateTime startDate, LocalDateTime endDate) {
+    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+      .switchIfEmpty(Single.error(new ResponseStatusException(
+        HttpStatus.NOT_FOUND, "Account not found")))
+      .flatMap(account -> RxJava3Adapter.monoToSingle(
+        transactionClient.getMovementsByAccountId(accountId, startDate, endDate)));
+  }
+
+  private AccountDocument applyUpdate(AccountDocument accountDocument, UpdateAccountRequestDto requestDto) {
+    if (requestDto.getCurrency() != null) {
+      accountDocument.setCurrency(requestDto.getCurrency());
+    }
+    if (requestDto.getBalance() != null) {
+      accountDocument.setBalance(requestDto.getBalance());
+    }
+    if (requestDto.getHolders() != null) {
+      accountDocument.setHolders(Utils.normalizeList(requestDto.getHolders()));
+    }
+    if (requestDto.getAuthorizedSigners() != null) {
+      accountDocument.setAuthorizedSigners(Utils.normalizeList(requestDto.getAuthorizedSigners()));
+    }
+    if (requestDto.getFixedTransactionDay() != null) {
+      accountDocument.setFixedTransactionDay(requestDto.getFixedTransactionDay());
+    }
+    if (requestDto.getAccountStatus() != null) {
+      accountDocument.setStatus(requestDto.getAccountStatus());
+    }
+    return accountDocument;
   }
 }
