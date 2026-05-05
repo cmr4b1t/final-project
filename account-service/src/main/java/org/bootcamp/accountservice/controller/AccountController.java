@@ -4,7 +4,9 @@ import io.reactivex.rxjava3.core.Single;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.bootcamp.accountservice.controller.dto.AccountResponseDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountRequestDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountResponseDto;
 import org.bootcamp.accountservice.service.AccountService;
@@ -33,6 +35,19 @@ public class AccountController {
     @Valid @RequestBody CreateAccountRequestDto requestDto) {
     return accountService.createAccount(idempotencyKey, requestDto)
       .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
+  }
+
+  @GetMapping
+  public Single<ResponseEntity<List<AccountResponseDto>>> findAll() {
+    return accountService.findAll()
+      .map(ResponseEntity::ok);
+  }
+
+  @GetMapping("/{accountId}")
+  public Single<ResponseEntity<AccountResponseDto>> findAccountById(
+    @PathVariable @NotBlank String accountId) {
+    return accountService.findAccountById(accountId)
+      .map(ResponseEntity::ok);
   }
 
   @GetMapping("/{accountId}/balance")

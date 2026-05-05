@@ -1,5 +1,6 @@
 package org.bootcamp.accountservice.mapper;
 
+import org.bootcamp.accountservice.controller.dto.AccountResponseDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountRequestDto;
 import org.bootcamp.accountservice.domain.account.Account;
 import org.bootcamp.accountservice.repository.mongo.document.AccountDocument;
@@ -16,4 +17,6 @@ public interface AccountMapper {
   AccountDocument toDocument(Account account);
 
   Account toDomain(AccountDocument accountDocument);
+
+  AccountResponseDto toResponseDto(AccountDocument accountDocument);
 }

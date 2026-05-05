@@ -51,7 +51,7 @@ public class AccountCreatedConsumer {
     return idempotencyLogRepository
       .findByIdempotencyKeyAndOperationType(idempotencyKey, OperationType.CREATE_DEBIT_CARD)
       .hasElement()
-      .flatMap(exists -> exists ? Mono.empty() : processNewOperation(payload, idempotencyKey));
+      .flatMap(exists -> Boolean.TRUE.equals(exists) ? Mono.empty() : processNewOperation(payload, idempotencyKey));
   }
 
   private Mono<Void> processNewOperation(String payload, String idempotencyKey) {

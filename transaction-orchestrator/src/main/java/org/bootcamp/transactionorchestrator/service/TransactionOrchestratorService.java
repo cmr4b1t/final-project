@@ -28,41 +28,36 @@ public class TransactionOrchestratorService {
     String idempotencyKey, String accountId, AccountTransactionRequestDto requestDto) {
     return orchestrate(
       idempotencyKey,
-      accountId,
       requestDto,
       OperationType.DEPOSIT,
-      publishDepositRequestedEvent(idempotencyKey, accountId, requestDto));
+      Completable.defer(() -> publishDepositRequestedEvent(idempotencyKey, accountId, requestDto)));
   }
 
   public Single<AccountTransactionResponseDto> withdraw(
     String idempotencyKey, String accountId, AccountTransactionRequestDto requestDto) {
     return orchestrate(
       idempotencyKey,
-      accountId,
       requestDto,
       OperationType.WITHDRAW,
-      publishWithdrawRequestedEvent(idempotencyKey, accountId, requestDto));
+      Completable.defer(() -> publishWithdrawRequestedEvent(idempotencyKey, accountId, requestDto)));
   }
 
-  private Single<AccountTransactionResponseDto> orchestrate(
-    String idempotencyKey,
-    String accountId,
-    AccountTransactionRequestDto requestDto,
-    OperationType operationType,
-    Completable publishEvent) {
+  private Single<AccountTransactionResponseDto> orchestrate(String idempotencyKey,
+                                                            AccountTransactionRequestDto requestDto,
+                                                            OperationType operationType,
+                                                            Completable publishEvent) {
     return RxJava3Adapter.monoToMaybe(
         idempotencyLogRepository.findByIdempotencyKeyAndOperationType(idempotencyKey, operationType))
       .map(this::deserializeResponse)
-      .switchIfEmpty(savePendingOperation(idempotencyKey, accountId, requestDto, operationType, publishEvent));
+      .switchIfEmpty(
+        Single.defer(() -> savePendingOperation(idempotencyKey, requestDto, operationType, publishEvent)));
   }
 
-  private Single<AccountTransactionResponseDto> savePendingOperation(
-    String idempotencyKey,
-    String accountId,
-    AccountTransactionRequestDto requestDto,
-    OperationType operationType,
-    Completable publishEvent) {
-    AccountTransactionResponseDto response = buildPendingResponse(accountId, requestDto);
+  private Single<AccountTransactionResponseDto> savePendingOperation(String idempotencyKey,
+                                                                     AccountTransactionRequestDto requestDto,
+                                                                     OperationType operationType,
+                                                                     Completable publishEvent) {
+    AccountTransactionResponseDto response = buildPendingResponse(idempotencyKey, requestDto);
     IdempotencyLogDocument idempotencyLog = IdempotencyLogDocument.builder()
       .idempotencyKey(idempotencyKey)
       .operationType(operationType)
@@ -102,9 +97,9 @@ public class TransactionOrchestratorService {
   }
 
   private AccountTransactionResponseDto buildPendingResponse(
-    String accountId, AccountTransactionRequestDto requestDto) {
+    String idempotencyKey, AccountTransactionRequestDto requestDto) {
     return AccountTransactionResponseDto.builder()
-      .id(accountId)
+      .operationId(idempotencyKey)
       .operationStatus(OperationStatus.PENDING.name())
       .amount(requestDto.getAmount())
       .currency(requestDto.getCurrency())

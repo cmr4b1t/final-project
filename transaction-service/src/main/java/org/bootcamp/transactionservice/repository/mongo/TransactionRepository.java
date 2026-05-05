@@ -15,7 +15,7 @@ public interface TransactionRepository extends ReactiveMongoRepository<Transacti
 
   Flux<TransactionDocument> findBySourceAccountId(String sourceAccountId);
 
-  Flux<TransactionDocument> findBySourceAccountIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+  Flux<TransactionDocument> findBySourceAccountIdAndCreatedAtBetween(
     String sourceAccountId, LocalDateTime startDate, LocalDateTime endDate);
 
   Flux<TransactionDocument> findBySourceAccountIdAndCreatedAtGreaterThanEqual(

@@ -2,6 +2,7 @@ package org.bootcamp.accountservice.kafka;
 
 import io.reactivex.rxjava3.core.Completable;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bootcamp.accountservice.kafka.event.AccountActivatedEvent;
 import org.bootcamp.accountservice.kafka.event.AccountCreatedEvent;
 import org.bootcamp.accountservice.kafka.event.DepositAcceptedEvent;
@@ -16,6 +17,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventProducerService {
@@ -40,6 +42,8 @@ public class EventProducerService {
   private String withdrawRejectedTopic;
 
   public Completable publishAccountCreatedEvent(String idempotencyKey, AccountCreatedEvent event) {
+    log.info("Publishing account created event. idempotencyKey={}, event={}",
+      idempotencyKey, event);
     Message<AccountCreatedEvent> message = MessageBuilder.withPayload(event)
       .setHeader(KafkaHeaders.TOPIC, accountCreatedTopic)
       .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
@@ -49,6 +53,8 @@ public class EventProducerService {
   }
 
   public Completable publishAccountActivatedEvent(String idempotencyKey, AccountActivatedEvent event) {
+    log.info("Publishing account activated event. idempotencyKey={}, event={}",
+      idempotencyKey, event);
     Message<AccountActivatedEvent> message = MessageBuilder.withPayload(event)
       .setHeader(KafkaHeaders.TOPIC, accountActivatedTopic)
       .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
@@ -58,6 +64,8 @@ public class EventProducerService {
   }
 
   public Completable publishDepositAcceptedEvent(String idempotencyKey, DepositAcceptedEvent event) {
+    log.info("Publishing deposit accepted event. idempotencyKey={}, event={}",
+      idempotencyKey, event);
     Message<DepositAcceptedEvent> message = MessageBuilder.withPayload(event)
       .setHeader(KafkaHeaders.TOPIC, depositAcceptedTopic)
       .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
@@ -67,6 +75,8 @@ public class EventProducerService {
   }
 
   public Completable publishDepositRejectedEvent(String idempotencyKey, DepositRejectedEvent event) {
+    log.info("Publishing deposit rejected event. idempotencyKey={}, event={}",
+      idempotencyKey, event);
     Message<DepositRejectedEvent> message = MessageBuilder.withPayload(event)
       .setHeader(KafkaHeaders.TOPIC, depositRejectedTopic)
       .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
@@ -76,6 +86,8 @@ public class EventProducerService {
   }
 
   public Completable publishWithdrawAcceptedEvent(String idempotencyKey, WithdrawAcceptedEvent event) {
+    log.info("Publishing withdraw accepted event. idempotencyKey={}, event={}",
+      idempotencyKey, event);
     Message<WithdrawAcceptedEvent> message = MessageBuilder.withPayload(event)
       .setHeader(KafkaHeaders.TOPIC, withdrawAcceptedTopic)
       .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
@@ -85,6 +97,8 @@ public class EventProducerService {
   }
 
   public Completable publishWithdrawRejectedEvent(String idempotencyKey, WithdrawRejectedEvent event) {
+    log.info("Publishing withdraw rejected event. idempotencyKey={}, event={}",
+      idempotencyKey, event);
     Message<WithdrawRejectedEvent> message = MessageBuilder.withPayload(event)
       .setHeader(KafkaHeaders.TOPIC, withdrawRejectedTopic)
       .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)

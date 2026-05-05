@@ -17,7 +17,7 @@ import org.bootcamp.transactionorchestrator.domain.Currency;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountTransactionResponseDto {
-  private String id;
+  private String operationId;
   private String operationStatus;
   private BigDecimal amount;
   private Currency currency;

@@ -53,7 +53,7 @@ public class TransactionService {
   private Flux<TransactionDocument> findTransactions(
     String accountId, LocalDateTime startDate, LocalDateTime endDate) {
     if (startDate != null && endDate != null) {
-      return transactionRepository.findBySourceAccountIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+      return transactionRepository.findBySourceAccountIdAndCreatedAtBetween(
         accountId, startDate, endDate);
     }
     if (startDate != null) {

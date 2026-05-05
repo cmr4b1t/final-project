@@ -30,6 +30,8 @@ public class WithdrawAcceptedConsumer {
   public void listen(ConsumerRecord<String, String> consumerRecord,
                      @Header(Constants.IDEMPOTENCY_KEY_HEADER) String idempotencyKey,
                      Acknowledgment ack) {
+    log.info("Received withdraw accepted event. idempotencyKey={}, offset={}",
+      idempotencyKey, consumerRecord.offset());
     processWithdrawAccepted(consumerRecord.value(), idempotencyKey)
       .doOnSuccess(unused -> ack.acknowledge())
       .doOnError(error -> log.error(
@@ -58,16 +60,16 @@ public class WithdrawAcceptedConsumer {
 
     WithdrawAcceptedEvent event = IdempotencyUtils.deserializeResponse(payload, WithdrawAcceptedEvent.class);
     idempotencyLog.setStatus(OperationStatus.COMPLETED);
-    idempotencyLog.setResponseBody(buildCompletedResponseBody(idempotencyLog.getResponseBody(), event));
+    idempotencyLog.setResponseBody(buildCompletedResponseBody(idempotencyLog, event));
 
     return idempotencyLogRepository.save(idempotencyLog).then();
   }
 
-  private String buildCompletedResponseBody(String currentResponseBody, WithdrawAcceptedEvent event) {
+  private String buildCompletedResponseBody(IdempotencyLogDocument idempotencyLog, WithdrawAcceptedEvent event) {
     AccountTransactionResponseDto responseDto =
-      IdempotencyUtils.deserializeResponse(currentResponseBody, AccountTransactionResponseDto.class);
+      IdempotencyUtils.deserializeResponse(idempotencyLog.getResponseBody(), AccountTransactionResponseDto.class);
     responseDto.setOperationStatus(OperationStatus.COMPLETED.name());
-    responseDto.setId(event.accountId());
+    responseDto.setOperationId(idempotencyLog.getIdempotencyKey());
     responseDto.setCustomerId(event.customerId());
     responseDto.setAccountType(event.accountType());
     responseDto.setAccountSubType(event.accountSubType());

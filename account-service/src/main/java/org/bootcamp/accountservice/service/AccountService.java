@@ -3,11 +3,14 @@ package org.bootcamp.accountservice.service;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
+import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.accountservice.client.CustomerClient;
 import org.bootcamp.accountservice.client.dto.CustomerSummaryDto;
+import org.bootcamp.accountservice.controller.dto.AccountResponseDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountRequestDto;
 import org.bootcamp.accountservice.controller.dto.CreateAccountResponseDto;
 import org.bootcamp.accountservice.domain.account.Account;
@@ -44,7 +47,7 @@ public class AccountService {
   public Single<CreateAccountResponseDto> createAccount(
     String idempotencyKey, CreateAccountRequestDto requestDto) {
     return findExistingOperation(idempotencyKey)
-      .switchIfEmpty(customerClient.findByCustomerId(requestDto.getCustomerId())
+      .switchIfEmpty(Single.defer(() -> customerClient.findByCustomerId(requestDto.getCustomerId()))
         .flatMap(customer -> validateBusinessRules(customer, requestDto))
         .map(customer -> buildAccount(requestDto))
         .flatMap(this::saveAccount)
@@ -84,6 +87,7 @@ public class AccountService {
     account.setCreatedAt(createdAt);
     account.setHolders(Utils.normalizeList(requestDto.getHolders()));
     account.setAuthorizedSigners(Utils.normalizeList(requestDto.getAuthorizedSigners()));
+    account.setFixedTransactionDay(requestDto.getFixedTransactionDay());
     account.setUnlimitedTransactions(accountPolicies.resolveHasUnlimitedTransactions(requestDto.getAccountType()));
     account.setMonthlyTransactionsLimit(accountPolicies.resolveMonthlyTransactionsLimit(requestDto.getAccountType()));
     account.setMonthlyTransactionsLimitWithoutCommission(
@@ -154,5 +158,18 @@ public class AccountService {
       .build();
 
     return eventProducerService.publishAccountCreatedEvent(idempotencyKey, event);
+  }
+
+  public Single<List<AccountResponseDto>> findAll() {
+    return RxJava3Adapter.fluxToObservable(accountRepository.findAll())
+      .map(accountMapper::toResponseDto)
+      .toList();
+  }
+
+  public Single<AccountResponseDto> findAccountById(@NotBlank String accountId) {
+    return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
+      .map(accountMapper::toResponseDto)
+      .switchIfEmpty(Single.error(new ResponseStatusException(
+        HttpStatus.NOT_FOUND, "Account not found")));
   }
 }

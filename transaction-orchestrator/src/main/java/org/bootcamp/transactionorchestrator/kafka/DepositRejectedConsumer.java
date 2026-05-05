@@ -30,6 +30,8 @@ public class DepositRejectedConsumer {
   public void listen(ConsumerRecord<String, String> consumerRecord,
                      @Header(Constants.IDEMPOTENCY_KEY_HEADER) String idempotencyKey,
                      Acknowledgment ack) {
+    log.info("Received deposit rejected event. idempotencyKey={}, offset={}",
+      idempotencyKey, consumerRecord.offset());
     processDepositRejected(consumerRecord.value(), idempotencyKey)
       .doOnSuccess(unused -> ack.acknowledge())
       .doOnError(error -> log.error(
@@ -58,16 +60,16 @@ public class DepositRejectedConsumer {
 
     DepositRejectedEvent event = IdempotencyUtils.deserializeResponse(payload, DepositRejectedEvent.class);
     idempotencyLog.setStatus(OperationStatus.FAILED);
-    idempotencyLog.setResponseBody(buildFailedResponseBody(idempotencyLog.getResponseBody(), event));
+    idempotencyLog.setResponseBody(buildFailedResponseBody(idempotencyLog, event));
 
     return idempotencyLogRepository.save(idempotencyLog).then();
   }
 
-  private String buildFailedResponseBody(String currentResponseBody, DepositRejectedEvent event) {
+  private String buildFailedResponseBody(IdempotencyLogDocument idempotencyLog, DepositRejectedEvent event) {
     AccountTransactionResponseDto responseDto =
-      IdempotencyUtils.deserializeResponse(currentResponseBody, AccountTransactionResponseDto.class);
+      IdempotencyUtils.deserializeResponse(idempotencyLog.getResponseBody(), AccountTransactionResponseDto.class);
     responseDto.setOperationStatus(OperationStatus.FAILED.name());
-    responseDto.setId(event.accountId());
+    responseDto.setOperationId(idempotencyLog.getIdempotencyKey());
     responseDto.setCustomerId(event.customerId());
     responseDto.setAccountType(event.accountType());
     responseDto.setAccountSubType(event.accountSubType());

@@ -46,6 +46,8 @@ public class DepositRequestedConsumer {
   public void listen(ConsumerRecord<String, String> consumerRecord,
                      @Header(Constants.IDEMPOTENCY_KEY_HEADER) String idempotencyKey,
                      Acknowledgment ack) {
+    log.info("Received deposit requested event. idempotencyKey={}, offset={}",
+      idempotencyKey, consumerRecord.offset());
     processDepositRequested(consumerRecord.value(), idempotencyKey)
       .doOnSuccess(unused -> ack.acknowledge())
       .doOnError(error -> log.error(
@@ -64,8 +66,11 @@ public class DepositRequestedConsumer {
   private Mono<Void> processNewRequest(String payload, String idempotencyKey) {
     DepositRequestedEvent event = IdempotencyUtils.deserializeResponse(payload, DepositRequestedEvent.class);
     return accountRepository.findByAccountId(event.accountId())
-      .flatMap(account -> processAccountDeposit(idempotencyKey, event, account))
-      .switchIfEmpty(rejectDeposit(idempotencyKey, event, null, "Account not found"));
+      .switchIfEmpty(Mono.defer(() ->
+        rejectDeposit(idempotencyKey, event, null, "Account not found: " + event.accountId())
+          .then(Mono.empty())
+      ))
+      .flatMap(account -> processAccountDeposit(idempotencyKey, event, account));
   }
 
   private Mono<Void> processAccountDeposit(String idempotencyKey, 

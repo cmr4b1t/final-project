@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bootcamp.customerservice.application.port.out.CustomerRepositoryPort;
 import org.bootcamp.customerservice.domain.model.Customer;
+import org.bootcamp.customerservice.infrastructure.mongo.document.CustomerDocument;
 import org.bootcamp.customerservice.infrastructure.mongo.mapper.CustomerPersistenceMapper;
 import org.bootcamp.customerservice.infrastructure.mongo.repository.CustomerRepository;
 import org.springframework.stereotype.Repository;
@@ -22,7 +23,14 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
 
   @Override
   public Single<Customer> save(Customer customer) {
-    return RxJava3Adapter.monoToSingle(customerRepository.save(customerPersistenceMapper.toDocument(customer)))
+    return RxJava3Adapter.monoToMaybe(customerRepository.findByCustomerId(customer.getCustomerId()))
+      .map(existing -> {
+        CustomerDocument toSave = customerPersistenceMapper.toDocument(customer);
+        toSave.setId(existing.getId());
+        return toSave;
+      })
+      .defaultIfEmpty(customerPersistenceMapper.toDocument(customer))
+      .flatMap(toSave -> RxJava3Adapter.monoToSingle(customerRepository.save(toSave)))
       .map(customerPersistenceMapper::toDomain);
   }
 
@@ -34,12 +42,14 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
 
   @Override
   public Observable<Customer> findAll() {
-    return null;
+    return RxJava3Adapter.fluxToObservable(customerRepository.findAll())
+      .map(customerPersistenceMapper::toDomain);
   }
 
   @Override
   public Completable delete(String customerId) {
-    return null;
+    return RxJava3Adapter.monoToCompletable(customerRepository.findByCustomerId(customerId)
+      .flatMap(customerRepository::delete));
   }
 
   @Override

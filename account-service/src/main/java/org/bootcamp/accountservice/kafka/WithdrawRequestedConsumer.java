@@ -46,6 +46,8 @@ public class WithdrawRequestedConsumer {
   public void listen(ConsumerRecord<String, String> consumerRecord,
                      @Header(Constants.IDEMPOTENCY_KEY_HEADER) String idempotencyKey,
                      Acknowledgment ack) {
+    log.info("Received withdraw requested event. idempotencyKey={}, offset={}",
+      idempotencyKey, consumerRecord.offset());
     processWithdrawRequested(consumerRecord.value(), idempotencyKey)
       .doOnSuccess(unused -> ack.acknowledge())
       .doOnError(error -> log.error(
@@ -64,8 +66,11 @@ public class WithdrawRequestedConsumer {
   private Mono<Void> processNewRequest(String payload, String idempotencyKey) {
     WithdrawRequestedEvent event = IdempotencyUtils.deserializeResponse(payload, WithdrawRequestedEvent.class);
     return accountRepository.findByAccountId(event.accountId())
-      .flatMap(account -> processAccountWithdraw(idempotencyKey, event, account))
-      .switchIfEmpty(rejectWithdraw(idempotencyKey, event, null, "Account not found"));
+      .switchIfEmpty(Mono.defer(() ->
+        rejectWithdraw(idempotencyKey, event, null, "Account not found: " + event.accountId())
+          .then(Mono.empty())
+      ))
+      .flatMap(account -> processAccountWithdraw(idempotencyKey, event, account));
   }
 
   private Mono<Void> processAccountWithdraw(String idempotencyKey,
@@ -146,11 +151,10 @@ public class WithdrawRequestedConsumer {
         eventProducerService.publishWithdrawAcceptedEvent(idempotencyKey, acceptedEvent)));
   }
 
-  private Mono<Void> rejectWithdraw(
-    String idempotencyKey,
-    WithdrawRequestedEvent event,
-    AccountDocument account,
-    String description) {
+  private Mono<Void> rejectWithdraw(String idempotencyKey,
+                                    WithdrawRequestedEvent event,
+                                    AccountDocument account,
+                                    String description) {
     WithdrawRejectedEvent rejectedEvent = WithdrawRejectedEvent.builder()
       .accountId(event.accountId())
       .customerId(account == null ? null : account.getCustomerId())
