@@ -3,6 +3,7 @@ package org.bootcamp.cardservice.service;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.cardservice.controller.dto.CardResponseDto;
 import org.bootcamp.cardservice.controller.dto.CreateCardRequestDto;
@@ -49,6 +50,13 @@ public class CardService {
 
   public Single<CardResponseDto> findCreditByCardId(String cardId) {
     return findByCardIdAndType(cardId, CardType.CREDIT);
+  }
+
+  public Single<List<CardResponseDto>> findAllCardsByCustomerId(String customerId) {
+    return RxJava3Adapter.fluxToObservable(cardRepository.findByCustomerId(customerId))
+      .map(cardMapper::toDomain)
+      .map(cardMapper::toCardResponseDto)
+      .toList();
   }
 
   public Single<CardResponseDto> updateDebit(String cardId, UpdateCardRequestDto requestDto) {
