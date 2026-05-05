@@ -38,6 +38,20 @@ public class TransactionService {
       .map(transactionMapper::toResponseDto);
   }
 
+  public Single<List<TransactionResponseDto>> findAllTransactions() {
+    return RxJava3Adapter.fluxToFlowable(transactionRepository.findAll())
+      .map(transactionMapper::toDomain)
+      .map(transactionMapper::toResponseDto)
+      .toList();
+  }
+
+  public Single<List<TransactionResponseDto>> findTransactionsByCustomerId(String customerId) {
+    return RxJava3Adapter.fluxToFlowable(transactionRepository.findByCustomerId(customerId))
+      .map(transactionMapper::toDomain)
+      .map(transactionMapper::toResponseDto)
+      .toList();
+  }
+
   public Single<List<TransactionResponseDto>> getTransactionsByAccountId(
     String accountId, LocalDateTime startDate, LocalDateTime endDate) {
     if (startDate != null && endDate != null && startDate.isAfter(endDate)) {

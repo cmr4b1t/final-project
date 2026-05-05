@@ -38,6 +38,12 @@ public class TransactionController {
       .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
   }
 
+  @GetMapping
+  public Single<ResponseEntity<List<TransactionResponseDto>>> findAllTransactions() {
+    return transactionService.findAllTransactions()
+      .map(ResponseEntity::ok);
+  }
+
   @GetMapping("/{accountId}")
   public Single<ResponseEntity<List<TransactionResponseDto>>> getTransactionsByAccountId(
     @PathVariable @NotBlank String accountId,
@@ -46,6 +52,13 @@ public class TransactionController {
     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     LocalDateTime endDate) {
     return transactionService.getTransactionsByAccountId(accountId, startDate, endDate)
+      .map(ResponseEntity::ok);
+  }
+
+  @GetMapping("/customers/{customerId}")
+  public Single<ResponseEntity<List<TransactionResponseDto>>> findTransactionsByCustomerId(
+    @PathVariable @NotBlank String customerId) {
+    return transactionService.findTransactionsByCustomerId(customerId)
       .map(ResponseEntity::ok);
   }
 
