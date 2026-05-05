@@ -1,4 +1,49 @@
 services:
+  # Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.13
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    restart: unless-stopped
+    ports:
+      - "2181:2181"
+    networks:
+      - bootcamp-network
+    healthcheck:
+      test: [ "CMD", "bash", "-lc", "echo ruok | nc -w 2 127.0.0.1 2181 | grep imok || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Kafka
+  kafka:
+    image: confluentinc/cp-kafka:7.4.13
+    container_name: kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "9092:9092"
+    networks:
+      - bootcamp-network
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "bash", "-lc", "kafka-topics --bootstrap-server localhost:9092 --list >/dev/null 2>&1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
   # MongoDB
   mongo-db:
     image: mongo:7
@@ -50,7 +95,6 @@ services:
       retries: 5
       start_period: 30s
 
-  # customer-service
   customer-service:
     build: ./customer-service
     container_name: customer-service
@@ -59,16 +103,112 @@ services:
     networks:
       - bootcamp-network
     depends_on:
-      config-server:
+      kafka:
         condition: service_healthy
       mongo-db:
         condition: service_started
+      config-server:
+        condition: service_healthy
     environment:
       - SERVER_PORT=8081
       - CONFIG_SERVER_URL=http://config-server:8888
       - MONGO_URI=mongodb://bootcamp-mongodb:27017/customer-db
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - HOSTNAME=customer-service
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_CONSUMER_GROUP_ID=customer.consumer
+
+  account-service:
+    build: ./account-service
+    container_name: account-service
+    ports:
+      - "8082:8082"
+    networks:
+      - bootcamp-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mongo-db:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=8082
+      - CONFIG_SERVER_URL=http://config-server:8888
+      - MONGO_URI=mongodb://bootcamp-mongodb:27017/account-db
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - HOSTNAME=account-service
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_CONSUMER_GROUP_ID=account.consumer
+      - CLIENTS_CUSTOMER_SERVICE_BASE_URL=http://customer-service:8081
+      - CLIENTS_TRANSACTION_SERVICE_BASE_URL=http://transaction-service:8083
+
+  transaction-service:
+    build: ./transaction-service
+    container_name: transaction-service
+    ports:
+      - "8083:8083"
+    networks:
+      - bootcamp-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mongo-db:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=8083
+      - CONFIG_SERVER_URL=http://config-server:8888
+      - MONGO_URI=mongodb://bootcamp-mongodb:27017/transaction-db
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - HOSTNAME=transaction-service
+
+  card-service:
+    build: ./card-service
+    container_name: card-service
+    ports:
+      - "8084:8084"
+    networks:
+      - bootcamp-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mongo-db:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=8084
+      - CONFIG_SERVER_URL=http://config-server:8888
+      - MONGO_URI=mongodb://bootcamp-mongodb:27017/transaction-db
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - HOSTNAME=card-service
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_CONSUMER_GROUP_ID=card.consumer
+
+  transaction-orchestrator:
+    build: ./transaction-orchestrator
+    container_name: transaction-orchestrator
+    ports:
+      - "8085:8085"
+    networks:
+      - bootcamp-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mongo-db:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=8085
+      - CONFIG_SERVER_URL=http://config-server:8888
+      - MONGO_URI=mongodb://bootcamp-mongodb:27017/transaction-orchestrator-db
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - HOSTNAME=transaction-orchestrator
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_CONSUMER_GROUP_ID=transaction-orchestrator.consumer
 
 networks:
   bootcamp-network:
