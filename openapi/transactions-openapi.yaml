@@ -1,0 +1,247 @@
+openapi: 3.0.3
+info:
+  title: Transactions API
+  version: v1.0.0
+  description: ''
+servers:
+  - url: http://localhost:8083
+    description: Local
+paths:
+  /v1/transactions:
+    get:
+      tags:
+        - Transactions
+      summary: List transactions
+      description: Returns all registered transactions.
+      operationId: findAllTransactions
+      responses:
+        '200':
+          description: Transactions returned
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponseDto'
+        '500':
+          description: Unexpected error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    post:
+      tags:
+        - Transactions
+      summary: Register transaction
+      description: Registers a deposit, withdrawal, transfer, consumption or payment transaction.
+      operationId: registerTransaction
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Transaction registered
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TransactionResponseDto'
+        '400':
+          description: Invalid request body or idempotency key
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Transaction already registered for the idempotency key
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Unexpected error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/transactions/{accountId}:
+    get:
+      tags:
+        - Transactions
+      summary: List account transactions
+      description: Returns transactions for an account, optionally filtered by date range.
+      operationId: getTransactionsByAccountId
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Account transactions returned
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponseDto'
+        '400':
+          description: Invalid account identifier or date range
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Unexpected error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/transactions/customers/{customerId}:
+    get:
+      tags:
+        - Transactions
+      summary: List customer transactions
+      description: Returns all transactions registered for a customer.
+      operationId: findTransactionsByCustomerId
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Customer transactions returned
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponseDto'
+        '400':
+          description: Invalid customer identifier
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Unexpected error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          format: int32
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+    TransactionRequestDto:
+      type: object
+      properties:
+        transactionType:
+          type: string
+          enum:
+            - WITHDRAW
+            - DEPOSIT
+            - PURCHASE
+            - CREDIT_CARD_PAYMENT
+            - DISBURSEMENT
+            - LOAN_PAYMENT
+        sourceAccountId:
+          type: string
+          minLength: 1
+        customerId:
+          type: string
+          minLength: 1
+        amount:
+          type: number
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        commission:
+          type: number
+        note:
+          type: string
+        statementId:
+          type: string
+      required:
+        - amount
+        - currency
+        - customerId
+        - sourceAccountId
+        - transactionType
+    TransactionResponseDto:
+      type: object
+      properties:
+        transactionId:
+          type: string
+        transactionType:
+          type: string
+          enum:
+            - WITHDRAW
+            - DEPOSIT
+            - PURCHASE
+            - CREDIT_CARD_PAYMENT
+            - DISBURSEMENT
+            - LOAN_PAYMENT
+        sourceAccountId:
+          type: string
+        customerId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        commission:
+          type: number
+        note:
+          type: string
+        statementId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time

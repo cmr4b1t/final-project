@@ -1,0 +1,521 @@
+openapi: 3.0.3
+info:
+  title: Accounts API
+  version: v1.0.0
+  description: ''
+servers:
+  - url: http://localhost:8082
+    description: Local
+paths:
+  /v1/accounts/{accountId}:
+    get:
+      tags:
+        - Accounts
+      summary: Find bank account by ID
+      description: Returns a bank account using its business identifier.
+      operationId: findAccountById
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Account found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountResponseDto'
+        '400':
+          description: Invalid account identifier
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    put:
+      tags:
+        - Accounts
+      summary: Update bank account
+      description: Updates mutable data of an existing bank account.
+      operationId: updateAccount
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAccountRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Account updated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountResponseDto'
+        '400':
+          description: Invalid request body or account identifier
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    delete:
+      tags:
+        - Accounts
+      summary: Delete bank account
+      description: Deletes an existing bank account.
+      operationId: deleteAccount
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '204':
+          description: Account deleted
+        '400':
+          description: Invalid account identifier
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/accounts:
+    get:
+      tags:
+        - Accounts
+      summary: List bank accounts
+      description: Returns all registered bank accounts.
+      operationId: findAll
+      responses:
+        '200':
+          description: Accounts returned
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountResponseDto'
+    post:
+      tags:
+        - Accounts
+      summary: Create bank account
+      description: Creates a bank account request and publishes the account creation event.
+      operationId: createAccount
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Account creation requested
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreateAccountResponseDto'
+        '400':
+          description: Invalid request body, idempotency key or business input
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Related customer was not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Business rule conflict for account creation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/accounts/{accountId}/movements:
+    get:
+      tags:
+        - Accounts
+      summary: List account movements
+      description: Returns account movements, optionally filtered by date range.
+      operationId: getMovementsByAccountId
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Account movements returned
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionMovementResponseDto'
+        '400':
+          description: Invalid account identifier or date query parameters
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/accounts/{accountId}/balance:
+    get:
+      tags:
+        - Accounts
+      summary: Get available account balance
+      description: Returns the current available balance for a bank account.
+      operationId: findAvailableBalance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Available balance returned
+          content:
+            '*/*':
+              schema:
+                type: number
+        '400':
+          description: Invalid account identifier
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/accounts/customers/{customerId}:
+    get:
+      tags:
+        - Accounts
+      summary: List customer bank accounts
+      description: Returns all bank accounts owned by a customer.
+      operationId: findAllAccountsByCustomerId
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Customer accounts returned
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountResponseDto'
+        '400':
+          description: Invalid customer identifier
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          format: int32
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+    UpdateAccountRequestDto:
+      type: object
+      properties:
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        balance:
+          type: number
+        holders:
+          type: array
+          items:
+            type: string
+        authorizedSigners:
+          type: array
+          items:
+            type: string
+        fixedTransactionDay:
+          type: integer
+          format: int32
+        accountStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - CLOSED
+    AccountResponseDto:
+      type: object
+      properties:
+        accountId:
+          type: string
+        customerId:
+          type: string
+        accountType:
+          type: string
+          enum:
+            - SAVINGS
+            - CHECKING
+            - FIXED_TERM
+        accountSubType:
+          type: string
+          enum:
+            - STANDARD
+            - VIP
+            - PYME
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        balance:
+          type: number
+        holders:
+          type: array
+          items:
+            type: string
+        authorizedSigners:
+          type: array
+          items:
+            type: string
+        fixedTransactionDay:
+          type: integer
+          format: int32
+        unlimitedTransactions:
+          type: boolean
+        monthlyTransactionsLimit:
+          type: integer
+          format: int32
+        monthlyTransactionsLimitWithoutCommission:
+          type: integer
+          format: int32
+        transactionCommission:
+          type: number
+        maintenanceCommission:
+          type: number
+        allowedMinimumBalance:
+          type: number
+        accountStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - CLOSED
+        createdAt:
+          type: string
+          format: date-time
+    CreateAccountRequestDto:
+      type: object
+      properties:
+        customerId:
+          type: string
+          minLength: 1
+        accountType:
+          type: string
+          enum:
+            - SAVINGS
+            - CHECKING
+            - FIXED_TERM
+        accountSubType:
+          type: string
+          enum:
+            - STANDARD
+            - VIP
+            - PYME
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        openingBalance:
+          type: number
+        holders:
+          type: array
+          items:
+            type: string
+        authorizedSigners:
+          type: array
+          items:
+            type: string
+        fixedTransactionDay:
+          type: integer
+          format: int32
+      required:
+        - accountSubType
+        - accountType
+        - currency
+        - customerId
+        - openingBalance
+    CreateAccountResponseDto:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - PENDING
+            - COMPLETED
+            - FAILED
+        createdAt:
+          type: string
+          format: date-time
+        accountId:
+          type: string
+        customerId:
+          type: string
+        accountType:
+          type: string
+          enum:
+            - SAVINGS
+            - CHECKING
+            - FIXED_TERM
+        accountSubType:
+          type: string
+          enum:
+            - STANDARD
+            - VIP
+            - PYME
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        balance:
+          type: number
+        holders:
+          type: array
+          items:
+            type: string
+        authorizedSigners:
+          type: array
+          items:
+            type: string
+        fixedTransactionDay:
+          type: integer
+          format: int32
+        unlimitedTransactions:
+          type: boolean
+        monthlyTransactionsLimit:
+          type: integer
+          format: int32
+        monthlyTransactionsLimitWithoutCommission:
+          type: integer
+          format: int32
+        transactionCommission:
+          type: number
+        maintenanceCommission:
+          type: number
+        allowedMinimumBalance:
+          type: number
+        accountStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - CLOSED
+    TransactionMovementResponseDto:
+      type: object
+      properties:
+        transactionId:
+          type: string
+        transactionType:
+          type: string
+        sourceAccountId:
+          type: string
+        customerId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        commission:
+          type: number
+        note:
+          type: string
+        statementId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time

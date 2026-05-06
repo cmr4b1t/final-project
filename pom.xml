@@ -16,6 +16,8 @@
         <module>transaction-service</module>
         <module>card-service</module>
         <module>transaction-orchestrator</module>
+        <module>auth-service</module>
+        <module>api-gateway</module>
     </modules>
 
     <properties>

@@ -97,6 +97,48 @@ services:
       retries: 5
       start_period: 15s
 
+  # api-gateway
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - bootcamp-network
+    depends_on:
+      config-server:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=8080
+      - CONFIG_SERVER_URL=http://config-server:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - JWT_SECRET_KEY=ABCDE-7242d1d4-a327-4ec3-af96-3eff35cc8553
+      - HOSTNAME=api-gateway
+      - AUTH_SERVICE_BASE_URL=http://auth-service:8181
+      - CUSTOMER_SERVICE_BASE_URL=http://customer-service:8081
+      - ACCOUNT_SERVICE_BASE_URL=http://account-service:8082
+      - TRANSACTION_SERVICE_BASE_URL=http://transaction-service:8083
+      - CARD_SERVICE_BASE_URL=http://card-service:8084
+      - TRANSACTION_ORCHESTRATOR_BASE_URL=http://transaction-orchestrator:8085
+
+  # auth-service
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8181:8181"
+    networks:
+      - bootcamp-network
+    depends_on:
+      config-server:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=8181
+      - CONFIG_SERVER_URL=http://config-server:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - JWT_SECRET_KEY=ABCDE-7242d1d4-a327-4ec3-af96-3eff35cc8553
+      - HOSTNAME=auth-service
+
   customer-service:
     build: ./customer-service
     container_name: customer-service

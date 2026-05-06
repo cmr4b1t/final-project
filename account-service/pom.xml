@@ -231,8 +231,8 @@
                 </executions>
             </plugin>
 
-            <!-- Code coverage -->
-            <!--<plugin>
+
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
@@ -281,7 +281,7 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.9</minimum>
+                                            <minimum>0.2</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
@@ -289,7 +289,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
         </plugins>
     </build>
 

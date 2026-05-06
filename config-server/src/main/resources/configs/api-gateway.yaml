@@ -1,0 +1,49 @@
+jwt:
+  secret: ${JWT_SECRET_KEY:ABCDE-7242d1d4-a327-4ec3-af96-3eff35cc8553}
+
+spring:
+  cloud:
+    gateway:
+      routes:
+
+        - id: auth-service
+          uri: ${AUTH_SERVICE_BASE_URL:http://localhost:8181}
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - StripPrefix=1
+
+        - id: customer-service
+          uri: ${CUSTOMER_SERVICE_BASE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/customers/**
+          filters:
+            - StripPrefix=1
+
+        - id: account-service
+          uri: ${ACCOUNT_SERVICE_BASE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/accounts/**
+          filters:
+            - StripPrefix=1
+
+        - id: transaction-service
+          uri: ${TRANSACTION_SERVICE_BASE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/v1/transactions/**
+          filters:
+            - StripPrefix=1
+
+        - id: card-service
+          uri: ${CARD_SERVICE_BASE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/cards/**
+          filters:
+            - StripPrefix=1
+
+        - id: transaction-orchestrator
+          uri: ${TRANSACTION_ORCHESTRATOR_BASE_URL:http://localhost:8085}
+          predicates:
+            - Path=/api/v1/transaction-orchestrator/**
+          filters:
+            - StripPrefix=1

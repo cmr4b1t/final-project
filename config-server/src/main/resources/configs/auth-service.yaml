@@ -1,0 +1,9 @@
+jwt:
+  secret: ${JWT_SECRET_KEY:ABCDE-7242d1d4-a327-4ec3-af96-3eff35cc8553}
+  expiration: 3600000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

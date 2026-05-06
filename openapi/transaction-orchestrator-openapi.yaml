@@ -1,0 +1,161 @@
+openapi: 3.0.3
+info:
+  title: Transaction Orchestrator API
+  version: v1.0.0
+  description: ''
+servers:
+  - url: http://localhost:8085
+    description: Local
+paths:
+  /v1/transaction-orchestrator/accounts/{accountId}/withdraw:
+    post:
+      tags:
+        - Transaction Orchestrator
+      summary: Orchestrate account withdrawal
+      description: Creates a pending withdrawal operation and publishes the withdrawal request event.
+      operationId: withdraw
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountTransactionRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Withdrawal operation requested
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountTransactionResponseDto'
+        '400':
+          description: Invalid request body, account identifier or idempotency key
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/transaction-orchestrator/accounts/{accountId}/deposit:
+    post:
+      tags:
+        - Transaction Orchestrator
+      summary: Orchestrate account deposit
+      description: Creates a pending deposit operation and publishes the deposit request event.
+      operationId: deposit
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountTransactionRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Deposit operation requested
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountTransactionResponseDto'
+        '400':
+          description: Invalid request body, account identifier or idempotency key
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          format: int32
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+    AccountTransactionRequestDto:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        note:
+          type: string
+      required:
+        - amount
+        - currency
+    AccountTransactionResponseDto:
+      type: object
+      properties:
+        operationId:
+          type: string
+        operationStatus:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        note:
+          type: string
+        customerId:
+          type: string
+        accountType:
+          type: string
+          enum:
+            - SAVINGS
+            - CHECKING
+            - FIXED_TERM
+        accountSubType:
+          type: string
+          enum:
+            - STANDARD
+            - VIP
+            - PYME
+        accountStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - CLOSED
+        balance:
+          type: number
+        description:
+          type: string
