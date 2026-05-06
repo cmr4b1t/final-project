@@ -203,7 +203,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyle.version}</version>
                 <configuration>
-                    <configLocation>google_checks.xml</configLocation>
+                    <configLocation>../checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>false</failsOnError>        <!--  No detiene el build -->
                     <violationSeverity>warning</violationSeverity>
@@ -265,6 +265,7 @@
                                 <exclude>**/*Application*</exclude>
                                 <exclude>**/dto/**</exclude>
                                 <exclude>**/exception/**</exclude>
+                                <exclude>**/document/**</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -275,6 +276,15 @@
                         <goals><goal>check</goal></goals>
                         <configuration>
                             <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                            <excludes>
+                                <exclude>**/*MapperImpl.class</exclude>
+                                <exclude>**/config/**</exclude>
+                                <exclude>com/bank/events/**</exclude>
+                                <exclude>**/*Application*</exclude>
+                                <exclude>**/dto/**</exclude>
+                                <exclude>**/exception/**</exclude>
+                                <exclude>**/document/**</exclude>
+                            </excludes>
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
@@ -282,7 +292,7 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.2</minimum>
+                                            <minimum>0.7</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

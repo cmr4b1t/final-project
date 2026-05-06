@@ -2,50 +2,11 @@ openapi: 3.0.3
 info:
   title: Transaction Orchestrator API
   version: v1.0.0
-  description: ''
+  description: 'Transaction Orchestrator'
 servers:
   - url: http://localhost:8085
     description: Local
 paths:
-  /v1/transaction-orchestrator/accounts/{accountId}/withdraw:
-    post:
-      tags:
-        - Transaction Orchestrator
-      summary: Orchestrate account withdrawal
-      description: Creates a pending withdrawal operation and publishes the withdrawal request event.
-      operationId: withdraw
-      parameters:
-        - name: Idempotency-Key
-          in: header
-          required: true
-          schema:
-            type: string
-            minLength: 1
-        - name: accountId
-          in: path
-          required: true
-          schema:
-            type: string
-            minLength: 1
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccountTransactionRequestDto'
-        required: true
-      responses:
-        '201':
-          description: Withdrawal operation requested
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/AccountTransactionResponseDto'
-        '400':
-          description: Invalid request body, account identifier or idempotency key
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
   /v1/transaction-orchestrator/accounts/{accountId}/deposit:
     post:
       tags:
@@ -75,6 +36,45 @@ paths:
       responses:
         '201':
           description: Deposit operation requested
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountTransactionResponseDto'
+        '400':
+          description: Invalid request body, account identifier or idempotency key
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/transaction-orchestrator/accounts/{accountId}/withdraw:
+    post:
+      tags:
+        - Transaction Orchestrator
+      summary: Orchestrate account withdrawal
+      description: Creates a pending withdrawal operation and publishes the withdrawal request event.
+      operationId: withdraw
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountTransactionRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Withdrawal operation requested
           content:
             '*/*':
               schema:

@@ -3,8 +3,10 @@ package org.bootcamp.accountservice.repository.mongo.document;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bootcamp.accountservice.domain.Currency;
 import org.bootcamp.accountservice.domain.account.AccountStatus;
 import org.bootcamp.accountservice.domain.account.AccountSubType;
@@ -16,6 +18,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Builder
 @Document(collection = "accounts")
+@NoArgsConstructor
+@AllArgsConstructor
 public class AccountDocument {
     @Id
     private String id;

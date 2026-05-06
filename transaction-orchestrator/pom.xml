@@ -203,7 +203,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyle.version}</version>
                 <configuration>
-                    <configLocation>google_checks.xml</configLocation>
+                    <configLocation>../checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>false</failsOnError>        <!--  No detiene el build -->
                     <violationSeverity>warning</violationSeverity>
@@ -259,6 +259,7 @@
                                 <reportFormat>XML</reportFormat>
                             </reportFormats>
                             <excludes>
+                                <exclude>**/*MapperImpl.class</exclude>
                                 <exclude>**/config/**</exclude>
                                 <exclude>com/bank/events/**</exclude>
                                 <exclude>**/*Application*</exclude>
@@ -281,7 +282,7 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.2</minimum>
+                                            <minimum>0.7</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

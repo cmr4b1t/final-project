@@ -2,11 +2,58 @@ openapi: 3.0.3
 info:
   title: Customers API
   version: v1.0.0
-  description: ''
+  description: 'Customers Management'
 servers:
   - url: http://localhost:8081
     description: Local
 paths:
+  /v1/customers:
+    post:
+      tags:
+        - Customers
+      summary: Register a new customer
+      description: Creates an active customer using the provided identity document data.
+      operationId: createCustomer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Customer created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CustomerResponseDto'
+        '400':
+          description: Invalid request body
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Customer already exists
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    get:
+      tags:
+        - Customers
+      summary: List customers
+      description: Returns all registered customers.
+      operationId: findAll
+      responses:
+        '200':
+          description: Customers returned
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerResponseDto'
   /v1/customers/{customerId}:
     get:
       tags:
@@ -108,53 +155,6 @@ paths:
                 $ref: '#/components/schemas/ApiErrorResponse'
         '404':
           description: Customer not found
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-  /v1/customers:
-    get:
-      tags:
-        - Customers
-      summary: List customers
-      description: Returns all registered customers.
-      operationId: findAll
-      responses:
-        '200':
-          description: Customers returned
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CustomerResponseDto'
-    post:
-      tags:
-        - Customers
-      summary: Register a new customer
-      description: Creates an active customer using the provided identity document data.
-      operationId: createCustomer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCustomerRequestDto'
-        required: true
-      responses:
-        '201':
-          description: Customer created
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CustomerResponseDto'
-        '400':
-          description: Invalid request body
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '409':
-          description: Customer already exists
           content:
             '*/*':
               schema:

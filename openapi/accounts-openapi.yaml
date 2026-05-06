@@ -2,11 +2,71 @@ openapi: 3.0.3
 info:
   title: Accounts API
   version: v1.0.0
-  description: ''
+  description: 'Accounts Management'
 servers:
   - url: http://localhost:8082
     description: Local
 paths:
+  /v1/accounts:
+    post:
+      tags:
+        - Accounts
+      summary: Create bank account
+      description: Creates a bank account request and publishes the account creation event.
+      operationId: createAccount
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Account creation requested
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreateAccountResponseDto'
+        '400':
+          description: Invalid request body, idempotency key or business input
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Related customer was not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Business rule conflict for account creation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    get:
+      tags:
+        - Accounts
+      summary: List bank accounts
+      description: Returns all registered bank accounts.
+      operationId: findAll
+      responses:
+        '200':
+          description: Accounts returned
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountResponseDto'
   /v1/accounts/{accountId}:
     get:
       tags:
@@ -106,62 +166,35 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
-  /v1/accounts:
+  /v1/accounts/{accountId}/balance:
     get:
       tags:
         - Accounts
-      summary: List bank accounts
-      description: Returns all registered bank accounts.
-      operationId: findAll
-      responses:
-        '200':
-          description: Accounts returned
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccountResponseDto'
-    post:
-      tags:
-        - Accounts
-      summary: Create bank account
-      description: Creates a bank account request and publishes the account creation event.
-      operationId: createAccount
+      summary: Get available account balance
+      description: Returns the current available balance for a bank account.
+      operationId: findAvailableBalance
       parameters:
-        - name: Idempotency-Key
-          in: header
+        - name: accountId
+          in: path
           required: true
           schema:
             type: string
             minLength: 1
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateAccountRequestDto'
-        required: true
       responses:
-        '201':
-          description: Account creation requested
+        '200':
+          description: Available balance returned
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/CreateAccountResponseDto'
+                type: number
         '400':
-          description: Invalid request body, idempotency key or business input
+          description: Invalid account identifier
           content:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
         '404':
-          description: Related customer was not found
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '409':
-          description: Business rule conflict for account creation
+          description: Account not found
           content:
             '*/*':
               schema:
@@ -203,39 +236,6 @@ paths:
                   $ref: '#/components/schemas/TransactionMovementResponseDto'
         '400':
           description: Invalid account identifier or date query parameters
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '404':
-          description: Account not found
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-  /v1/accounts/{accountId}/balance:
-    get:
-      tags:
-        - Accounts
-      summary: Get available account balance
-      description: Returns the current available balance for a bank account.
-      operationId: findAvailableBalance
-      parameters:
-        - name: accountId
-          in: path
-          required: true
-          schema:
-            type: string
-            minLength: 1
-      responses:
-        '200':
-          description: Available balance returned
-          content:
-            '*/*':
-              schema:
-                type: number
-        '400':
-          description: Invalid account identifier
           content:
             '*/*':
               schema:

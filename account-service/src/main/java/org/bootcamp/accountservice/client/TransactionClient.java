@@ -26,7 +26,6 @@ public class TransactionClient {
     @Qualifier("transactionServiceWebClient")
     private final WebClient webClient;
 
-
     @TimeLimiter(name = BACKEND)
     @Retry(name = BACKEND)
     @CircuitBreaker(name = BACKEND)

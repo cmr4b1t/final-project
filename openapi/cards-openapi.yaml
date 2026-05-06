@@ -2,11 +2,50 @@ openapi: 3.0.3
 info:
   title: Cards API
   version: v1.0.0
-  description: ''
+  description: 'Cards Management'
 servers:
   - url: http://localhost:8084
     description: Local
 paths:
+  /v1/cards/debit:
+    post:
+      tags:
+        - Cards
+      summary: Create debit card
+      description: Creates an active debit card for a customer.
+      operationId: createDebit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCardRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Debit card created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CardResponseDto'
+        '400':
+          description: Invalid request body
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    get:
+      tags:
+        - Cards
+      summary: List debit cards
+      description: Returns all debit cards.
+      operationId: findAllDebits
+      responses:
+        '200':
+          description: Debit cards returned
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CardResponseDto'
   /v1/cards/debit/{cardId}:
     get:
       tags:
@@ -110,6 +149,45 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/cards/credit:
+    post:
+      tags:
+        - Cards
+      summary: Create credit card
+      description: Creates an active credit card for a customer.
+      operationId: createCredit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCardRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Credit card created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CardResponseDto'
+        '400':
+          description: Invalid request body
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    get:
+      tags:
+        - Cards
+      summary: List credit cards
+      description: Returns all credit cards.
+      operationId: findAllCredits
+      responses:
+        '200':
+          description: Credit cards returned
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CardResponseDto'
   /v1/cards/credit/{cardId}:
     get:
       tags:
@@ -209,84 +287,6 @@ paths:
                 $ref: '#/components/schemas/ApiErrorResponse'
         '404':
           description: Credit card not found
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-  /v1/cards/debit:
-    get:
-      tags:
-        - Cards
-      summary: List debit cards
-      description: Returns all debit cards.
-      operationId: findAllDebits
-      responses:
-        '200':
-          description: Debit cards returned
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CardResponseDto'
-    post:
-      tags:
-        - Cards
-      summary: Create debit card
-      description: Creates an active debit card for a customer.
-      operationId: createDebit
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCardRequestDto'
-        required: true
-      responses:
-        '201':
-          description: Debit card created
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CardResponseDto'
-        '400':
-          description: Invalid request body
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-  /v1/cards/credit:
-    get:
-      tags:
-        - Cards
-      summary: List credit cards
-      description: Returns all credit cards.
-      operationId: findAllCredits
-      responses:
-        '200':
-          description: Credit cards returned
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CardResponseDto'
-    post:
-      tags:
-        - Cards
-      summary: Create credit card
-      description: Creates an active credit card for a customer.
-      operationId: createCredit
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCardRequestDto'
-        required: true
-      responses:
-        '201':
-          description: Credit card created
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CardResponseDto'
-        '400':
-          description: Invalid request body
           content:
             '*/*':
               schema:
