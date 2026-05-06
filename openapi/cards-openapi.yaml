@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Cards API
   version: v1.0.0
-  description: 'Cards Management'
+  description: 'API para gestionar tarjetas de crédito y débito'
 servers:
   - url: http://localhost:8084
     description: Local

@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Accounts API
   version: v1.0.0
-  description: 'Accounts Management'
+  description: 'API para gestionar cuentas bancarias, ver el balance actual, movimientos de la cuenta, listar cuentas por cliente.'
 servers:
   - url: http://localhost:8082
     description: Local

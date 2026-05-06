@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Transaction Orchestrator API
   version: v1.0.0
-  description: 'Transaction Orchestrator'
+  description: 'API orquestador de transacciones: deposito, retiro y consumo'
 servers:
   - url: http://localhost:8085
     description: Local

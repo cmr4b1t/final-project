@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Transactions API
   version: v1.0.0
-  description: 'Transactions API'
+  description: 'API para registrar y listar transacciones'
 servers:
   - url: http://localhost:8083
     description: Local

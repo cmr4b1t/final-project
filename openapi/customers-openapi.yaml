@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Customers API
   version: v1.0.0
-  description: 'Customers Management'
+  description: 'API para gestionar clientes'
 servers:
   - url: http://localhost:8081
     description: Local

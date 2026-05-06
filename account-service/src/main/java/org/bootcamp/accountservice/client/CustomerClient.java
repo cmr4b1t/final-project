@@ -7,9 +7,11 @@ import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bootcamp.accountservice.client.dto.CustomerSummaryDto;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.adapter.rxjava.RxJava3Adapter;
@@ -32,9 +34,14 @@ public class CustomerClient {
             .get()
             .uri("/v1/customers/{customerId}", customerId)
             .retrieve()
-            .onStatus(HttpStatusCode::isError,
-                response -> response.createException().flatMap(error -> Mono.error(
-                    new ResponseStatusException(response.statusCode(), error.getResponseBodyAsString(), error))))
+            .onStatus(HttpStatusCode::isError, CustomerClient::getResponseException)
             .bodyToMono(CustomerSummaryDto.class));
+    }
+
+    private static @NonNull Mono<Throwable> getResponseException(ClientResponse response) {
+        return response.createException()
+            .flatMap(error -> Mono.error(
+                new ResponseStatusException(response.statusCode(),
+                    error.getResponseBodyAsString(), error)));
     }
 }

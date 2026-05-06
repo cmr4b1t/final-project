@@ -39,6 +39,7 @@ public class DebitCardCreatedConsumer {
                        Acknowledgment ack) {
         log.info("Received debit card created event. idempotencyKey={}, offset={}",
             idempotencyKey, consumerRecord.offset());
+
         processDebitCardCreated(consumerRecord.value(), idempotencyKey)
             .doOnSuccess(unused -> ack.acknowledge())
             .doOnError(error -> log.error(
