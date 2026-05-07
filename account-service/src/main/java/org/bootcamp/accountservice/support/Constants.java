@@ -8,4 +8,6 @@ public final class Constants {
 
     public static final String IDEMPOTENCY_KEY_HEADER = "Idempotency-Key";
 
+    public static final String ACCOUNT_NOT_FOUND_ERROR = "Account not found";
+
 }

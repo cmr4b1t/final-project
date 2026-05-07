@@ -73,7 +73,7 @@ public class AccountService {
     public Single<BigDecimal> findAvailableBalance(String accountId) {
         return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
             .switchIfEmpty(Single.error(new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Account not found for accountId: " + accountId)))
+                HttpStatus.NOT_FOUND, Constants.ACCOUNT_NOT_FOUND_ERROR)))
             .map(accountMapper::toDomain)
             .map(Account::getBalance);
     }
@@ -184,14 +184,14 @@ public class AccountService {
         return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
             .map(accountMapper::toResponseDto)
             .switchIfEmpty(Single.error(new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Account not found")));
+                HttpStatus.NOT_FOUND, Constants.ACCOUNT_NOT_FOUND_ERROR)));
     }
 
     public Single<AccountResponseDto> updateAccount(
         @NotBlank String accountId, UpdateAccountRequestDto requestDto) {
         return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
             .switchIfEmpty(Single.error(new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Account not found")))
+                HttpStatus.NOT_FOUND, Constants.ACCOUNT_NOT_FOUND_ERROR)))
             .map(accountDocument -> applyUpdate(accountDocument, requestDto))
             .flatMap(accountDocument -> RxJava3Adapter.monoToSingle(accountRepository.save(accountDocument)))
             .map(accountMapper::toResponseDto);
@@ -200,7 +200,7 @@ public class AccountService {
     public Completable deleteAccount(@NotBlank String accountId) {
         return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
             .switchIfEmpty(Single.error(new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Account not found")))
+                HttpStatus.NOT_FOUND, Constants.ACCOUNT_NOT_FOUND_ERROR)))
             .flatMapCompletable(accountDocument -> RxJava3Adapter.monoToCompletable(
                 accountRepository.delete(accountDocument)));
     }
@@ -215,7 +215,7 @@ public class AccountService {
         @NotBlank String accountId, LocalDateTime startDate, LocalDateTime endDate, Integer last) {
         return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
             .switchIfEmpty(Single.error(new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Account not found")))
+                HttpStatus.NOT_FOUND, Constants.ACCOUNT_NOT_FOUND_ERROR)))
             .flatMap(account -> RxJava3Adapter.monoToSingle(
                 transactionClient.getMovementsByAccountId(accountId, startDate, endDate)
                     .map(transactions -> lastNTransactions(transactions, last)))

@@ -69,8 +69,7 @@ public class CreditCardCreatedConsumer {
         CreditCardCreatedEvent event = IdempotencyUtils.deserializeResponse(payload, CreditCardCreatedEvent.class);
 
         return repository.findByCreditId(event.accountId())
-            .switchIfEmpty(Mono.error(new IllegalStateException(
-                "Account not found for accountId: " + event.accountId())))
+            .switchIfEmpty(Mono.error(new IllegalStateException("Credit Card Account not found")))
             .flatMap(account -> activateCreditCardAccount(idempotencyLog, account));
     }
 

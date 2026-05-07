@@ -225,6 +225,15 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: last
+          in: query
+          required: false
+          description: cuantos de los ulitmos movimientos quieres
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            exclusiveMinimum: true
       responses:
         '200':
           description: Account movements returned

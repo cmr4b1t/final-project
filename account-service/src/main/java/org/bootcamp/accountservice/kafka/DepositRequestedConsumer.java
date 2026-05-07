@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.bootcamp.accountservice.client.TransactionClient;
+import org.bootcamp.accountservice.client.dto.RegisterTransactionDto;
 import org.bootcamp.accountservice.domain.account.AccountStatus;
 import org.bootcamp.accountservice.domain.account.AccountType;
 import org.bootcamp.accountservice.kafka.event.DepositAcceptedEvent;
@@ -83,10 +84,17 @@ public class DepositRequestedConsumer {
 
         LocalDateTime startDate = LocalDate.now().withDayOfMonth(1).atStartOfDay();
         LocalDateTime endDate = LocalDateTime.now();
-        return transactionClient.countTransactionsByAccountId(account.getAccountId(), startDate, endDate)
+        return getTransactionCountByAccountId(account.getAccountId(), startDate, endDate)
             .flatMap(transactionCount -> validateMonthlyLimit(account, transactionCount)
                 .map(error -> rejectDeposit(idempotencyKey, event, account, error))
                 .orElseGet(() -> acceptDeposit(idempotencyKey, event, account, transactionCount)));
+    }
+
+    private Mono<Long> getTransactionCountByAccountId(String accountId,
+                                                      LocalDateTime startDate,
+                                                      LocalDateTime endDate) {
+        return transactionClient.getMovementsByAccountId(accountId, startDate, endDate)
+            .map(transactions -> (long) transactions.size());
     }
 
     private String validateRequest(DepositRequestedEvent event, AccountDocument account) {
@@ -128,14 +136,17 @@ public class DepositRequestedConsumer {
         return accountRepository.save(account)
             .then(idempotencyLogRepository.save(idempotencyLog))
             .then(transactionClient.registerTransaction(
-                idempotencyKey,
-                TRANSACTION_TYPE,
-                account.getAccountId(),
-                account.getCustomerId(),
-                event.amount(),
-                event.currency(),
-                commission,
-                event.note()))
+                RegisterTransactionDto.builder()
+                    .idempotencyKey(idempotencyKey)
+                    .transactionType(TRANSACTION_TYPE)
+                    .accountId(account.getAccountId())
+                    .customerId(account.getCustomerId())
+                    .amount(event.amount())
+                    .currency(event.currency())
+                    .commission(commission)
+                    .note(event.note())
+                    .build())
+            )
             .then(RxJava3Adapter.completableToMono(
                 eventProducerService.publishDepositAcceptedEvent(idempotencyKey, acceptedEvent)));
     }

@@ -1,13 +1,15 @@
 package org.bootcamp.accountservice.kafka;
 
 import io.reactivex.rxjava3.core.Completable;
+import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.bootcamp.accountservice.client.TransactionClient;
+import org.bootcamp.accountservice.client.dto.RegisterTransactionDto;
+import org.bootcamp.accountservice.client.dto.TransactionMovementResponseDto;
 import org.bootcamp.accountservice.domain.Currency;
 import org.bootcamp.accountservice.domain.account.AccountStatus;
 import org.bootcamp.accountservice.domain.account.AccountSubType;
 import org.bootcamp.accountservice.domain.account.AccountType;
-import org.bootcamp.accountservice.kafka.event.WithdrawAcceptedEvent;
 import org.bootcamp.accountservice.kafka.event.WithdrawRequestedEvent;
 import org.bootcamp.accountservice.repository.mongo.AccountRepository;
 import org.bootcamp.accountservice.repository.mongo.IdempotencyLogRepository;
@@ -96,11 +98,13 @@ class WithdrawRequestedConsumerTest {
         when(accountRepository.findByAccountId("acc-1"))
             .thenReturn(Mono.just(account));
 
-        when(transactionClient.countTransactionsByAccountId(
+        when(transactionClient.getMovementsByAccountId(
             any(),
             any(),
             any()
-        )).thenReturn(Mono.just(1L));
+        )).thenReturn(Mono.just(List.of(
+            new TransactionMovementResponseDto()
+        )));
 
         when(accountRepository.save(any(AccountDocument.class)))
             .thenReturn(Mono.just(account));
@@ -108,16 +112,8 @@ class WithdrawRequestedConsumerTest {
         when(idempotencyLogRepository.save(any()))
             .thenReturn(Mono.just(new IdempotencyLogDocument()));
 
-        when(transactionClient.registerTransaction(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any()
-        )).thenReturn(Mono.empty());
+        when(transactionClient.registerTransaction(any(RegisterTransactionDto.class)))
+            .thenReturn(Mono.empty());
 
         when(eventProducerService.publishWithdrawAcceptedEvent(any(), any()))
             .thenReturn(Completable.complete());
@@ -265,11 +261,22 @@ class WithdrawRequestedConsumerTest {
         when(accountRepository.findByAccountId("acc-1"))
             .thenReturn(Mono.just(account));
 
-        when(transactionClient.countTransactionsByAccountId(
+        when(transactionClient.getMovementsByAccountId(
             any(),
             any(),
             any()
-        )).thenReturn(Mono.just(10L));
+        )).thenReturn(Mono.just(List.of(
+            new TransactionMovementResponseDto(),
+            new TransactionMovementResponseDto(),
+            new TransactionMovementResponseDto(),
+            new TransactionMovementResponseDto(),
+            new TransactionMovementResponseDto(),
+            new TransactionMovementResponseDto(),
+            new TransactionMovementResponseDto(),
+            new TransactionMovementResponseDto(),
+            new TransactionMovementResponseDto(),
+            new TransactionMovementResponseDto()
+        )));
 
         when(idempotencyLogRepository.save(any()))
             .thenReturn(Mono.just(new IdempotencyLogDocument()));
@@ -302,72 +309,4 @@ class WithdrawRequestedConsumerTest {
                 .acknowledge();
         }
     }
-
-    /*@Test
-    void shouldApplyCommissionSuccessfully() {
-
-        String payload = "{json}";
-
-        ConsumerRecord<String, String> consumerRecord =
-            new ConsumerRecord<>("topic", 0, 1L, "key", payload);
-
-        when(idempotencyLogRepository.findByIdempotencyKeyAndOperationType(
-            "idem-1",
-            OperationType.WITHDRAW_REQUESTED
-        )).thenReturn(Mono.empty());
-
-        when(accountRepository.findByAccountId("acc-1"))
-            .thenReturn(Mono.just(account));
-
-        when(transactionClient.countTransactionsByAccountId(
-            any(),
-            any(),
-            any()
-        )).thenReturn(Mono.just(10L));
-
-        when(accountRepository.save(any(AccountDocument.class)))
-            .thenReturn(Mono.just(account));
-
-        when(idempotencyLogRepository.save(any()))
-            .thenReturn(Mono.just(new IdempotencyLogDocument()));
-
-        when(transactionClient.registerTransaction(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            any()
-        )).thenReturn(Mono.empty());
-
-        when(eventProducerService.publishWithdrawAcceptedEvent(anyString(), any(WithdrawAcceptedEvent.class)))
-            .thenReturn(Completable.complete());
-
-        try (MockedStatic<IdempotencyUtils> mocked =
-                 mockStatic(IdempotencyUtils.class)) {
-
-            mocked.when(() ->
-                    IdempotencyUtils.deserializeResponse(
-                        payload,
-                        WithdrawRequestedEvent.class
-                    ))
-                .thenReturn(event);
-
-            mocked.when(() ->
-                    IdempotencyUtils.serializeResponse(any()))
-                .thenReturn("{response}");
-
-            consumer.listen(consumerRecord, "idem-1", acknowledgment);
-
-            verify(accountRepository, timeout(1000))
-                .save(argThat(saved ->
-                    saved.getBalance().compareTo(BigDecimal.valueOf(390)) == 0
-                ));
-
-            verify(acknowledgment, timeout(1000))
-                .acknowledge();
-        }
-    }*/
 }

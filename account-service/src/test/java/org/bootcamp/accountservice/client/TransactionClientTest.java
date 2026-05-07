@@ -3,6 +3,7 @@ package org.bootcamp.accountservice.client;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Function;
+import org.bootcamp.accountservice.client.dto.RegisterTransactionDto;
 import org.bootcamp.accountservice.client.dto.TransactionMovementResponseDto;
 import org.bootcamp.accountservice.domain.Currency;
 import org.bootcamp.accountservice.support.Constants;
@@ -15,7 +16,6 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -53,42 +53,6 @@ class TransactionClientTest {
         requestBodySpec = mock(WebClient.RequestBodySpec.class);
 
         transactionClient = new TransactionClient(webClient);
-    }
-
-    @Test
-    void shouldCountTransactionsByAccountIdSuccessfully() {
-
-        List<Map<String, Object>> transactions = List.of(
-            Map.of("id", 1),
-            Map.of("id", 2),
-            Map.of("id", 3)
-        );
-
-        when(webClient.get())
-            .thenReturn(requestHeadersUriSpec);
-
-        when(requestHeadersUriSpec.uri(any(Function.class)))
-            .thenReturn(requestHeadersSpec);
-
-        when(requestHeadersSpec.retrieve())
-            .thenReturn(responseSpec);
-
-        when(responseSpec.bodyToMono(
-            any(ParameterizedTypeReference.class)
-        )).thenReturn(Mono.just(transactions));
-
-        Mono<Long> result =
-            transactionClient.countTransactionsByAccountId(
-                "acc-1",
-                LocalDateTime.now().minusDays(1),
-                LocalDateTime.now()
-            );
-
-        StepVerifier.create(result)
-            .expectNext(3L)
-            .verifyComplete();
-
-        verify(webClient).get();
     }
 
     @Test
@@ -154,14 +118,16 @@ class TransactionClientTest {
 
         Mono<Void> result =
             transactionClient.registerTransaction(
-                "idem-1",
-                "DEPOSIT",
-                "acc-1",
-                "customer-1",
-                BigDecimal.TEN,
-                Currency.PEN,
-                BigDecimal.ZERO,
-                "note"
+                RegisterTransactionDto.builder()
+                    .idempotencyKey("idem-1")
+                    .transactionType("DEPOSIT")
+                    .accountId("acc-1")
+                    .customerId("customer-1")
+                    .amount(BigDecimal.TEN)
+                    .currency(Currency.PEN)
+                    .commission(BigDecimal.ZERO)
+                    .note("note")
+                    .build()
             );
 
         StepVerifier.create(result)
@@ -174,6 +140,6 @@ class TransactionClientTest {
 
         verify(requestBodySpec).contentType(MediaType.APPLICATION_JSON);
 
-        verify(requestBodySpec).bodyValue(any(Map.class));
+        verify(requestBodySpec).bodyValue(any(RegisterTransactionDto.class));
     }
 }
