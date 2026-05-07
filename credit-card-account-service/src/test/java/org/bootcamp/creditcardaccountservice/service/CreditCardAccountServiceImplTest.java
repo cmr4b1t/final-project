@@ -197,11 +197,13 @@ class CreditCardAccountServiceImplTest {
         TransactionDto trx1 =
             TransactionDto.builder()
                 .transactionId("trx-001")
+                .createdAt(LocalDateTime.now())
                 .build();
 
         TransactionDto trx2 =
             TransactionDto.builder()
                 .transactionId("trx-002")
+                .createdAt(LocalDateTime.now())
                 .build();
 
         when(transactionClient

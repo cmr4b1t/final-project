@@ -205,7 +205,7 @@ services:
     environment:
       - SERVER_PORT=8086
       - CONFIG_SERVER_URL=http://config-server:8888
-      - MONGO_URI=mongodb://bootcamp-mongodb:27017/account-db
+      - MONGO_URI=mongodb://bootcamp-mongodb:27017/credit-card-account-db
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - HOSTNAME=credit-card-account-service
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092

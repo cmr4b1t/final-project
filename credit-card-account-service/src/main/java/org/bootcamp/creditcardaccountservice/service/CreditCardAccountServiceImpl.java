@@ -2,6 +2,7 @@ package org.bootcamp.creditcardaccountservice.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.creditcardaccountservice.api.model.CreateCreditCardAccountRequestDto;
@@ -24,7 +25,9 @@ import org.bootcamp.creditcardaccountservice.repository.mongo.document.Idempoten
 import org.bootcamp.creditcardaccountservice.repository.mongo.document.OperationStatus;
 import org.bootcamp.creditcardaccountservice.repository.mongo.document.OperationType;
 import org.bootcamp.creditcardaccountservice.service.policies.CreditCardAccountPolicies;
+import org.bootcamp.creditcardaccountservice.support.Constants;
 import org.bootcamp.creditcardaccountservice.support.IdempotencyUtils;
+import org.bootcamp.creditcardaccountservice.support.Utils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -77,6 +80,7 @@ public class CreditCardAccountServiceImpl implements CreditCardAccountService {
         return transactionClient.findAllTransactionsByAccountId(creditId)
             .map(transactions ->
                 transactions.stream()
+                    .sorted(Comparator.comparing(TransactionDto::getCreatedAt).reversed())
                     .limit(Optional.ofNullable(last).orElse(transactions.size()))
                     .toList()
             )
@@ -129,6 +133,7 @@ public class CreditCardAccountServiceImpl implements CreditCardAccountService {
     private CreditCardAccount buildNewCreditCardAccount(CreateCreditCardAccountRequestDto requestDto) {
         LocalDateTime createdAt = LocalDateTime.now();
         return CreditCardAccount.builder()
+            .creditId(Utils.generateId(Constants.PREFIX_CREDIT_CARD_ACCOUNT_ID))
             .customerId(requestDto.getCustomerId())
             .currency(creditCardAccountMapper.toCurrency(requestDto.getCurrency()))
             .maxCreditLimit(requestDto.getMaxCreditLimit())

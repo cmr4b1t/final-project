@@ -6,6 +6,7 @@ import io.reactivex.rxjava3.core.Single;
 import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -224,6 +225,7 @@ public class AccountService {
     private List<TransactionMovementResponseDto> lastNTransactions(
         List<TransactionMovementResponseDto> transactions, Integer last) {
         return transactions.stream()
+            .sorted(Comparator.comparing(TransactionMovementResponseDto::getCreatedAt).reversed())
             .limit(Optional.ofNullable(last).orElse(transactions.size()))
             .toList();
     }
