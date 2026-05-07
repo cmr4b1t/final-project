@@ -1,0 +1,29 @@
+eureka:
+  client:
+    enabled: false
+
+spring:
+  application:
+    name: credit-card-account-service
+  cloud:
+    config:
+      enabled: false
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/credit-card-account-test-db
+
+kafka:
+  bootstrap-servers: localhost:29092
+  consumer:
+    group-id: credit-card-account.consumer.test
+
+topics:
+  bank-credit-card-account-created: bank.credit-card-account.created
+  bank-credit-card-created: bank.credit-card.created
+  bank-credit-card-account-activated: bank.credit-card-account.activated
+
+clients:
+  customer-service:
+    base-url: http://localhost:8081
+  transaction-service:
+    base-url: http://localhost:8082

@@ -120,6 +120,7 @@ services:
       - TRANSACTION_SERVICE_BASE_URL=http://transaction-service:8083
       - CARD_SERVICE_BASE_URL=http://card-service:8084
       - TRANSACTION_ORCHESTRATOR_BASE_URL=http://transaction-orchestrator:8085
+      - CREDIT_CARD_ACCOUNT_SERVICE_BASE_URL=http://credit-card-account-service:8086
 
   # auth-service
   auth-service:
@@ -184,6 +185,31 @@ services:
       - HOSTNAME=account-service
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - KAFKA_CONSUMER_GROUP_ID=account.consumer
+      - CLIENTS_CUSTOMER_SERVICE_BASE_URL=http://customer-service:8081
+      - CLIENTS_TRANSACTION_SERVICE_BASE_URL=http://transaction-service:8083
+
+  credit-card-account-service:
+    build: ./credit-card-account-service
+    container_name: credit-card-account-service
+    ports:
+      - "8086:8086"
+    networks:
+      - bootcamp-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mongo-db:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=8086
+      - CONFIG_SERVER_URL=http://config-server:8888
+      - MONGO_URI=mongodb://bootcamp-mongodb:27017/account-db
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - HOSTNAME=credit-card-account-service
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_CONSUMER_GROUP_ID=credit-card-account.consumer
       - CLIENTS_CUSTOMER_SERVICE_BASE_URL=http://customer-service:8081
       - CLIENTS_TRANSACTION_SERVICE_BASE_URL=http://transaction-service:8083
 

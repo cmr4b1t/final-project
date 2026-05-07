@@ -173,11 +173,12 @@ class AccountServiceTest {
     void getMovementsByAccountIdShouldValidateAccountAndCallTransactionService() {
         LocalDateTime start = LocalDateTime.now().minusDays(1);
         LocalDateTime end = LocalDateTime.now();
+        Integer last = 2;
         when(accountRepository.findByAccountId("ACC-1")).thenReturn(Mono.just(document("ACC-1")));
         when(transactionClient.getMovementsByAccountId("ACC-1", start, end))
             .thenReturn(Mono.just(List.of(TransactionMovementResponseDto.builder().transactionId("TX-1").build())));
 
-        assertEquals(1, accountService.getMovementsByAccountId("ACC-1", start, end).blockingGet().size());
+        assertEquals(1, accountService.getMovementsByAccountId("ACC-1", start, end, last).blockingGet().size());
     }
 
     private static CreateAccountRequestDto createRequest() {

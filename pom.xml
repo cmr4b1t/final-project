@@ -18,6 +18,7 @@
         <module>transaction-orchestrator</module>
         <module>auth-service</module>
         <module>api-gateway</module>
+        <module>credit-card-account-service</module>
     </modules>
 
     <properties>

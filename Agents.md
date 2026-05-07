@@ -64,7 +64,7 @@ Gestionar clientes financieros y sus productos bancarios.
   - Muchas Cuentas de Corriente (Checking)
 
 - Cliente Personal puede tener muchos préstamos (Loan)
-- Cliente Personal puede tener muchas tarjetas de crédito (credit_card)
+- Cliente Empresarial puede tener muchas tarjetas de crédito
 
 - Cliente Empresarial puede tener:
   - 1 o más titulares

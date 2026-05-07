@@ -2,6 +2,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_URI:mongodb://localhost:27017/customer-db}
+      auto-index-creation: true
 
 kafka:
   bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
@@ -9,9 +10,8 @@ kafka:
     group-id: ${KAFKA_CONSUMER_GROUP_ID:customer.consumer}
 
 topics:
-  bank-account-created: bank.account.created
-  bank-debitcard-created: bank.debitcard.created
   bank-account-activated: bank.account.activated
+  bank-credit-card-account-activated: bank.credit-card-account.activated
 
 management:
   endpoints:

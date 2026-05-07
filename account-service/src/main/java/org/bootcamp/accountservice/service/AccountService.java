@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.accountservice.client.CustomerClient;
 import org.bootcamp.accountservice.client.dto.CustomerSummaryDto;
@@ -36,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.adapter.rxjava.RxJava3Adapter;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -52,14 +54,19 @@ public class AccountService {
     public Single<CreateAccountResponseDto> createAccount(
         String idempotencyKey, CreateAccountRequestDto requestDto) {
         return findExistingOperation(idempotencyKey)
-            .switchIfEmpty(Single.defer(() -> customerClient.findByCustomerId(requestDto.getCustomerId()))
-                .flatMap(customer -> validateBusinessRules(customer, requestDto))
-                .map(customer -> buildAccount(requestDto))
-                .flatMap(this::saveAccount)
-                .map(this::buildResponse)
-                .flatMap(response -> saveIdempotencyLog(idempotencyKey, response)
-                    .andThen(publishAccountCreatedEvent(idempotencyKey, response))
-                    .andThen(Single.just(response))));
+            .switchIfEmpty(newCreationRequest(idempotencyKey, requestDto));
+    }
+
+    private Single<CreateAccountResponseDto> newCreationRequest(String idempotencyKey,
+                                                                CreateAccountRequestDto requestDto) {
+        return Single.defer(() -> customerClient.findByCustomerId(requestDto.getCustomerId()))
+            .flatMap(customer -> validateBusinessRules(customer, requestDto))
+            .map(customer -> buildAccount(requestDto))
+            .flatMap(this::saveNewAccount)
+            .map(this::buildResponse)
+            .flatMap(response -> saveIdempotencyLog(idempotencyKey, response)
+                .andThen(publishAccountCreatedEvent(idempotencyKey, response))
+                .andThen(Single.just(response)));
     }
 
     public Single<BigDecimal> findAvailableBalance(String accountId) {
@@ -104,7 +111,7 @@ public class AccountService {
         return account;
     }
 
-    private Single<Account> saveAccount(Account account) {
+    private Single<Account> saveNewAccount(Account account) {
         return RxJava3Adapter.monoToSingle(accountRepository.save(accountMapper.toDocument(account)))
             .map(accountMapper::toDomain);
     }
@@ -204,12 +211,21 @@ public class AccountService {
     }
 
     public Single<List<TransactionMovementResponseDto>> getMovementsByAccountId(
-        @NotBlank String accountId, LocalDateTime startDate, LocalDateTime endDate) {
+        @NotBlank String accountId, LocalDateTime startDate, LocalDateTime endDate, Integer last) {
         return RxJava3Adapter.monoToMaybe(accountRepository.findByAccountId(accountId))
             .switchIfEmpty(Single.error(new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Account not found")))
             .flatMap(account -> RxJava3Adapter.monoToSingle(
-                transactionClient.getMovementsByAccountId(accountId, startDate, endDate)));
+                transactionClient.getMovementsByAccountId(accountId, startDate, endDate)
+                    .map(transactions -> lastNTransactions(transactions, last)))
+            );
+    }
+
+    private List<TransactionMovementResponseDto> lastNTransactions(
+        List<TransactionMovementResponseDto> transactions, Integer last) {
+        return transactions.stream()
+            .limit(Optional.ofNullable(last).orElse(transactions.size()))
+            .toList();
     }
 
     private AccountDocument applyUpdate(AccountDocument accountDocument, UpdateAccountRequestDto requestDto) {

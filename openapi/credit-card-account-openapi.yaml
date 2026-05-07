@@ -1,0 +1,446 @@
+openapi: 3.0.3
+info:
+  title: Credit Card Account API
+  version: v1.0.0
+  description: 'API para gestionar cuentas de crédito, ver el crédito disponible, movimientos de la cuenta, listar cuentas por cliente.'
+servers:
+  - url: http://localhost:8086
+    description: Local
+paths:
+  /v1/credit-card-accounts:
+    post:
+      tags:
+        - Credit Card Accounts
+      summary: Create credit card account
+      description: Creates a credit card account request and publishes the credit card account creation event.
+      operationId: createCreditCardAccount
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCreditCardAccountRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Credit Card Account creation requested
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCreditCardAccountResponseDto'
+        '400':
+          description: Invalid request body, idempotency key or business input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Related customer was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Business rule conflict for credit card account creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    get:
+      tags:
+        - Credit Card Accounts
+      summary: List credit card accounts
+      description: Returns all registered credit card accounts.
+      operationId: findAll
+      responses:
+        '200':
+          description: Credit card accounts returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditCardAccountResponseDto'
+  /v1/credit-card-accounts/{creditId}:
+    get:
+      tags:
+        - Credit Card Accounts
+      summary: Find bank credit card account by ID
+      description: Returns a bank account using its business identifier.
+      operationId: findCreditCardAccountByCreditId
+      parameters:
+        - name: creditId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Account found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditCardAccountResponseDto'
+        '400':
+          description: Invalid account identifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    put:
+      tags:
+        - Credit Card Accounts
+      summary: Update credit card account
+      description: Updates mutable data of an existing credit card account.
+      operationId: updateCreditCardAccount
+      parameters:
+        - name: creditId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCreditCardAccountRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditCardAccountResponseDto'
+        '400':
+          description: Invalid request body or account identifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+    delete:
+      tags:
+        - Credit Card Accounts
+      summary: Delete credit card account
+      description: Deletes an existing credit card account.
+      operationId: deleteCreditCardAccount
+      parameters:
+        - name: creditId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '204':
+          description: Credit card account deleted
+        '400':
+          description: Invalid account identifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/credit-card-accounts/{creditId}/balance:
+    get:
+      tags:
+        - Credit Card Accounts
+      summary: Get available credit card account balance
+      description: Returns the current available balance for a credit card account.
+      operationId: findAvailableCredit
+      parameters:
+        - name: creditId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Available balance returned
+          content:
+            '*/*':
+              schema:
+                type: number
+        '400':
+          description: Invalid account identifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+  /v1/credit-card-accounts/{creditId}/movements:
+    get:
+      tags:
+        - Credit Card Accounts
+      summary: List account movements
+      description: Returns account movements, optionally filtered by last movements.
+      operationId: getMovementsByCreditId
+      parameters:
+        - name: creditId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - name: last
+          in: query
+          required: false
+          description: cuantos de los ulitmos movimientos quieres
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            exclusiveMinimum: true
+      responses:
+        '200':
+          description: Account movements returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionMovementResponseDto'
+        '400':
+          description: Invalid account identifier or query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+components:
+  schemas:
+    ApiErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          format: int32
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+    UpdateCreditCardAccountRequestDto:
+      type: object
+      properties:
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        maxCreditLimit:
+          type: number
+          format: double
+          example: 50.0
+        availableCredit:
+          type: number
+          format: double
+          example: 50.0
+        currentBalance:
+          type: number
+          format: double
+          example: 50.0
+        cycleBillingDay:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+    CreditCardAccountResponseDto:
+      type: object
+      properties:
+        creditId:
+          type: string
+        customerId:
+          type: string
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        maxCreditLimit:
+          type: number
+          format: double
+          example: 50.00
+        cycleBillingDay:
+          type: integer
+          format: int32
+        openingDate:
+          type: string
+          format: date-time
+        nextBillingDate:
+          type: string
+          format: date-time
+        lastBillingDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateCreditCardAccountRequestDto:
+      type: object
+      required:
+        - customerId
+        - currency
+        - maxCreditLimit
+        - cycleBillingDay
+      properties:
+        customerId:
+          type: string
+          minLength: 1
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        maxCreditLimit:
+          type: number
+          format: double
+          example: 50.00
+        cycleBillingDay:
+          type: integer
+          format: int32
+    CreateCreditCardAccountResponseDto:
+      type: object
+      properties:
+        operationStatus:
+          type: string
+          enum:
+            - PENDING
+            - COMPLETED
+            - FAILED
+        operationCreateAt:
+          type: string
+          format: date-time
+        creditId:
+          type: string
+        customerId:
+          type: string
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        maxCreditLimit:
+          type: number
+          format: double
+          example: 50.00
+        availableCredit:
+          type: number
+          format: double
+          example: 50.00
+        currentBalance:
+          type: number
+          format: double
+          example: 0.00
+        cycleBillingDay:
+          type: integer
+          format: int32
+        openingDate:
+          type: string
+          format: date-time
+        nextBillingDate:
+          type: string
+          format: date-time
+        lastBillingDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    TransactionMovementResponseDto:
+      type: object
+      properties:
+        transactionId:
+          type: string
+        transactionType:
+          type: string
+        sourceAccountId:
+          type: string
+        customerId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+          enum:
+            - PEN
+            - USD
+            - EUR
+        commission:
+          type: number
+        note:
+          type: string
+        statementId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time

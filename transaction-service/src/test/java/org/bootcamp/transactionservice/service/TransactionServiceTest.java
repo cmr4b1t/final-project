@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -138,7 +139,7 @@ class TransactionServiceTest {
     @Test
     void findAllTransactionsShouldReturnMappedList() {
         TransactionDocument document = document("TX-1", TransactionType.DEPOSIT);
-        when(transactionRepository.findAll()).thenReturn(Flux.just(document));
+        when(transactionRepository.findAll(any(Sort.class))).thenReturn(Flux.just(document));
         when(transactionMapper.toDomain(document)).thenReturn(domain("TX-1"));
         when(transactionMapper.toResponseDto(any(Transaction.class))).thenReturn(response("TX-1"));
 

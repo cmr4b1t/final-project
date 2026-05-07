@@ -2,10 +2,13 @@ package org.bootcamp.accountservice.controller;
 
 import io.reactivex.rxjava3.core.Single;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,6 +25,7 @@ import org.bootcamp.accountservice.support.Constants;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -180,8 +184,13 @@ public class AccountController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         LocalDateTime startDate,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        LocalDateTime endDate) {
-        return accountService.getMovementsByAccountId(accountId, startDate, endDate)
+        LocalDateTime endDate,
+        @Min(value = 0)
+        @Parameter(
+            name = "last", description = "cuantos de los ulitmos movimientos quieres",
+            in = ParameterIn.QUERY)
+        @Valid @RequestParam(value = "last", required = false) @Nullable Integer last) {
+        return accountService.getMovementsByAccountId(accountId, startDate, endDate, last)
             .map(ResponseEntity::ok);
     }
 

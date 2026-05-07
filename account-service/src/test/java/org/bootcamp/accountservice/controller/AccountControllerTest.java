@@ -64,13 +64,14 @@ class AccountControllerTest {
         AccountResponseDto response = AccountResponseDto.builder().accountId("ACC-1").build();
         LocalDateTime start = LocalDateTime.now().minusDays(1);
         LocalDateTime end = LocalDateTime.now();
+        Integer last = null;
         when(accountService.updateAccount("ACC-1", request)).thenReturn(Single.just(response));
         when(accountService.deleteAccount("ACC-1")).thenReturn(Completable.complete());
-        when(accountService.getMovementsByAccountId("ACC-1", start, end))
+        when(accountService.getMovementsByAccountId("ACC-1", start, end, last))
             .thenReturn(Single.just(List.of(TransactionMovementResponseDto.builder().transactionId("TX-1").build())));
 
         assertEquals(HttpStatus.OK, controller.updateAccount("ACC-1", request).blockingGet().getStatusCode());
         assertEquals(HttpStatus.NO_CONTENT, controller.deleteAccount("ACC-1").blockingGet().getStatusCode());
-        assertEquals(1, controller.getMovementsByAccountId("ACC-1", start, end).blockingGet().getBody().size());
+        assertEquals(1, controller.getMovementsByAccountId("ACC-1", start, end, last).blockingGet().getBody().size());
     }
 }

@@ -2,6 +2,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_URI:mongodb://localhost:27017/account-db}
+      auto-index-creation: true
 
 kafka:
   bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
@@ -10,7 +11,7 @@ kafka:
 
 topics:
   bank-account-created: bank.account.created
-  bank-debit-card-created: bank.debit.card.created
+  bank-debit-card-created: bank.debit-card.created
   bank-account-activated: bank.account.activated
   bank-transaction-deposit-requested: bank.transaction.deposit.requested
   bank-transaction-deposit-accepted: bank.transaction.deposit.accepted

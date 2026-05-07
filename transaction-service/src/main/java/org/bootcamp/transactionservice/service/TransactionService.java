@@ -39,7 +39,8 @@ public class TransactionService {
     }
 
     public Single<List<TransactionResponseDto>> findAllTransactions() {
-        return RxJava3Adapter.fluxToFlowable(transactionRepository.findAll())
+        return RxJava3Adapter.fluxToFlowable(
+            transactionRepository.findAll(Constants.DEFAULT_SORT))
             .map(transactionMapper::toDomain)
             .map(transactionMapper::toResponseDto)
             .toList();
