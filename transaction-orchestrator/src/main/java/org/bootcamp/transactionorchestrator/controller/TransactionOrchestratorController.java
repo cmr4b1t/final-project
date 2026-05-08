@@ -67,4 +67,13 @@ public class TransactionOrchestratorController {
         return transactionOrchestratorService.withdraw(idempotencyKey, accountId, requestDto)
             .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
+
+    @PostMapping("/credit-card-accounts/{creditId}/purchase")
+    public Single<ResponseEntity<AccountTransactionResponseDto>> purchase(
+        @RequestHeader(Constants.IDEMPOTENCY_KEY_HEADER) @NotBlank String idempotencyKey,
+        @PathVariable @NotBlank String creditId,
+        @Valid @RequestBody AccountTransactionRequestDto requestDto) {
+        return transactionOrchestratorService.purchase(idempotencyKey, creditId, requestDto)
+            .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
+    }
 }

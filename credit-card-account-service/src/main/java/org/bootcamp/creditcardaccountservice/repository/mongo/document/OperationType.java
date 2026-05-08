@@ -1,8 +1,7 @@
 package org.bootcamp.creditcardaccountservice.repository.mongo.document;
 
 public enum OperationType {
-    CREATE_ACCOUNT,
     DEPOSIT_REQUESTED,
-    WITHDRAW_REQUESTED,
+    PURCHASE_REQUESTED,
     CREATE_CREDIT_CARD_ACCOUNT
 }

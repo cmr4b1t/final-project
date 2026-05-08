@@ -284,6 +284,8 @@ components:
         cycleBillingDay:
           type: integer
           format: int32
+        allowNewPurchases:
+          type: boolean
         status:
           type: string
           enum:
@@ -321,6 +323,8 @@ components:
         dueDate:
           type: string
           format: date-time
+        allowNewPurchases:
+          type: boolean
         status:
           type: string
           enum:

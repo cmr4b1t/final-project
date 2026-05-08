@@ -28,7 +28,9 @@ import org.bootcamp.creditcardaccountservice.service.policies.CreditCardAccountP
 import org.bootcamp.creditcardaccountservice.support.Constants;
 import org.bootcamp.creditcardaccountservice.support.IdempotencyUtils;
 import org.bootcamp.creditcardaccountservice.support.Utils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -120,11 +122,16 @@ public class CreditCardAccountServiceImpl implements CreditCardAccountService {
 
         if (requestDto.getMaxCreditLimit().compareTo(CreditCardAccountPolicies.MAX_CREDIT_LIMIT) > 0) {
             return Mono.error(
-                new RuntimeException("Credit limit cannot exceed " + CreditCardAccountPolicies.MAX_CREDIT_LIMIT));
+                new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Credit limit cannot exceed " + CreditCardAccountPolicies.MAX_CREDIT_LIMIT));
         }
 
         if (CustomerType.PERSONAL.name().equals(customer.getType()) && customer.getCreditCardsCount() >= 1) {
-            return Mono.error(new RuntimeException("Personal customer can have only one credit card"));
+            return Mono.error(
+                new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Personal customer can have only one credit card"));
         }
 
         return Mono.just(customer);
@@ -142,6 +149,7 @@ public class CreditCardAccountServiceImpl implements CreditCardAccountService {
             .currentBalance(BigDecimal.ZERO)
             .openingDate(createdAt)
             .nextBillingDate(createdAt.plusMonths(1).withDayOfMonth(requestDto.getCycleBillingDay()))
+            .allowNewPurchases(true)
             .status(CreditCardStatus.INACTIVE)
             .createdAt(createdAt)
             .build();

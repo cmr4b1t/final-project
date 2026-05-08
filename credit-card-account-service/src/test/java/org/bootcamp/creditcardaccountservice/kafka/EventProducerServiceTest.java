@@ -14,6 +14,8 @@ import org.bootcamp.creditcardaccountservice.domain.CreditCardStatus;
 import org.bootcamp.creditcardaccountservice.domain.Currency;
 import org.bootcamp.creditcardaccountservice.kafka.event.CreditCardAccountActivatedEvent;
 import org.bootcamp.creditcardaccountservice.kafka.event.CreditCardAccountCreatedEvent;
+import org.bootcamp.creditcardaccountservice.kafka.event.PurchaseAcceptedEvent;
+import org.bootcamp.creditcardaccountservice.kafka.event.PurchaseRejectedEvent;
 import org.bootcamp.creditcardaccountservice.support.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +54,18 @@ class EventProducerServiceTest {
             eventProducerService,
             "creditCarAccountActivatedTopic",
             "credit-card-account-activated-topic"
+        );
+
+        ReflectionTestUtils.setField(
+            eventProducerService,
+            "purchaseAcceptedTopic",
+            "purchase-accepted-topic"
+        );
+
+        ReflectionTestUtils.setField(
+            eventProducerService,
+            "purchaseRejectedTopic",
+            "purchase-rejected-topic"
         );
     }
 
@@ -255,5 +269,115 @@ class EventProducerServiceTest {
                     .equals("Kafka activated error")
             )
             .verify();
+    }
+
+    @Test
+    void shouldPublishPurchaseAcceptedEventSuccessfully() {
+
+        String idempotencyKey = "idem-purchase-accepted-001";
+
+        PurchaseAcceptedEvent event =
+            PurchaseAcceptedEvent.builder()
+                .creditId("credit-001")
+                .customerId("customer-001")
+                .currency(Currency.PEN)
+                .availableCredit(BigDecimal.valueOf(8000))
+                .currentBalance(BigDecimal.valueOf(2000))
+                .build();
+
+        CompletableFuture future =
+            CompletableFuture.completedFuture(null);
+
+        when(kafkaTemplate.send(any(Message.class)))
+            .thenReturn(future);
+
+        Mono<Void> result =
+            eventProducerService.publishPurchaseAcceptedEvent(
+                idempotencyKey,
+                event
+            );
+
+        StepVerifier.create(result)
+            .verifyComplete();
+
+        ArgumentCaptor<Message> captor =
+            ArgumentCaptor.forClass(Message.class);
+
+        verify(kafkaTemplate)
+            .send(captor.capture());
+
+        Message<?> message = captor.getValue();
+
+        assertNotNull(message);
+
+        assertEquals(
+            event,
+            message.getPayload()
+        );
+
+        assertEquals(
+            "purchase-accepted-topic",
+            message.getHeaders().get(KafkaHeaders.TOPIC)
+        );
+
+        assertEquals(
+            idempotencyKey,
+            message.getHeaders().get(Constants.IDEMPOTENCY_KEY_HEADER)
+        );
+    }
+
+    @Test
+    void shouldPublishPurchaseRejectedEventSuccessfully() {
+
+        String idempotencyKey = "idem-purchase-rejected-001";
+
+        PurchaseRejectedEvent event =
+            PurchaseRejectedEvent.builder()
+                .creditId("credit-002")
+                .customerId("customer-002")
+                .amount(BigDecimal.valueOf(500))
+                .currency(Currency.USD)
+                .description("Available credit is not enough")
+                .build();
+
+        CompletableFuture future =
+            CompletableFuture.completedFuture(null);
+
+        when(kafkaTemplate.send(any(Message.class)))
+            .thenReturn(future);
+
+        Mono<Void> result =
+            eventProducerService.publishPurchaseRejectedEvent(
+                idempotencyKey,
+                event
+            );
+
+        StepVerifier.create(result)
+            .verifyComplete();
+
+        ArgumentCaptor<Message> captor =
+            ArgumentCaptor.forClass(Message.class);
+
+        verify(kafkaTemplate)
+            .send(captor.capture());
+
+        Message<?> message = captor.getValue();
+
+        assertNotNull(message);
+
+        assertEquals(
+            event,
+            message.getPayload()
+        );
+
+        assertEquals(
+            "purchase-rejected-topic",
+            message.getHeaders().get(KafkaHeaders.TOPIC)
+        );
+
+        assertEquals(
+            idempotencyKey,
+            message.getHeaders().get(Constants.IDEMPOTENCY_KEY_HEADER)
+        );
     }
 }

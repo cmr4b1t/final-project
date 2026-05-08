@@ -26,6 +26,7 @@ public class AccountTransactionResponseDto {
     private AccountType accountType;
     private AccountSubType accountSubType;
     private AccountStatus accountStatus;
+    BigDecimal availableCredit;
     private BigDecimal balance;
     private String description;
 }

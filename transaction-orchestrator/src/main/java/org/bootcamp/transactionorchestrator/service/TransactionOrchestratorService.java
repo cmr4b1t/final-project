@@ -10,6 +10,7 @@ import org.bootcamp.transactionorchestrator.domain.OperationStatus;
 import org.bootcamp.transactionorchestrator.domain.OperationType;
 import org.bootcamp.transactionorchestrator.kafka.EventProducerService;
 import org.bootcamp.transactionorchestrator.kafka.event.DepositRequestedEvent;
+import org.bootcamp.transactionorchestrator.kafka.event.PurchaseRequestedEvent;
 import org.bootcamp.transactionorchestrator.kafka.event.WithdrawRequestedEvent;
 import org.bootcamp.transactionorchestrator.repository.mongo.IdempotencyLogRepository;
 import org.bootcamp.transactionorchestrator.repository.mongo.document.IdempotencyLogDocument;
@@ -40,6 +41,15 @@ public class TransactionOrchestratorService {
             requestDto,
             OperationType.WITHDRAW,
             Completable.defer(() -> publishWithdrawRequestedEvent(idempotencyKey, accountId, requestDto)));
+    }
+
+    public Single<AccountTransactionResponseDto> purchase(
+        String idempotencyKey, String creditId, AccountTransactionRequestDto requestDto) {
+        return orchestrate(
+            idempotencyKey,
+            requestDto,
+            OperationType.PURCHASE,
+            Completable.defer(() -> publishPurchaseRequestedEvent(idempotencyKey, creditId, requestDto)));
     }
 
     private Single<AccountTransactionResponseDto> orchestrate(String idempotencyKey,
@@ -89,6 +99,18 @@ public class TransactionOrchestratorService {
         return eventProducerService.publishWithdrawRequestedEvent(
             idempotencyKey,
             WithdrawRequestedEvent.builder()
+                .accountId(accountId)
+                .amount(requestDto.getAmount())
+                .currency(requestDto.getCurrency())
+                .note(requestDto.getNote())
+                .build());
+    }
+
+    private Completable publishPurchaseRequestedEvent(
+        String idempotencyKey, String accountId, AccountTransactionRequestDto requestDto) {
+        return eventProducerService.publishPurchaseRequestedEvent(
+            idempotencyKey,
+            PurchaseRequestedEvent.builder()
                 .accountId(accountId)
                 .amount(requestDto.getAmount())
                 .currency(requestDto.getCurrency())

@@ -13,6 +13,9 @@ topics:
   bank-credit-card-account-created: bank.credit-card-account.created
   bank-credit-card-created: bank.credit-card.created
   bank-credit-card-account-activated: bank.credit-card-account.activated
+  bank-transaction-purchase-requested: bank.transaction.purchase.requested
+  bank-transaction-purchase-accepted: bank.transaction.purchase.accepted
+  bank-transaction-purchase-rejected: bank.transaction.purchase.rejected
 
 management:
   endpoints:

@@ -3,6 +3,7 @@ package org.bootcamp.transactionorchestrator.kafka;
 import io.reactivex.rxjava3.core.Completable;
 import lombok.RequiredArgsConstructor;
 import org.bootcamp.transactionorchestrator.kafka.event.DepositRequestedEvent;
+import org.bootcamp.transactionorchestrator.kafka.event.PurchaseRequestedEvent;
 import org.bootcamp.transactionorchestrator.kafka.event.WithdrawRequestedEvent;
 import org.bootcamp.transactionorchestrator.support.Constants;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,9 @@ public class EventProducerService {
     @Value("${topics.bank-transaction-withdraw-requested}")
     private String withdrawRequestedTopic;
 
+    @Value("${topics.bank-transaction-purchase-requested}")
+    private String purchaseRequestedTopic;
+
     public Completable publishDepositRequestedEvent(String idempotencyKey, DepositRequestedEvent event) {
         Message<DepositRequestedEvent> message = MessageBuilder.withPayload(event)
             .setHeader(KafkaHeaders.TOPIC, depositRequestedTopic)
@@ -35,6 +39,15 @@ public class EventProducerService {
     public Completable publishWithdrawRequestedEvent(String idempotencyKey, WithdrawRequestedEvent event) {
         Message<WithdrawRequestedEvent> message = MessageBuilder.withPayload(event)
             .setHeader(KafkaHeaders.TOPIC, withdrawRequestedTopic)
+            .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
+            .build();
+
+        return Completable.fromCompletionStage(kafkaTemplate.send(message));
+    }
+
+    public Completable publishPurchaseRequestedEvent(String idempotencyKey, PurchaseRequestedEvent event) {
+        Message<PurchaseRequestedEvent> message = MessageBuilder.withPayload(event)
+            .setHeader(KafkaHeaders.TOPIC, purchaseRequestedTopic)
             .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
             .build();
 

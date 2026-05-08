@@ -39,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -338,9 +339,10 @@ class CreditCardAccountServiceImplTest {
                     request
                 ))
             .expectErrorMatches(error ->
-                error instanceof RuntimeException
-                    && error.getMessage()
+                error instanceof ResponseStatusException
+                    && ((ResponseStatusException) error).getReason()
                     .equals("Personal customer can have only one credit card")
+                && ((ResponseStatusException) error).getStatusCode().value() == 400
             )
             .verify();
 

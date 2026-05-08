@@ -1,10 +1,11 @@
 package org.bootcamp.creditcardaccountservice.kafka;
 
-import io.reactivex.rxjava3.core.Completable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bootcamp.creditcardaccountservice.kafka.event.CreditCardAccountActivatedEvent;
 import org.bootcamp.creditcardaccountservice.kafka.event.CreditCardAccountCreatedEvent;
+import org.bootcamp.creditcardaccountservice.kafka.event.PurchaseAcceptedEvent;
+import org.bootcamp.creditcardaccountservice.kafka.event.PurchaseRejectedEvent;
 import org.bootcamp.creditcardaccountservice.support.Constants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -26,9 +27,16 @@ public class EventProducerService {
     @Value("${topics.bank-credit-card-account-activated}")
     private String creditCarAccountActivatedTopic;
 
+    @Value("${topics.bank-transaction-purchase-accepted}")
+    private String purchaseAcceptedTopic;
+
+    @Value("${topics.bank-transaction-purchase-rejected}")
+    private String purchaseRejectedTopic;
+
     public Mono<Void> publishCreditCardAccountCreatedEvent(String idempotencyKey, CreditCardAccountCreatedEvent event) {
         log.info("Publishing credit card account created event. idempotencyKey={}, event={}",
             idempotencyKey, event);
+
         Message<CreditCardAccountCreatedEvent> message = MessageBuilder.withPayload(event)
             .setHeader(KafkaHeaders.TOPIC, creditCardAccountCreatedTopic)
             .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
@@ -41,8 +49,35 @@ public class EventProducerService {
                                                               CreditCardAccountActivatedEvent event) {
         log.info("Publishing credit card account activated event. idempotencyKey={}, event={}",
             idempotencyKey, event);
+
         Message<CreditCardAccountActivatedEvent> message = MessageBuilder.withPayload(event)
             .setHeader(KafkaHeaders.TOPIC, creditCarAccountActivatedTopic)
+            .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
+            .build();
+
+        return Mono.fromFuture(kafkaTemplate.send(message)).then();
+    }
+
+    public Mono<Void> publishPurchaseAcceptedEvent(String idempotencyKey,
+                                                   PurchaseAcceptedEvent event) {
+        log.info("Publishing purchase accepted event. idempotencyKey={}, event={}",
+            idempotencyKey, event);
+
+        Message<PurchaseAcceptedEvent> message = MessageBuilder.withPayload(event)
+            .setHeader(KafkaHeaders.TOPIC, purchaseAcceptedTopic)
+            .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
+            .build();
+
+        return Mono.fromFuture(kafkaTemplate.send(message)).then();
+    }
+
+    public Mono<Void> publishPurchaseRejectedEvent(String idempotencyKey,
+                                                   PurchaseRejectedEvent event) {
+        log.info("Publishing purchase rejected event. idempotencyKey={}, event={}",
+            idempotencyKey, event);
+
+        Message<PurchaseRejectedEvent> message = MessageBuilder.withPayload(event)
+            .setHeader(KafkaHeaders.TOPIC, purchaseRejectedTopic)
             .setHeader(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
             .build();
 

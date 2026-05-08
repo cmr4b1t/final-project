@@ -26,6 +26,8 @@ public class CreditCardAccount {
     private LocalDateTime lastBillingDate;
     private LocalDateTime dueDate;
 
+    private boolean allowNewPurchases;
+
     private CreditCardStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -165,6 +165,8 @@ services:
         condition: service_healthy
       mongo-db:
         condition: service_started
+      redis:
+        condition: service_healthy
       config-server:
         condition: service_healthy
     environment:

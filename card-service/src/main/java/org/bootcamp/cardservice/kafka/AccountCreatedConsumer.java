@@ -39,6 +39,9 @@ public class AccountCreatedConsumer {
     public void listen(ConsumerRecord<String, String> consumerRecord,
                        @Header(Constants.IDEMPOTENCY_KEY_HEADER) String idempotencyKey,
                        Acknowledgment ack) {
+        log.info("Received account created event. idempotencyKey={}, offset={}",
+            idempotencyKey, consumerRecord.offset());
+
         processAccountCreated(consumerRecord.value(), idempotencyKey)
             .doOnSuccess(unused -> ack.acknowledge())
             .doOnError(error -> log.error(

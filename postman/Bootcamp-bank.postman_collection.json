@@ -52,13 +52,13 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"documentNumber\": \"71542368\",\r\n    \"fullName\": \"Jorge Perez\",\r\n    \"type\": \"PERSONAL\",\r\n    \"profile\": \"STANDARD\"\r\n}",
+              "raw": "{\r\n    \"documentNumber\": \"71542123\",\r\n    \"fullName\": \"Edgar Sifuentes\",\r\n    \"type\": \"PERSONAL\",\r\n    \"profile\": \"STANDARD\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -79,57 +79,7 @@
               ]
             }
           },
-          "response": [
-            {
-              "name": "create customer",
-              "originalRequest": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"documentNumber\": \"71542368\",\r\n    \"fullName\": \"Jorge Perez\",\r\n    \"type\": \"PERSONAL\",\r\n    \"profile\": \"STANDARD\"\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "http://localhost:8081/v1/customers",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "8081",
-                  "path": [
-                    "v1",
-                    "customers"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": "",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                },
-                {
-                  "key": "Content-Length",
-                  "value": "327"
-                }
-              ],
-              "cookie": [
-                {
-                  "expires": "Invalid Date",
-                  "domain": "",
-                  "path": ""
-                }
-              ],
-              "body": "{\n    \"customerId\": \"CUS-827f02c45ad74a0d83c370d34ab5f475\",\n    \"documentNumber\": \"71542368\",\n    \"fullName\": \"Jorge Perez\",\n    \"type\": \"PERSONAL\",\n    \"profile\": \"STANDARD\",\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2026-05-05T05:12:38.68179423\",\n    \"hasOverdueDebts\": false,\n    \"savingsAccountsCount\": 0,\n    \"checkingAccountsCount\": 0,\n    \"fixedTermAccountsCount\": 0,\n    \"creditCardsCount\": 0,\n    \"loansCount\": 0\n}"
-            }
-          ]
+          "response": []
         },
         {
           "name": "all customers",
@@ -138,7 +88,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
@@ -165,12 +115,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/api/v1/customers/CUS-db95dab23d1544679fe0929c1fdd9cb4",
+              "raw": "http://localhost:8080/api/v1/customers/{{customer_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -180,7 +130,7 @@
                 "api",
                 "v1",
                 "customers",
-                "CUS-db95dab23d1544679fe0929c1fdd9cb4"
+                "{{customer_id}}"
               ]
             }
           },
@@ -193,13 +143,13 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"documentNumber\": \"71542368\",\r\n  \"fullName\": \"Jorge Arias\",\r\n  \"type\": \"PERSONAL\",\r\n  \"profile\": \"STANDARD\"\r\n}",
+              "raw": "{\r\n  \"documentNumber\": \"71542368\",\r\n  \"fullName\": \"Jorge Arias\",\r\n  \"type\": \"PERSONAL\",\r\n  \"profile\": \"STANDARD\",\r\n  \"hasOverdueDebts\": false\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -207,7 +157,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/customers/CUS-79921895b2904c63b2a60cd85d90875a",
+              "raw": "http://localhost:8080/api/v1/customers/{{customer_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -217,7 +167,7 @@
                 "api",
                 "v1",
                 "customers",
-                "CUS-79921895b2904c63b2a60cd85d90875a"
+                "{{customer_id}}"
               ]
             }
           },
@@ -230,12 +180,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/api/v1/customers/CUS-09c3b0adbf1549efabe0dd9f8e6b36c2",
+              "raw": "http://localhost:8080/api/v1/customers/{{customer_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -245,7 +195,7 @@
                 "api",
                 "v1",
                 "customers",
-                "CUS-09c3b0adbf1549efabe0dd9f8e6b36c2"
+                "{{customer_id}}"
               ]
             }
           },
@@ -263,18 +213,18 @@
             "header": [
               {
                 "key": "Idempotency-Key",
-                "value": "66c862b1-da5d-4ffe-8caf-8e8fa4ce539a",
+                "value": "66c862b1-da5d-4ffe-8caf-8e8fa4ce5104",
                 "type": "text"
               },
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"customerId\": \"CUS-db95dab23d1544679fe0929c1fdd9cb4\",\r\n    \"accountType\": \"SAVINGS\",\r\n    \"accountSubType\": \"STANDARD\",\r\n    \"currency\": \"PEN\",\r\n    \"openingBalance\": 1000.0,\r\n    \"holders\": [\"CUS-db95dab23d1544679fe0929c1fdd9cb4\"],\r\n    \"authorizedSigners\": [],\r\n    \"fixedTransactionDay\": 0\r\n}",
+              "raw": "{\r\n    \"customerId\": \"{{customer_id}}\",\r\n    \"accountType\": \"CHECKING\",\r\n    \"accountSubType\": \"STANDARD\",\r\n    \"currency\": \"PEN\",\r\n    \"openingBalance\": 1500.0,\r\n    \"holders\": [\"{{customer_id}}\"],\r\n    \"authorizedSigners\": [],\r\n    \"fixedTransactionDay\": 0\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -295,57 +245,7 @@
               ]
             }
           },
-          "response": [
-            {
-              "name": "create account",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Idempotency-Key",
-                    "value": "12345678910123456",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"customerId\": \"CUS-827f02c45ad74a0d83c370d34ab5f475\",\r\n    \"accountType\": \"SAVINGS\",\r\n    \"accountSubType\": \"STANDARD\",\r\n    \"currency\": \"PEN\",\r\n    \"openingBalance\": 1000.0,\r\n    \"holders\": [\"CUS-827f02c45ad74a0d83c370d34ab5f475\"],\r\n    \"authorizedSigners\": [],\r\n    \"fixedTransactionDay\": 0\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "http://localhost:8082/v1/accounts",
-                  "protocol": "http",
-                  "host": [
-                    "localhost"
-                  ],
-                  "port": "8082",
-                  "path": [
-                    "v1",
-                    "accounts"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": null,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                },
-                {
-                  "key": "Content-Length",
-                  "value": "542"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n    \"status\": \"COMPLETED\",\n    \"createdAt\": \"2026-05-05T05:13:34.194721753\",\n    \"accountId\": \"ACC-539C932EB91B4F119FBAE8F9FEE16C0B\",\n    \"customerId\": \"CUS-827f02c45ad74a0d83c370d34ab5f475\",\n    \"accountType\": \"SAVINGS\",\n    \"accountSubType\": \"STANDARD\",\n    \"currency\": \"PEN\",\n    \"balance\": 1000,\n    \"holders\": [\n        \"CUS-827f02c45ad74a0d83c370d34ab5f475\"\n    ],\n    \"authorizedSigners\": [],\n    \"unlimitedTransactions\": false,\n    \"monthlyTransactionsLimit\": 25,\n    \"monthlyTransactionsLimitWithoutCommission\": 10,\n    \"transactionCommission\": 2,\n    \"maintenanceCommission\": 0,\n    \"allowedMinimumBalance\": 0,\n    \"accountStatus\": \"ACTIVE\"\n}"
-            }
-          ]
+          "response": []
         },
         {
           "name": "all accounts",
@@ -354,7 +254,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
@@ -381,12 +281,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/api/v1/accounts/ACC-40DAE9C6A80C436FA55BA4BAA01B77DA",
+              "raw": "http://localhost:8080/api/v1/accounts/{{account_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -396,7 +296,7 @@
                 "api",
                 "v1",
                 "accounts",
-                "ACC-40DAE9C6A80C436FA55BA4BAA01B77DA"
+                "{{account_id}}"
               ]
             }
           },
@@ -409,7 +309,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
@@ -423,7 +323,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/accounts/ACC-0F93ABD44BAA4FE5B93DECAC2AAF1246",
+              "raw": "http://localhost:8080/api/v1/accounts/{{account_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -433,7 +333,7 @@
                 "api",
                 "v1",
                 "accounts",
-                "ACC-0F93ABD44BAA4FE5B93DECAC2AAF1246"
+                "{{account_id}}"
               ]
             }
           },
@@ -446,12 +346,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/v1/accounts/ACC-0F93ABD44BAA4FE5B93DECAC2AAF1246",
+              "raw": "http://localhost:8080/v1/accounts/{{account_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -460,7 +360,7 @@
               "path": [
                 "v1",
                 "accounts",
-                "ACC-0F93ABD44BAA4FE5B93DECAC2AAF1246"
+                "{{account_id}}"
               ]
             }
           },
@@ -473,12 +373,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/api/v1/accounts/customers/CUS-db95dab23d1544679fe0929c1fdd9cb4",
+              "raw": "http://localhost:8080/api/v1/accounts/customers/{{customer_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -489,7 +389,7 @@
                 "v1",
                 "accounts",
                 "customers",
-                "CUS-db95dab23d1544679fe0929c1fdd9cb4"
+                "{{customer_id}}"
               ]
             }
           },
@@ -502,12 +402,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/api/v1/accounts/ACC-40DAE9C6A80C436FA55BA4BAA01B77DA/movements?last=10",
+              "raw": "http://localhost:8080/api/v1/accounts/{{account_id}}/movements?last=10",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -517,7 +417,7 @@
                 "api",
                 "v1",
                 "accounts",
-                "ACC-40DAE9C6A80C436FA55BA4BAA01B77DA",
+                "{{account_id}}",
                 "movements"
               ],
               "query": [
@@ -547,12 +447,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/api/v1/accounts/ACC-40DAE9C6A80C436FA55BA4BAA01B77DA/balance",
+              "raw": "http://localhost:8080/api/v1/accounts/{{account_id}}/balance",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -562,7 +462,7 @@
                 "api",
                 "v1",
                 "accounts",
-                "ACC-40DAE9C6A80C436FA55BA4BAA01B77DA",
+                "{{account_id}}",
                 "balance"
               ]
             }
@@ -581,12 +481,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/api/v1/transactions/ACC-40DAE9C6A80C436FA55BA4BAA01B77DA",
+              "raw": "http://localhost:8080/api/v1/transactions/{{account_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -596,7 +496,7 @@
                 "api",
                 "v1",
                 "transactions",
-                "ACC-40DAE9C6A80C436FA55BA4BAA01B77DA"
+                "{{account_id}}"
               ],
               "query": [
                 {
@@ -621,7 +521,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
@@ -648,12 +548,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/api/v1/transactions/customers/CUS-79921895b2904c63b2a60cd85d90875a",
+              "raw": "http://localhost:8080/api/v1/transactions/customers/{{customer_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -664,7 +564,7 @@
                 "v1",
                 "transactions",
                 "customers",
-                "CUS-79921895b2904c63b2a60cd85d90875a"
+                "{{customer_id}}"
               ]
             }
           },
@@ -682,18 +582,18 @@
             "header": [
               {
                 "key": "Idempotency-Key",
-                "value": "c7e644ef-d67f-4851-aa5e-cc3dd9827c96",
+                "value": "c7e644ef-d67f-4851-aa5e-cc3dd9827c01",
                 "type": "text"
               },
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"amount\": 900.0,\r\n    \"currency\": \"PEN\",\r\n    \"note\": \"deposit transaction\"\r\n}",
+              "raw": "{\r\n    \"amount\": 200.0,\r\n    \"currency\": \"PEN\",\r\n    \"note\": \"deposit transaction\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -701,7 +601,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/transaction-orchestrator/accounts/ACC-40DAE9C6A80C436FA55BA4BAA01B77DA/deposit",
+              "raw": "http://localhost:8080/api/v1/transaction-orchestrator/accounts/{{account_id}}/deposit",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -712,7 +612,7 @@
                 "v1",
                 "transaction-orchestrator",
                 "accounts",
-                "ACC-40DAE9C6A80C436FA55BA4BAA01B77DA",
+                "{{account_id}}",
                 "deposit"
               ]
             }
@@ -731,7 +631,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
@@ -745,7 +645,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/transaction-orchestrator/accounts/ACC-40DAE9C6A80C436FA55BA4BAA01B77DA/withdraw",
+              "raw": "http://localhost:8080/api/v1/transaction-orchestrator/accounts/{{account_id}}/withdraw",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -756,8 +656,282 @@
                 "v1",
                 "transaction-orchestrator",
                 "accounts",
-                "ACC-40DAE9C6A80C436FA55BA4BAA01B77DA",
+                "{{account_id}}",
                 "withdraw"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "purchase",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "4f30d263-1ba8-4273-9d73-f17d0aa57103",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"amount\": 900.0,\r\n    \"currency\": \"PEN\",\r\n    \"note\": \"purchase transaction\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/transaction-orchestrator/credit-card-accounts/{{credit_card_account_id}}/purchase",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "transaction-orchestrator",
+                "credit-card-accounts",
+                "{{credit_card_account_id}}",
+                "purchase"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "credit-card-accounts",
+      "item": [
+        {
+          "name": "create credit-card-account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "66c862b1-da5d-4ffe-8caf-8e8fa4ce5002",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"customerId\": \"{{customer_id}}\",\r\n  \"currency\": \"PEN\",\r\n  \"maxCreditLimit\": 2000,\r\n  \"cycleBillingDay\": 15\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/credit-card-accounts",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "credit-card-accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "all credit card accounts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/credit-card-accounts",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "credit-card-accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "find credit card account by creditId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/credit-card-accounts/{{credit_card_account_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "credit-card-accounts",
+                "{{credit_card_account_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update credit card account",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"currency\": \"PEN\",\r\n  \"maxCreditLimit\": 50,\r\n  \"availableCredit\": 50,\r\n  \"currentBalance\": 0,\r\n  \"cycleBillingDay\": 0,\r\n  \"status\": \"ACTIVE\",\r\n  \"allowNewPurchases\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/credit-card-accounts/{{credit_card_account_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "credit-card-accounts",
+                "{{credit_card_account_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete  credit card account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/credit-card-accounts/{{credit_card_account_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "credit-card-accounts",
+                "{{credit_card_account_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get movements by creditId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/credit-card-accounts/{{credit_card_account_id}}/movements?last=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "credit-card-accounts",
+                "{{credit_card_account_id}}",
+                "movements"
+              ],
+              "query": [
+                {
+                  "key": "last",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get saldo disponible",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/credit-card-accounts/{{credit_card_account_id}}/balance",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "credit-card-accounts",
+                "{{credit_card_account_id}}",
+                "balance"
               ]
             }
           },
@@ -778,7 +952,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                    "value": "Bearer {{access_token}}",
                     "type": "text"
                   }
                 ],
@@ -815,7 +989,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODEwNjM5NSwiZXhwIjoxNzc4MTA5OTk1fQ.TyuS6ElP_V2tBgAnS9iUs_vS3H0iVoLx91GYazjzDds",
+                    "value": "Bearer {{access_token}}",
                     "type": "text"
                   }
                 ],
@@ -843,7 +1017,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                    "value": "Bearer {{access_token}}",
                     "type": "text"
                   }
                 ],
@@ -872,7 +1046,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                    "value": "Bearer {{access_token}}",
                     "type": "text"
                   }
                 ],
@@ -910,7 +1084,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                    "value": "Bearer {{access_token}}",
                     "type": "text"
                   }
                 ],
@@ -944,7 +1118,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                    "value": "Bearer {{access_token}}",
                     "type": "text"
                   }
                 ],
@@ -981,7 +1155,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                    "value": "Bearer {{access_token}}",
                     "type": "text"
                   }
                 ],
@@ -1009,7 +1183,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                    "value": "Bearer {{access_token}}",
                     "type": "text"
                   }
                 ],
@@ -1038,7 +1212,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                    "value": "Bearer {{access_token}}",
                     "type": "text"
                   }
                 ],
@@ -1075,7 +1249,7 @@
                 "method": "DELETE",
                 "header": [],
                 "url": {
-                  "raw": "http://localhost:8080/api/v1/cards/credit/CRC-11EE2A24737A45A3A255255338649565?Authorization=Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                  "raw": "http://localhost:8080/api/v1/cards/credit/CRC-11EE2A24737A45A3A255255338649565?Authorization=Bearer {{access_token}}",
                   "protocol": "http",
                   "host": [
                     "localhost"
@@ -1091,8 +1265,7 @@
                   "query": [
                     {
                       "key": "Authorization",
-                      "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
-                      "type": "text"
+                      "value": "Bearer {{access_token}}"
                     }
                   ]
                 }
@@ -1108,12 +1281,12 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
+                "value": "Bearer {{access_token}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "http://localhost:8080/api/v1/cards/customers/CUS-79921895b2904c63b2a60cd85d90875a",
+              "raw": "http://localhost:8080/api/v1/cards/customers/{{customer_id}}",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -1124,243 +1297,59 @@
                 "v1",
                 "cards",
                 "customers",
-                "CUS-79921895b2904c63b2a60cd85d90875a"
+                "{{customer_id}}"
               ]
             }
           },
           "response": []
         }
       ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
     },
     {
-      "name": "credit-card-accounts",
-      "item": [
-        {
-          "name": "create credit-card-account",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Idempotency-Key",
-                "value": "66c862b1-da5d-4ffe-8caf-8e8fa4ce539a",
-                "type": "text"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"customerId\": \"CUS-db95dab23d1544679fe0929c1fdd9cb4\",\r\n  \"currency\": \"PEN\",\r\n  \"maxCreditLimit\": 1000,\r\n  \"cycleBillingDay\": 15\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/credit-card-accounts",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "credit-card-accounts"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "all credit card accounts",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/credit-card-accounts",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "credit-card-accounts"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "find credit card account by creditId",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/credit-card-accounts/CCA-08A058CE71274B73B090F31CE631EFCD",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "credit-card-accounts",
-                "CCA-08A058CE71274B73B090F31CE631EFCD"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "update credit card account",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"currency\": \"PEN\",\r\n  \"maxCreditLimit\": 50,\r\n  \"availableCredit\": 50,\r\n  \"currentBalance\": 0,\r\n  \"cycleBillingDay\": 0,\r\n  \"status\": \"ACTIVE\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/api/v1/credit-card-accounts/CCA-08A058CE71274B73B090F31CE631EFCD",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "credit-card-accounts",
-                "CCA-08A058CE71274B73B090F31CE631EFCD"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "delete  credit card account",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODA0ODk2NSwiZXhwIjoxNzc4MDUyNTY1fQ.RgzBOV6Dkv7UXcqoQJqgfGMGlPQFltCwsqEWJ9_J3XE",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/credit-card-accounts/CCA-0F93ABD44BAA4FE5B93DECAC2AAF1246",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "credit-card-accounts",
-                "CCA-0F93ABD44BAA4FE5B93DECAC2AAF1246"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "get movements by creditId",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/credit-card-accounts/CCA-08A058CE71274B73B090F31CE631EFCD/movements?last=10",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "credit-card-accounts",
-                "CCA-08A058CE71274B73B090F31CE631EFCD",
-                "movements"
-              ],
-              "query": [
-                {
-                  "key": "last",
-                  "value": "10"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "get saldo disponible",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc3ODE0NDA5MCwiZXhwIjoxNzc4MTQ3NjkwfQ.k71xgDy6HtOMe_wYzk9_Q9NmSdjVOeiUYJkfpc0T_Jg",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "http://localhost:8080/api/v1/credit-card-accounts/CCA-08A058CE71274B73B090F31CE631EFCD/balance",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "v1",
-                "credit-card-accounts",
-                "CCA-08A058CE71274B73B090F31CE631EFCD",
-                "balance"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "customer_id",
+      "value": ""
+    },
+    {
+      "key": "account_id",
+      "value": ""
+    },
+    {
+      "key": "credit_card_account_id",
+      "value": ""
+    },
+    {
+      "value": "",
+      "type": "default"
     }
   ]
 }

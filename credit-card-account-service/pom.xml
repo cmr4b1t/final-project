@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.bootcamp</groupId>
     <artifactId>credit-card-account-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>credit-card-account-service</name>
     <description>credit-card-account-service</description>
     <url/>
