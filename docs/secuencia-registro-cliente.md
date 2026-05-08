@@ -9,6 +9,7 @@ sequenceDiagram
     participant Gateway
     participant Customer as customer-service
     participant MongoDB
+    participant Redis
 
     Usuario->>Gateway: POST /v1/customers
     Gateway->>Customer: Registrar cliente
@@ -17,6 +18,8 @@ sequenceDiagram
     alt Documento no existe
         Customer->>MongoDB: Guardar cliente ACTIVE
         MongoDB-->>Customer: Cliente creado
+        Customer->>Redis: Guardar cliente ACTIVE
+        Redis-->>Customer: Cliente guardado
         Customer-->>Gateway: 201 Created
         Gateway-->>Usuario: Cliente registrado
     else Documento duplicado
@@ -38,17 +41,24 @@ sequenceDiagram
     autonumber
     participant Account as account-service
     participant Customer as customer-service
+    participant Redis
     participant MongoDB
 
     Account->>Customer: GET /v1/customers/{customerId}
-    Customer->>MongoDB: Buscar cliente
-
-    alt Cliente existe
-        MongoDB-->>Customer: Cliente
-        Customer-->>Account: 200 OK + datos del cliente
-    else Cliente no existe
-        MongoDB-->>Customer: Sin resultado
-        Customer-->>Account: 404 Not Found
+    Customer->>Redis: Buscar cliente
+    Redis-->>Customer: Cliente
+    Customer-->>Account: 200 OK + datos del cliente
+        
+    alt Cliente no existe en Redis
+        Redis-->>Customer: Sin resultado
+        Customer-->>MongoDB: Buscar cliente
+        alt Cliente existe en MongoDB
+            MongoDB-->>Customer: Cliente
+            Customer-->>Account: 200 OK + datos del cliente 
+        else Cliente no existe en MongoDB
+            MongoDB-->>Customer: Sin resultado
+            Customer-->>Account: 404 Not Found
+        end
     else Timeout/error tecnico
         Customer--x Account: Error propagado
     end

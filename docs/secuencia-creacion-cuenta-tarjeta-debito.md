@@ -10,6 +10,7 @@ sequenceDiagram
     participant Account as account-service
     participant Customer as customer-service
     participant Card as card-service
+    participant Redis
     participant Kafka
     participant MongoDB
 
@@ -23,8 +24,8 @@ sequenceDiagram
         Gateway-->>Usuario: Resultado existente
     else Nueva solicitud
         Account->>Customer: Validar cliente
-        Customer->>MongoDB: Buscar cliente
-        MongoDB-->>Customer: Cliente
+        Customer->>Redis: Buscar cliente
+        Redis-->>Customer: Cliente
         Customer-->>Account: Datos del cliente
         Account-->>Account: Reglas de negocio
         Account->>MongoDB: Guardar cuenta INACTIVE y log PENDING
@@ -42,6 +43,7 @@ sequenceDiagram
 
         Kafka-->>Customer: bank.account.activated
         Customer->>MongoDB: Actualizar contador de cuentas del cliente
+        Customer->>Redis: Actualizar contador de cuentas del cliente
     end
 ```
 
