@@ -48,10 +48,10 @@ public class TransactionClient {
     @TimeLimiter(name = BACKEND)
     @Retry(name = BACKEND)
     @CircuitBreaker(name = BACKEND)
-    public Mono<Void> registerTransaction(RegisterTransactionDto registerTransactionDto) {
+    public Mono<Void> registerTransaction(String idempotencyKey, RegisterTransactionDto registerTransactionDto) {
         return webClient.post()
             .uri("/v1/transactions")
-            .header(Constants.IDEMPOTENCY_KEY_HEADER, registerTransactionDto.getIdempotencyKey())
+            .header(Constants.IDEMPOTENCY_KEY_HEADER, idempotencyKey)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(registerTransactionDto)
             .retrieve()

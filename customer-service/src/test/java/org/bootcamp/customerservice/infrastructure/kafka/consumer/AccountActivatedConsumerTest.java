@@ -1,6 +1,8 @@
 package org.bootcamp.customerservice.infrastructure.kafka.consumer;
 
+import io.reactivex.rxjava3.core.Single;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.bootcamp.customerservice.application.port.out.CustomerStateRepositoryPort;
 import org.bootcamp.customerservice.domain.AccountType;
 import org.bootcamp.customerservice.infrastructure.kafka.event.AccountActivatedEvent;
 import org.bootcamp.customerservice.infrastructure.mongo.document.CustomerDocument;
@@ -8,6 +10,8 @@ import org.bootcamp.customerservice.infrastructure.mongo.document.IdempotencyLog
 import org.bootcamp.customerservice.infrastructure.mongo.document.OperationType;
 import org.bootcamp.customerservice.infrastructure.mongo.repository.CustomerRepository;
 import org.bootcamp.customerservice.infrastructure.mongo.repository.IdempotencyLogRepository;
+import org.bootcamp.customerservice.infrastructure.redis.dto.CustomerStateDto;
+import org.bootcamp.customerservice.infrastructure.redis.mapper.CustomerDtoMapper;
 import org.bootcamp.customerservice.support.IdempotencyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +41,12 @@ class AccountActivatedConsumerTest {
     @Mock
     private Acknowledgment acknowledgment;
 
+    @Mock
+    private CustomerDtoMapper customerDtoMapper;
+
+    @Mock
+    private CustomerStateRepositoryPort customerStateRepositoryPort;
+
     @InjectMocks
     private AccountActivatedConsumer consumer;
 
@@ -49,6 +59,14 @@ class AccountActivatedConsumerTest {
         customer.setSavingsAccountsCount(0);
         customer.setCheckingAccountsCount(0);
         customer.setFixedTermAccountsCount(0);
+
+        lenient().when(customerDtoMapper.toDto(any(CustomerDocument.class)))
+            .thenReturn(CustomerStateDto.builder()
+                .customerId("customer-1")
+                .build());
+
+        lenient().when(customerStateRepositoryPort.saveCustomerState(any(), any()))
+            .thenReturn(Single.just(true));
     }
 
     @Test

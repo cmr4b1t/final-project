@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.bootcamp.customerservice.application.port.out.CustomerStateRepositoryPort;
 import org.bootcamp.customerservice.infrastructure.kafka.event.CreditCardAccountActivatedEvent;
 import org.bootcamp.customerservice.infrastructure.mongo.document.CustomerDocument;
 import org.bootcamp.customerservice.infrastructure.mongo.document.IdempotencyLogDocument;
@@ -11,12 +12,14 @@ import org.bootcamp.customerservice.infrastructure.mongo.document.OperationStatu
 import org.bootcamp.customerservice.infrastructure.mongo.document.OperationType;
 import org.bootcamp.customerservice.infrastructure.mongo.repository.CustomerRepository;
 import org.bootcamp.customerservice.infrastructure.mongo.repository.IdempotencyLogRepository;
+import org.bootcamp.customerservice.infrastructure.redis.mapper.CustomerDtoMapper;
 import org.bootcamp.customerservice.support.Constants;
 import org.bootcamp.customerservice.support.IdempotencyUtils;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
+import reactor.adapter.rxjava.RxJava3Adapter;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -25,6 +28,8 @@ import reactor.core.publisher.Mono;
 public class CreditCardAccountActivatedConsumer {
     private final IdempotencyLogRepository idempotencyLogRepository;
     private final CustomerRepository customerRepository;
+    private final CustomerStateRepositoryPort customerStateRepositoryPort;
+    private final CustomerDtoMapper customerDtoMapper;
 
     @KafkaListener(
         topics = "${topics.bank-credit-card-account-activated}",
@@ -52,14 +57,22 @@ public class CreditCardAccountActivatedConsumer {
 
     private Mono<Void> processNewCreditCardAccountActivatedEvent(String payload, String idempotencyKey) {
         return Mono.defer(() -> {
-            CreditCardAccountActivatedEvent event = IdempotencyUtils.deserializeResponse(payload, CreditCardAccountActivatedEvent.class);
+            CreditCardAccountActivatedEvent event =
+                IdempotencyUtils.deserializeResponse(payload, CreditCardAccountActivatedEvent.class);
 
             return customerRepository.findByCustomerId(event.customerId())
                 .switchIfEmpty(Mono.error(new IllegalStateException(
                     "Customer not found for customerId: " + event.customerId())))
                 .map(this::incrementCreditCardAccountCounter)
-                .flatMap(customerRepository::save)
-                .then(idempotencyLogRepository.save(buildCompletedLog(idempotencyKey, payload)))
+                .flatMap(customer -> customerRepository.save(customer)
+                    .then(idempotencyLogRepository.save(buildCompletedLog(idempotencyKey, payload)))
+                    .then(
+                        RxJava3Adapter.singleToMono(
+                            customerStateRepositoryPort.saveCustomerState(
+                                customer.getCustomerId(),
+                                customerDtoMapper.toDto(customer))
+                        ))
+                )
                 .then();
         });
     }

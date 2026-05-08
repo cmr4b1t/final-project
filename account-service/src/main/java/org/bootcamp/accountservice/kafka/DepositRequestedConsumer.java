@@ -136,10 +136,10 @@ public class DepositRequestedConsumer {
         return accountRepository.save(account)
             .then(idempotencyLogRepository.save(idempotencyLog))
             .then(transactionClient.registerTransaction(
+                idempotencyKey,
                 RegisterTransactionDto.builder()
-                    .idempotencyKey(idempotencyKey)
                     .transactionType(TRANSACTION_TYPE)
-                    .accountId(account.getAccountId())
+                    .sourceAccountId(account.getAccountId())
                     .customerId(account.getCustomerId())
                     .amount(event.amount())
                     .currency(event.currency())

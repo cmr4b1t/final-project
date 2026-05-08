@@ -111,7 +111,7 @@ class DepositRequestedConsumerTest {
         when(idempotencyLogRepository.save(any()))
             .thenReturn(Mono.just(new IdempotencyLogDocument()));
 
-        when(transactionClient.registerTransaction(any(RegisterTransactionDto.class)))
+        when(transactionClient.registerTransaction(anyString(), any(RegisterTransactionDto.class)))
             .thenReturn(Mono.empty());
 
         when(eventProducerService.publishDepositAcceptedEvent(any(), any()))

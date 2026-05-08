@@ -118,10 +118,10 @@ class TransactionClientTest {
 
         Mono<Void> result =
             transactionClient.registerTransaction(
+                "idem-1",
                 RegisterTransactionDto.builder()
-                    .idempotencyKey("idem-1")
                     .transactionType("DEPOSIT")
-                    .accountId("acc-1")
+                    .sourceAccountId("acc-1")
                     .customerId("customer-1")
                     .amount(BigDecimal.TEN)
                     .currency(Currency.PEN)

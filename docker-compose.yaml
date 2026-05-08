@@ -58,6 +58,19 @@ services:
     volumes:
       - bootcamp-mongo-data:/data/db
 
+  redis:
+    image: redis:7-alpine
+    container_name: bootcamp-redis
+    restart: unless-stopped
+    ports: [ "6379:6379" ]
+    networks:
+      - bootcamp-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "PING" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   # Servicio de registro Eureka
   eureka-server:
     build: ./eureka-server
@@ -162,6 +175,8 @@ services:
       - HOSTNAME=customer-service
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - KAFKA_CONSUMER_GROUP_ID=customer.consumer
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 
   account-service:
     build: ./account-service

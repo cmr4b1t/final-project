@@ -147,16 +147,16 @@ public class WithdrawRequestedConsumer {
         return accountRepository.save(account)
             .then(idempotencyLogRepository.save(idempotencyLog))
             .then(transactionClient.registerTransaction(
-                    RegisterTransactionDto.builder()
-                        .idempotencyKey(idempotencyKey)
-                        .transactionType(TRANSACTION_TYPE)
-                        .accountId(account.getAccountId())
-                        .customerId(account.getCustomerId())
-                        .amount(event.amount())
-                        .currency(event.currency())
-                        .commission(commission)
-                        .note(event.note())
-                        .build())
+                idempotencyKey,
+                RegisterTransactionDto.builder()
+                    .transactionType(TRANSACTION_TYPE)
+                    .sourceAccountId(account.getAccountId())
+                    .customerId(account.getCustomerId())
+                    .amount(event.amount())
+                    .currency(event.currency())
+                    .commission(commission)
+                    .note(event.note())
+                    .build())
             )
             .then(RxJava3Adapter.completableToMono(
                 eventProducerService.publishWithdrawAcceptedEvent(idempotencyKey, acceptedEvent)));

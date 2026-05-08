@@ -3,6 +3,7 @@ package org.bootcamp.customerservice.infrastructure.kafka.consumer;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.after;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -10,10 +11,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.reactivex.rxjava3.core.Single;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.bootcamp.customerservice.application.port.out.CustomerStateRepositoryPort;
 import org.bootcamp.customerservice.domain.CreditCardStatus;
 import org.bootcamp.customerservice.domain.Currency;
 import org.bootcamp.customerservice.infrastructure.kafka.event.CreditCardAccountActivatedEvent;
@@ -22,10 +25,13 @@ import org.bootcamp.customerservice.infrastructure.mongo.document.IdempotencyLog
 import org.bootcamp.customerservice.infrastructure.mongo.document.OperationType;
 import org.bootcamp.customerservice.infrastructure.mongo.repository.CustomerRepository;
 import org.bootcamp.customerservice.infrastructure.mongo.repository.IdempotencyLogRepository;
+import org.bootcamp.customerservice.infrastructure.redis.dto.CustomerStateDto;
+import org.bootcamp.customerservice.infrastructure.redis.mapper.CustomerDtoMapper;
 import org.bootcamp.customerservice.support.IdempotencyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,14 +51,24 @@ class CreditCardAccountActivatedConsumerTest {
     @Mock
     private Acknowledgment acknowledgment;
 
+    @Mock
+    private CustomerDtoMapper customerDtoMapper;
+
+    @Mock
+    private CustomerStateRepositoryPort customerStateRepositoryPort;
+
+    @InjectMocks
     private CreditCardAccountActivatedConsumer consumer;
 
     @BeforeEach
     void setUp() {
-        consumer = new CreditCardAccountActivatedConsumer(
-            idempotencyLogRepository,
-            customerRepository
-        );
+        lenient().when(customerDtoMapper.toDto(any(CustomerDocument.class)))
+            .thenReturn(CustomerStateDto.builder()
+                .customerId("customer-1")
+                .build());
+
+        lenient().when(customerStateRepositoryPort.saveCustomerState(any(), any()))
+            .thenReturn(Single.just(true));
     }
 
     @Test

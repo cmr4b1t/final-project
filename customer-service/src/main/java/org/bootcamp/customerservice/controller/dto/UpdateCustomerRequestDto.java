@@ -10,4 +10,5 @@ public class UpdateCustomerRequestDto {
     private String fullName;
     private CustomerType type;
     private CustomerProfile profile;
+    private Boolean hasOverdueDebts;
 }

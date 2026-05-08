@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,10 +13,14 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import org.bootcamp.customerservice.application.port.out.CustomerRepositoryPort;
+import org.bootcamp.customerservice.application.port.out.CustomerStateRepositoryPort;
 import org.bootcamp.customerservice.domain.model.Customer;
 import org.bootcamp.customerservice.domain.model.CustomerProfile;
 import org.bootcamp.customerservice.domain.model.CustomerType;
 import org.bootcamp.customerservice.domain.model.StatusType;
+import org.bootcamp.customerservice.infrastructure.redis.dto.CustomerStateDto;
+import org.bootcamp.customerservice.infrastructure.redis.mapper.CustomerDtoMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,8 +32,24 @@ import org.springframework.web.server.ResponseStatusException;
 class CrudCustomerUseCaseImplTest {
     @Mock
     private CustomerRepositoryPort customerRepositoryPort;
+    @Mock
+    private CustomerStateRepositoryPort customerStateRepositoryPort;
+    @Mock
+    private CustomerDtoMapper customerDtoMapper;
     @InjectMocks
     private CrudCustomerUseCaseImpl useCase;
+
+    @BeforeEach
+    void setup() {
+        lenient().when(customerStateRepositoryPort.getCustomerState(any()))
+            .thenReturn(Maybe.empty());
+
+        lenient().when(customerDtoMapper.toDto(any(Customer.class)))
+            .thenReturn(new CustomerStateDto());
+
+        lenient().when(customerStateRepositoryPort.saveCustomerState(any(), any()))
+            .thenReturn(Single.just(true));
+    }
 
     @Test
     void createShouldSaveActiveCustomerWhenDocumentDoesNotExist() {
@@ -48,7 +69,7 @@ class CrudCustomerUseCaseImplTest {
     void createShouldFailWhenDocumentAlreadyExists() {
         when(customerRepositoryPort.existsByDocumentNumber("123")).thenReturn(Single.just(true));
 
-        assertThrows(ResponseStatusException.class, () -> useCase.create(customer(null, "123")).blockingGet());
+        assertThrows(ResponseStatusException.class, () -> useCase.create(customer("cus1", "123")).blockingGet());
     }
 
     @Test

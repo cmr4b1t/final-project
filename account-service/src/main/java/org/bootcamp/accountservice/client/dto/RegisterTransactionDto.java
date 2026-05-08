@@ -8,9 +8,8 @@ import org.bootcamp.accountservice.domain.Currency;
 @Data
 @Builder
 public class RegisterTransactionDto {
-    private String idempotencyKey;
     private String transactionType;
-    private String accountId;
+    private String sourceAccountId;
     private String customerId;
     private BigDecimal amount;
     private Currency currency;

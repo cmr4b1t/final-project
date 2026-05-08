@@ -194,6 +194,9 @@ components:
             - STANDARD
             - VIP
             - PYME
+        hasOverdueDebts:
+          type: boolean
+          example: false
     CustomerResponseDto:
       type: object
       properties:
